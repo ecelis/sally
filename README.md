@@ -1,6 +1,15 @@
 # Sally lightfoot
 
 
+Collection of web crawlers (crabs) based on Scrapy framework. Each crab
+focuses on very specific type of web sites or social networks.
+
+### Crabs
+
+* lightfoot, very basic crab to extract general information from web
+  sites
+
+
 ## Setup
 
 
@@ -19,6 +28,16 @@
       --publish=7474:7474 --publish=7687:7687 \
       --volume=$HOME/neo4j/data:/data \
       neo4j
+
+
+
+## Crabs run
+
+In order to run any crab youdo like the following command
+
+
+    scrapy crawl lightfoot -o <output_item_feed>.csv
+
 
 
 

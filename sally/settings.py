@@ -21,6 +21,12 @@ USER_AGENT = 'sally (+http://www.shipkraken.com)'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
+FEED_FORMAT = 'csv'
+## AttributeError: 'FeedExporter' object has no attribute 'slot'
+## https://github.com/scrapy/scrapyd/issues/31
+
+#FEED_URI = 'file:///tmp/sally/%(name)s/%s(time)s.csv'
+
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
