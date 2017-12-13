@@ -3,7 +3,7 @@ import numpy as np
 import eat
 
 
-csvs = ['./tests/fixtures/sampleaa.csv',
+csvs = ['./tests/fixtures/mx.csv',
             './tests/fixtures/sampleab.csv']
 
 class FeedSallyTestCase(unittest.TestCase):

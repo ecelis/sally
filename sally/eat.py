@@ -16,23 +16,25 @@ def check_path(files, verified=[]):
     return check_path(files, verified)
 
 
-def feed_csv(files, col=0, delimiter=',', urls=[]):
+def feed_csv(files, col=0, delimiter=',', urls=np.array([])):
     """Read a set of CSV files with URLs"""
     if not files:
         return urls
 
     f = files.pop()
-    if len(urls) < 1:
     # TODO validate url
+    if len(urls) < 0:
+        print('0 dim')
         urls = pd.read_csv(f, sep=delimiter, error_bad_lines=False,
                 header=None, index_col=False, names=['url'], usecols=['url'],
                 memory_map=True).values
     else:
+        print('>0 dim')
     # TODO validate url
-        np.append(urls,
+        np.concatenate((urls,
                 pd.read_csv(f, sep=delimiter, error_bad_lines=False,
                 header=None, index_col=False, names=['url'], usecols=['url'],
                 memory_map=True).values
-                )
+                ))
 
     return feed_csv(files, col=col, delimiter=delimiter, urls=urls)
