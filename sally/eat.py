@@ -1,4 +1,6 @@
-import csv
+import numpy as np
+import pandas as pd
+import validators
 from pathlib import Path
 
 
@@ -14,10 +16,23 @@ def check_path(files, verified=[]):
     return check_path(files, verified)
 
 
-
-def feed_csv(files, delimiter=',', **kwargs):
+def feed_csv(files, col=0, delimiter=',', urls=[]):
     """Read a set of CSV files with URLs"""
-    if type(files) is not list:
-        raise TypeError('files parameter should be a list.')
+    if not files:
+        return urls
 
+    f = files.pop()
+    if len(urls) < 1:
+    # TODO validate url
+        urls = pd.read_csv(f, sep=delimiter, error_bad_lines=False,
+                header=None, index_col=False, names=['url'], usecols=['url'],
+                memory_map=True).values
+    else:
+    # TODO validate url
+        np.append(urls,
+                pd.read_csv(f, sep=delimiter, error_bad_lines=False,
+                header=None, index_col=False, names=['url'], usecols=['url'],
+                memory_map=True).values
+                )
 
+    return feed_csv(files, col=col, delimiter=delimiter, urls=urls)
