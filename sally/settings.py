@@ -9,6 +9,17 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
+### BEGIN Eve settings
+
+DOMAIN = { 'sally': {}}
+MONGO_HOST = '127.0.0.1'
+MONGO_PORT = 27017
+MONGO_DBNAME = 'sally'
+#MONGO_USERNAME =
+#MONGO_PASSWORD =
+
+### END Eve settings
+
 MONGO_URI = 'mongodb://127.0.0.1:27017/'
 MONGO_DATABASE = 'sally'
 

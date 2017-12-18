@@ -25,8 +25,8 @@ class LightfootPipeline(object):
     @classmethod
     def from_crawler(cls, crawler):
         return cls(
-                mongo_uri=crawler.settings.get('MONGO_URI'), #'mongodb://127.0.0.1:27017/items',
-                mongo_db=crawler.settings.get('MONGO_DATABASE', 'sally') #'items'
+                mongo_uri=crawler.settings.get('MONGO_HOST'), #'mongodb://127.0.0.1:27017/items',
+                mongo_db=crawler.settings.get('MONGO_DBNAME', 'sally') #'items'
                 )
 
 
