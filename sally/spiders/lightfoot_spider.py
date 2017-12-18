@@ -42,7 +42,7 @@ class BasicCrab(scrapy.Spider):
         website['secure_url'] = True if parsed_url.scheme == 'https' else False
         website['url'] = response.url
         website['title'] = response.css('title::text').extract_first().strip()
-        website['links'] = website_link
+        website['link'] = website_link
         website['email'] = website_email
         website['telephone'] = response.xpath('//div').re(r'[Tt][Ee][Ll].*[0-9]') # TODO use libtelephone
         #website['meta'] = response.xpath('//meta/@content').extract()
@@ -50,4 +50,4 @@ class BasicCrab(scrapy.Spider):
         # TODO search for ecommerce and online payment
         website['last_crawl'] = datetime.now()
 
-        return website
+        return website.qualify()
