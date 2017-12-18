@@ -1,6 +1,7 @@
 from datetime import datetime
 from urllib.parse import urlparse
 import scrapy
+from scrapy.loader import ItemLoader
 #from scrapy import ItemLoader
 from sally.items import WebsiteItem
 #import eat
@@ -34,7 +35,7 @@ class BasicCrab(scrapy.Spider):
         #for sel in response.xpath('//a/@href'):
             #print(sel)
         #print(response.xpath('//td/text()').re(r'Tel\..*'))
-        parsed_url = urlparse(response.url).netloc
+        parsed_url = urlparse(response.url)
         website = WebsiteItem()
         website['base_url'] = parsed_url.netloc
         website['secure_url'] = True if parsed_url.scheme == 'https' else False

@@ -9,11 +9,13 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
+MONGO_URI = 'mongodb://127.0.0.1:27017/'
+MONGO_DATABASE = 'sally'
+
 BOT_NAME = 'sally'
 
 SPIDER_MODULES = ['sally.spiders']
 NEWSPIDER_MODULE = 'sally.spiders'
-
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = 'sally (+http://www.shipkraken.com)'
@@ -31,7 +33,13 @@ DEPTH_LIMIT = 1
 
 OUTPUT_PATH = '/tmp/sally/test.json'
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-#CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 32
+
+REACTOR_THREADPOOL_MAXSIZE = 20
+
+RETRY_ENABLED = False
+
+AJAXCRAWL_ENABLED = True
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
@@ -42,7 +50,7 @@ OUTPUT_PATH = '/tmp/sally/test.json'
 #CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-#COOKIES_ENABLED = False
+COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
@@ -64,6 +72,9 @@ OUTPUT_PATH = '/tmp/sally/test.json'
 #DOWNLOADER_MIDDLEWARES = {
 #    'sally.middlewares.MyCustomDownloaderMiddleware': 543,
 #}
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy.downloadermiddlewares.ajaxcrawl.AjaxCrawlMiddleware': 543,
+}
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -76,6 +87,9 @@ OUTPUT_PATH = '/tmp/sally/test.json'
 #ITEM_PIPELINES = {
 #    'sally.pipelines.SallyPipeline': 300,
 #}
+ITEM_PIPELINES = {
+    'sally.pipelines.LightfootPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
