@@ -14,6 +14,8 @@ class SallyItem(scrapy.Item):
     pass
 
 class WebsiteItem(scrapy.Item):
+    base_url = scrapy.Field()
+    secure_url = scrapy.Field()
     url = scrapy.Field()
     title = scrapy.Field()
     links = scrapy.Field()              # <a href> tags
