@@ -1,8 +1,8 @@
 from datetime import datetime
+import re
 from urllib.parse import urlparse
 import scrapy
 from scrapy.loader import ItemLoader
-#from scrapy import ItemLoader
 from sally.items import WebsiteItem
 #import eat
 
@@ -35,8 +35,9 @@ class BasicCrab(scrapy.Spider):
         website_link = [link for link in response.xpath('//a/@href').extract()]
         website_email = [email for email in
                 response.xpath('//div').re(r'[A-Za-z0-9].*@.*')]
-        #print(response.xpath('//td/text()').re(r'Tel\..*'))
+        website_telephone = response.xpath('//div').re(r'[Tt][Ee][Ll].*[0-9]') # TODO use libtelephone
         parsed_url = urlparse(response.url)
+
         website = WebsiteItem()
         website['base_url'] = parsed_url.netloc
         website['secure_url'] = True if parsed_url.scheme == 'https' else False
@@ -44,10 +45,19 @@ class BasicCrab(scrapy.Spider):
         website['title'] = response.css('title::text').extract_first().strip()
         website['link'] = website_link
         website['email'] = website_email
-        website['telephone'] = response.xpath('//div').re(r'[Tt][Ee][Ll].*[0-9]') # TODO use libtelephone
+        website['telephone'] = website_telephone
+        website['ecommerce'] = self.find_ecommerce(response.xpath('//meta/@content').extract())
         #website['meta'] = response.xpath('//meta/@content').extract()
         #website['scripts'] = response.xpath('//script').extract()
         # TODO search for ecommerce and online payment
         website['last_crawl'] = datetime.now()
 
         return website.qualify()
+
+
+    def find_ecommerce(self, full_text):
+        """function for findEcommerce"""
+        # TODO we look only for woocommerce right now
+        r = re.compile('[Ww]oo[Cc]ommerce')
+        ecommerce = filter(r.match, full_text)
+        return list(ecommerce)
