@@ -32,8 +32,9 @@ class BasicCrab(scrapy.Spider):
             f.write(response.body)
         f.close()
         """
-        #for sel in response.xpath('//a/@href'):
-            #print(sel)
+        website_link = [link for link in response.xpath('//a/@href').extract()]
+        website_email = [email for email in
+                response.xpath('//div').re(r'[A-Za-z0-9].*@.*')]
         #print(response.xpath('//td/text()').re(r'Tel\..*'))
         parsed_url = urlparse(response.url)
         website = WebsiteItem()
@@ -41,8 +42,8 @@ class BasicCrab(scrapy.Spider):
         website['secure_url'] = True if parsed_url.scheme == 'https' else False
         website['url'] = response.url
         website['title'] = response.css('title::text').extract_first().strip()
-        website['links'] = response.xpath('//a/@href').extract()
-        website['email'] = response.xpath('//div').re(r'[A-Za-z0-9].*@.*\.com\.*')
+        website['links'] = website_link
+        website['email'] = website_email
         website['telephone'] = response.xpath('//div').re(r'[Tt][Ee][Ll].*[0-9]') # TODO use libtelephone
         #website['meta'] = response.xpath('//meta/@content').extract()
         #website['scripts'] = response.xpath('//script').extract()
