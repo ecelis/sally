@@ -12,6 +12,8 @@ Eve==0.7.5
 Events==0.2.2
 Flask==0.12
 Flask-PyMongo==0.5.1
+google-api-python-client==1.6.4
+httplib2==0.10.3
 hyperlink==17.3.1
 idna==2.6
 incremental==17.5.0
@@ -20,6 +22,7 @@ Jinja2==2.10
 lxml==4.1.1
 MarkupSafe==0.23
 numpy==1.13.3
+oauth2client==4.1.2
 pandas==0.21.0
 parsel==1.2.0
 py2neo==3.1.2
@@ -32,11 +35,13 @@ pyOpenSSL==17.5.0
 python-dateutil==2.6.1
 pytz==2017.3
 queuelib==1.4.2
+rsa==3.4.2
 Scrapy==1.4.0
 service-identity==17.0.0
 simplejson==3.13.2
 six==1.11.0
 Twisted==17.9.0
+uritemplate==3.0.0
 validators==0.12.0
 w3lib==1.18.0
 Werkzeug==0.11.15
