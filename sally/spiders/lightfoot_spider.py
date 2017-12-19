@@ -2,13 +2,19 @@ from datetime import datetime
 import re
 from urllib.parse import urlparse
 import scrapy
+from scrapy import CrawlSpider, Rule
+from scrapy.linkextractors import LinkExtractor
 from scrapy.loader import ItemLoader
 from sally.items import WebsiteItem
 #import eat
 
 
-class BasicCrab(scrapy.Spider):
+class BasicCrab(Crawler):
     name = "lightfoot"
+
+    allowed_domains = ['com.mx']
+
+    rules = (Rule(LinkExtractor(unique=True), callback='parse_link'))
 
 
     def __init__(self):
