@@ -105,3 +105,4 @@ venv.bak/
 tests/fitures
 garbage
 tests/fixtures
+client_secret.json
