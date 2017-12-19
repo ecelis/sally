@@ -9,20 +9,20 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
+BOT_NAME = 'sally'
+
 ### BEGIN Eve settings
 
 API_VERSION = 'v1'
 DOMAIN = { 'lightfoot': {}}
 MONGO_HOST = '127.0.0.1'
 MONGO_PORT = 27017
-MONGO_DBNAME = 'sally'
+MONGO_DBNAME = BOT_NAME + '_' + API_VERSION
 #MONGO_USERNAME =
 #MONGO_PASSWORD =
 ALLOWED_FILTERS = []
 
 ### END Eve settings
-
-BOT_NAME = 'sally'
 
 SPIDER_MODULES = ['sally.spiders']
 NEWSPIDER_MODULE = 'sally.spiders'
