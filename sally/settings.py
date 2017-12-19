@@ -11,17 +11,16 @@
 
 ### BEGIN Eve settings
 
-DOMAIN = { 'sally': {}}
+API_VERSION = 'v1'
+DOMAIN = { 'lightfoot': {}}
 MONGO_HOST = '127.0.0.1'
 MONGO_PORT = 27017
 MONGO_DBNAME = 'sally'
 #MONGO_USERNAME =
 #MONGO_PASSWORD =
+ALLOWED_FILTERS = []
 
 ### END Eve settings
-
-MONGO_URI = 'mongodb://127.0.0.1:27017/'
-MONGO_DATABASE = 'sally'
 
 BOT_NAME = 'sally'
 
