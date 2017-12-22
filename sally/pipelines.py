@@ -5,6 +5,8 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
+import datetime
+import os
 import pymongo
 import sally.spreadsheets as gs
 
@@ -40,6 +42,7 @@ class LightfootPipeline(object):
 
 
     def close_spider(self, spider):
+        print(sheet_rows)
         self.client.close()
         gs.insert_to(self.spreadsheetId, self.sheet, self.sheet_rows)
 
