@@ -9,7 +9,7 @@ from sally.items import WebsiteItem
 #import eat
 
 
-class BasicCrab(Crawler):
+class BasicCrab(CrawlSpider):
     name = "lightfoot"
 
     allowed_domains = ['com.mx']

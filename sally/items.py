@@ -6,7 +6,7 @@
 # http://doc.scrapy.org/en/latest/topics/items.html
 
 import scrapy
-from qualifiers import QUALIFIER as q
+import qualifiers as q
 
 class SallyItem(scrapy.Item):
     # define the fields for your item here like:

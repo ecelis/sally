@@ -76,6 +76,9 @@ COOKIES_ENABLED = False
 #SPIDER_MIDDLEWARES = {
 #    'sally.middlewares.SallySpiderMiddleware': 543,
 #}
+SPIDER_MIDDLEWARES = {
+    'scrapy.spidermiddlewares.offsite.OffsiteMiddleware': 543,
+}
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
