@@ -6,6 +6,7 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 import pymongo
+import sally.spreadsheets as gs
 
 
 class SallyPipeline(object):
@@ -33,12 +34,29 @@ class LightfootPipeline(object):
     def open_spider(self, spider):
         self.client = pymongo.MongoClient(self.mongo_uri)
         self.db = self.client[self.mongo_db]
+        self.spreadsheetId = os.environ['SALLY_SHEET_ID']
+        self.sheet = os.environ['SALLY_SHEET_NAME']
+        self.sheet_rows = []
 
 
     def close_spider(self, spider):
         self.client.close()
+        gs.insert_to(self.spreadsheetId, self.sheet, self.sheet_rows)
 
 
     def process_item(self, item, spider):
         self.db[self.collection].insert_one(dict(item.qualify()))
+        # Send to spreadsheet
+        row = [
+                item['score'],
+                item['base_url'],
+                'N/O',          # item['oferta']
+                'N/T',          # item['telephone']
+                'N/E',          # item['email']
+                'N/C',          # item['ecommerce']
+                'N/L',          # item['place']
+                datetime.datetime.now().strftime('%m/%d/%Y')
+                ]
+        self.sheet_rows.append(row)
+
         return item
