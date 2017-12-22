@@ -2,7 +2,7 @@ from datetime import datetime
 import re
 from urllib.parse import urlparse
 import scrapy
-from scrapy import CrawlSpider, Rule
+from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from scrapy.loader import ItemLoader
 from sally.items import WebsiteItem
