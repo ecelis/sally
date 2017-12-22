@@ -30,14 +30,6 @@ class BasicCrab(Crawler):
 
 
     def parse_item(self, response):
-        """
-        Save pages locally"
-        page = response.url.split("/")[-2]
-        filename = './garbage/lead-%s.html' % page
-        with open(filename, 'wb') as f:
-            f.write(response.body)
-        f.close()
-        """
         website_link = [link for link in response.xpath('//a/@href').extract()]
         website_email = [email for email in
                 response.xpath('//div').re(r'[A-Za-z0-9].*@.*')]
@@ -58,7 +50,7 @@ class BasicCrab(Crawler):
         # TODO search for ecommerce and online payment
         website['last_crawl'] = datetime.now()
 
-        return website.qualify()
+        return website
 
 
     def find_ecommerce(self, full_text):

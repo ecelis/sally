@@ -6,28 +6,7 @@
 # http://doc.scrapy.org/en/latest/topics/items.html
 
 import scrapy
-
-
-QUALIFIER = {
-        'products': [
-            'cosméticos',
-            'ropa',
-            'zapatos',
-            'bisuteria',
-            'joyeria', # TODO more products
-            ],
-        'services': [
-            'envíos', # TODO more services
-            ],
-        'ecommerce': [
-            'woocommerce',
-            'shopify',
-            'magento',
-            'prestashop',
-            'shoperti'
-            ]
-        }
-
+import qualifiers.QUALIFIER as q
 
 class SallyItem(scrapy.Item):
     # define the fields for your item here like:

@@ -40,5 +40,5 @@ class LightfootPipeline(object):
 
 
     def process_item(self, item, spider):
-        self.db[self.collection].insert_one(dict(item))
+        self.db[self.collection].insert_one(dict(item.qualify()))
         return item
