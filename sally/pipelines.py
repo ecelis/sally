@@ -43,7 +43,6 @@ class LightfootPipeline(object):
 
 
     def close_spider(self, spider):
-        print(sheet_rows)
         self.client.close()
         gs.insert_to(self.spreadsheetId, self.sheet, self.sheet_rows)
 
