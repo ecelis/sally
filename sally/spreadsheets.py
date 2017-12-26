@@ -58,6 +58,11 @@ def insert_to(spreadsheetId, sheet, rows=[['','','','','','','','']], offset=2):
     row = [CALIFICACION,SITIO,OFERTA,TELÉFONO,EMAIL,ECOMMERCE,LUGAR,FECHA]
     offsset = row number to insert
     """
+    print('===================================')
+    print('===================================')
+    print("SAving to Drive")
+    print('===================================')
+    print('===================================')
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
     discoveryUrl = ('https://sheets.googleapis.com//rest?'
