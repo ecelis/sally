@@ -1,0 +1,8 @@
+version: '3.3'
+services:
+  mongosally:
+    image: mongo:3.6
+    volumes:
+      - ./storage:/data/db
+    ports:
+      - "27017:27017"
