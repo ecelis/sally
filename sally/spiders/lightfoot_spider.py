@@ -12,7 +12,7 @@ from sally.items import WebsiteItem
 class BasicCrab(CrawlSpider):
     name = "lightfoot"
 
-    allowed_domains = ['com.mx']
+    allowed_domains = ['com', 'com.mx']
 
     rules = (Rule(LinkExtractor(unique=True), callback='parse_link'))
 
@@ -32,7 +32,7 @@ class BasicCrab(CrawlSpider):
     def parse_item(self, response):
         website_link = [link for link in response.xpath('//a/@href').extract()]
         website_email = [email for email in
-                response.xpath('//div').re(r'[A-Za-z0-9].*@.*')]
+                response.xpath('//div').re(r'[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+')]
         website_telephone = response.xpath('//div').re(r'[Tt][Ee][Ll].*[0-9]') # TODO use libtelephone
         parsed_url = urlparse(response.url)
 
@@ -45,7 +45,7 @@ class BasicCrab(CrawlSpider):
         website['email'] = website_email
         website['telephone'] = website_telephone
         website['ecommerce'] = self.find_ecommerce(response.xpath('//meta/@content').extract())
-        #website['meta'] = response.xpath('//meta/@content').extract()
+        website['meta'] = response.xpath('//meta/@content').extract()
         #website['scripts'] = response.xpath('//script').extract()
         # TODO search for ecommerce and online payment
         website['last_crawl'] = datetime.now()

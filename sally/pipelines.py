@@ -37,8 +37,8 @@ class LightfootPipeline(object):
     def open_spider(self, spider):
         self.client = pymongo.MongoClient(self.mongo_uri)
         self.db = self.client[self.mongo_db]
-        self.spreadsheetId = os.environ['SALLY_SHEET_ID']
-        self.sheet = os.environ['SALLY_SHEET_NAME']
+        self.spreadsheetId = os.environ['SALLY_SHEET_ID'] or self.setings['SHEET_ID']
+        self.sheet = os.environ['SALLY_SHEET_NAME'] or self.settings['SHEET_NAME']
         self.sheet_rows = []
 
 
@@ -50,13 +50,26 @@ class LightfootPipeline(object):
     def process_item(self, item, spider):
         self.db[self.collection].insert_one(dict(item.qualify()))
         # Send to spreadsheet
+        # TODO put extract of first item in a function
+        if(len(item['email']) > 0):
+            email = item['email'][0]
+        else:
+            email = ''
+        if(len(item['telephone']) > 0):
+            telephone = item['telephone'][0]
+        else:
+            telephone = ''
+        if(len(item['ecommerce']) > 0):
+            ecommerce = item['ecommerce'][0]
+        else:
+            ecommerce = ''
         row = [
                 item['score'],
                 item['base_url'],
                 'N/O',          # item['oferta']
-                'N/T',          # item['telephone']
-                'N/E',          # item['email']
-                'N/C',          # item['ecommerce']
+                telephone,          # item['telephone']
+                email,          # item['email']
+                ecommerce,          # item['ecommerce']
                 'N/L',          # item['place']
                 datetime.datetime.now().strftime('%m/%d/%Y')
                 ]

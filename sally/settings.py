@@ -9,6 +9,11 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
+### Test settings
+SHEET_ID='1AxioUWtPJItfnv--JxNg5-oiUUMJgW4uoQopx-JlH00'
+SHEET_NAME='testing'
+### END test settings
+
 BOT_NAME = 'sally'
 
 ### BEGIN Eve settings
