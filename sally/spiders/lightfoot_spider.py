@@ -66,16 +66,13 @@ class BasicCrab(CrawlSpider):
                     r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)')
 
             if len(tel_list) > 0:
-                self.logger.info(tel_list)
-                l = self.to_tel(tel_raw, [])
-                if len(l) > 0:
-                    tel_list.append(l)
-                    self.logger.info(set(tel_list))
+                tel_list = self.to_tel(tel_raw, [])
+                self.logger.info(set(tel_list))
 
-            return self.extract_telephone(response, elements, tel_list,
-                    tel_set)
+                return self.extract_telephone(response, elements, tel_list,
+                    set(tel_list))
         else:
-            return tel_set
+            return set(tel_list)
 
 
     def parse_item(self, response):
