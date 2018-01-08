@@ -13,6 +13,7 @@ class SallyItem(scrapy.Item):
     # name = scrapy.Field()
     pass
 
+
 class WebsiteItem(scrapy.Item):
 
     base_url = scrapy.Field()           # Base URL after any 30x redirection
@@ -30,7 +31,9 @@ class WebsiteItem(scrapy.Item):
     url = scrapy.Field()                # start_url given by source
     webstore_rel = scrapy.Field()       # Any metion of ecommerce software
 
+
     def qualify(self):
+        """Qualify item based on score"""
         self['score'] = 1           # Initialize with 1/5 == five *
         ## lessen score if missing keys
         if not self['email'] or len(self['email']) < 1:         # No emails -1 *
@@ -44,3 +47,5 @@ class WebsiteItem(scrapy.Item):
             self['score'] += 0.1
 
         return self
+
+
