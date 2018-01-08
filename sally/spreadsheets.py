@@ -59,7 +59,10 @@ def insert_to(spreadsheetId, sheet, rows=[['','','','','','','','']], offset=2):
     discoveryUrl = ('https://sheets.googleapis.com//rest?'
                     'version=v4')
     service = discovery.build('sheets', 'v4', http=http,
-                              discoveryServiceUrl=discoveryUrl)
+                              discoveryServiceUrl=discoveryUrl,
+                              cache_discovery=False) # Set cache_discovery=False
+                            #to avoid ImportError: file_cache is unavailable when using oauth2client >= 4.0.0
+                            # https://github.com/google/google-api-python-client/issues/299
 
     rangeName = sheet + '!A' + str(offset)
     majorDimension = 'ROWS'
