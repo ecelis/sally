@@ -1,6 +1,7 @@
 from datetime import datetime
 import re
 from urllib.parse import urlparse
+import tldextract
 import scrapy
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
@@ -21,7 +22,10 @@ class BasicCrab(CrawlSpider):
 
     def __init__(self):
         with open('./tests/fixtures/very_small_list.txt', 'r') as f:
-            self.start_urls = ["http://%s"  % line.rstrip() for line in f]
+            allowed_urls = ["http://%s"  % line.rstrip() for line in f]
+            self.start_urls = [
+                    url for url in allowed_urls if tldextract.extract(url).suffix in BasicCrab.allowed_domains
+                    ]
         f.close()
 
 
@@ -57,8 +61,7 @@ class BasicCrab(CrawlSpider):
     def extract_telephone(self, response, elements, tel_set=set({})):
         """Extract telephone list"""
         if len(elements) > 0:
-            element = elements.pop()
-            tel_raw = response.xpath('//' + element).re(
+            tel_raw = response.xpath('//' + elements.pop()).re(
                     r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)')
             return self.extract_telephone(response,
                     elements, set(self.to_tel(tel_raw)))
