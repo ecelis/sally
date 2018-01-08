@@ -40,7 +40,9 @@ class BasicCrab(CrawlSpider):
        formated telephones"""
         if len(raw) > 0:
             try:
-                tel_list.append('-'.join(raw[:raw.index('')]))
+                number = '-'.join(raw[:raw.index('')])
+                if len(number.replace('-','')) == 10:
+                    tel_list.append(number)
                 return self.to_tel(raw[raw.index(''):][1:], tel_list)
             except:
                 # First param here must be empty list always
@@ -73,9 +75,9 @@ class BasicCrab(CrawlSpider):
     def parse_item(self, response):
         website_link = [link for link in response.xpath('//a/@href').extract()]
         website_email = list(self.extract_email(response,
-            list(BasicCrab.ELEMENTS), set({})))
+            list(BasicCrab.ELEMENTS)))
         website_telephone = list(self.extract_telephone(response,
-            list(BasicCrab.ELEMENTS), set({})))
+            list(BasicCrab.ELEMENTS)))
         parsed_url = urlparse(response.url)
 
         website = WebsiteItem()
