@@ -91,6 +91,7 @@ SPIDER_MIDDLEWARES = {
 #    'sally.middlewares.MyCustomDownloaderMiddleware': 543,
 #}
 DOWNLOADER_MIDDLEWARES = {
+    'scrapy.spidermiddlewares.offsite.OffsiteMiddleware': 540,
     'scrapy.downloadermiddlewares.ajaxcrawl.AjaxCrawlMiddleware': 543,
 }
 

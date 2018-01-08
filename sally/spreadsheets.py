@@ -8,11 +8,7 @@ from apiclient import discovery
 from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
-#try:
-#    import argparse
-#    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-#except ImportError:
-#    flags = None
+## TODO flags comes from sheets quickstart, check and remove if needed
 flags = None
 
 # If modifying these scopes, delete your previously saved credentials
@@ -58,11 +54,6 @@ def insert_to(spreadsheetId, sheet, rows=[['','','','','','','','']], offset=2):
     row = [CALIFICACION,SITIO,OFERTA,TELÉFONO,EMAIL,ECOMMERCE,LUGAR,FECHA]
     offsset = row number to insert
     """
-    print('===================================')
-    print('===================================')
-    print("SAving to Drive")
-    print('===================================')
-    print('===================================')
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
     discoveryUrl = ('https://sheets.googleapis.com//rest?'

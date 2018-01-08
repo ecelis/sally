@@ -16,8 +16,11 @@ class BasicCrab(CrawlSpider):
 
     rules = (Rule(LinkExtractor(unique=True), callback='parse_link'))
 
+    
 
     def __init__(self):
+
+
         with open('./tests/fixtures/very_small_list.txt', 'r') as f:
             self.start_urls = ["http://%s"  % line.rstrip() for line in f]
         f.close()
@@ -29,11 +32,61 @@ class BasicCrab(CrawlSpider):
             yield scrapy.Request(url=url, callback=self.parse_item)
 
 
+    def extract_email(self, response, elements, email_set):
+        """Extract email from assorted DOM elements"""
+        if len(elements) > 0:
+            myset = set(response.xpath('//' + elements.pop()).re(
+                        r'[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+'))
+            return self.extract_email(response=response,
+                    elements=elements,
+                    email_set=myset
+                    )
+        else:
+            return email_set
+
+
+    def to_tel(self, raw, tel_list):
+        """Take a list of split telephones and returns a lisf of
+       formated telephones"""
+
+        if len(raw) > 0:
+            try:
+                tel_list.append('-'.join(raw[:raw.index('')]))
+                return self.to_tel(raw[raw.index(''):][1:], tel_list)
+            except:
+                return tel_list
+        else:
+            return tel_list
+
+
+    def extract_telephone(self, response, elements, tel_list, tel_set):
+        if len(elements) > 0:
+            element = elements.pop()
+            tel_raw = response.xpath('//' + element).re(
+                    r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)')
+
+            if len(tel_list) > 0:
+                self.logger.info(tel_list)
+                l = self.to_tel(tel_raw, [])
+                if len(l) > 0:
+                    tel_list.append(l)
+                    self.logger.info(set(tel_list))
+
+            return self.extract_telephone(response, elements, tel_list,
+                    tel_set)
+        else:
+            return tel_set
+
+
     def parse_item(self, response):
         website_link = [link for link in response.xpath('//a/@href').extract()]
-        website_email = [email for email in
-                response.xpath('//div').re(r'[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+')]
-        website_telephone = response.xpath('//div').re(r'[Tt][Ee][Ll].*[0-9]') # TODO use libtelephone
+        website_email = list(self.extract_email(response,
+            ['div','p','span','a'], set({})))
+        self.logger.info(website_email)
+        website_telephone = list(self.extract_telephone(response, ['div','p','span','a'],
+            [], set({})))
+        self.logger.info(website_telephone)
+        #website_telephone = response.xpath('//div').re(r'[Tt][Ee][Ll].*[0-9]') # TODO use libtelephone
         parsed_url = urlparse(response.url)
 
         website = WebsiteItem()
