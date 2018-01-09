@@ -34,13 +34,19 @@ class WebsiteItem(scrapy.Item):
 
 
     def qualify_product(self):
-        [item for item in self['keywords']]
+        if type(self['keywords']) is list and len(self['keywords']) > 0:
+            products = [p for p in self['keywords'][0].replace(' ','').split(',') if p in q['products']]
+            if len(products) < 1:
+                self['score'] -= 0.2
+            # return clean list of useful keywords
+            #self['keywords'] = products
 
 
     def qualify(self):
         """Qualify item based on score"""
         self['score'] = 1           # Initialize with 1/5 == five *
         ## lessen score if missing keys
+        self.qualify_product()
         if not self['email'] or len(self['email']) < 1:         # No emails -1 *
             self['score'] -= 0.2
         if not self['telephone'] or len(self['telephone']) < 1:   # No tels -1 *

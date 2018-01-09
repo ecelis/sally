@@ -16,7 +16,7 @@ class BasicCrab(CrawlSpider):
 
     name = "lightfoot"
 
-    allowed_domains = ['*', 'com', 'com.mx']
+    allowed_domains = ['com', 'com.mx']
 
     rules = (Rule(LinkExtractor(unique=True), callback='parse_link'))
 
@@ -38,7 +38,7 @@ class BasicCrab(CrawlSpider):
         """Extract email from assorted DOM elements"""
         if len(elements) > 0:
             myset = set(response.xpath('//' + elements.pop()).re(
-                        r'[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+'))
+                        r'[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+\W'))
             return self.extract_email(response, elements, myset)
         else:
             return email_set
