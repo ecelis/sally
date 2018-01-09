@@ -82,10 +82,11 @@ class BasicCrab(CrawlSpider):
             r = re.compile(e, re.IGNORECASE)
             ecommerce = filter(r.match, full_text)
 
-        if ecommerce:
-            return list(ecommerce)
-        else:
-            return []
+            self.logger.info(ecommerce)
+            if ecommerce:
+                return list(ecommerce)
+            else:
+                return []
 
 
     def extract_description(self, response):
