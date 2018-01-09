@@ -8,8 +8,10 @@
 import datetime
 import os
 import pymongo
+import logging
 import sally.spreadsheets as gs
 
+logger = logging.getLogger('sally_lightfoot')
 
 class SallyPipeline(object):
     def process_item(self, item, spider):
@@ -63,10 +65,14 @@ class LightfootPipeline(object):
             ecommerce = item['ecommerce'][0]
         else:
             ecommerce = ''
+        if len(item['keywords']) > 0:
+            keywords = item['keywords'][0]
+        else:
+            keywords = ''
         row = [
                 item['score'],
                 item['base_url'],
-                'N/O',          # item['oferta']
+                keywords,          # item['oferta']
                 telephone,          # item['telephone']
                 email,          # item['email']
                 ecommerce,          # item['ecommerce']
@@ -74,5 +80,5 @@ class LightfootPipeline(object):
                 datetime.datetime.now().strftime('%m/%d/%Y')
                 ]
         self.sheet_rows.append(row)
-
+        logger.info(self.sheet_rows)
         return item

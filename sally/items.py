@@ -6,7 +6,7 @@
 # http://doc.scrapy.org/en/latest/topics/items.html
 
 import scrapy
-import sally.qualifiers as q
+from sally.qualifiers import QUALIFIER as q
 
 class SallyItem(scrapy.Item):
     # define the fields for your item here like:
@@ -21,7 +21,8 @@ class WebsiteItem(scrapy.Item):
     email = scrapy.Field()              # List of email regex
     last_crawl = scrapy.Field()         # Last time I crawled the site
     link = scrapy.Field()              # <a href> tags
-    meta = scrapy.Field()               # <meta content> tags
+    description = scrapy.Field()               # <meta content> tags
+    keywords = scrapy.Field()
     onlinepay_rel = scrapy.Field()      # Any mention of on line payment
     score = scrapy.Field()              # Score based on qualifiers
     secure_url = scrapy.Field()         # +1 if HTTPS
@@ -30,6 +31,10 @@ class WebsiteItem(scrapy.Item):
     title = scrapy.Field()              # <title> tag
     url = scrapy.Field()                # start_url given by source
     webstore_rel = scrapy.Field()       # Any metion of ecommerce software
+
+
+    def qualify_product(self):
+        [item for item in self['keywords']]
 
 
     def qualify(self):

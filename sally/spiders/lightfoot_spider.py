@@ -7,21 +7,23 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from scrapy.loader import ItemLoader
 from sally.items import WebsiteItem
+from sally.qualifiers import QUALIFIER
 #import eat
 
 
 class BasicCrab(CrawlSpider):
+    ELEMENTS = ['div', 'p', 'span', 'a', 'li']
+
     name = "lightfoot"
 
     allowed_domains = ['com', 'com.mx']
 
-    ELEMENTS = ['div', 'p', 'span', 'a', 'li']
-
     rules = (Rule(LinkExtractor(unique=True), callback='parse_link'))
 
 
-    def __init__(self):
-        with open('./tests/fixtures/very_small_list.txt', 'r') as f:
+    def __init__(self, csvfile='', *args, **kwargs):
+#        super(BasicCrab, self).__init__(*args, **kwargs)
+        with open(csvfile, 'r') as f:
             allowed_urls = ["http://%s"  % line.rstrip() for line in f]
             self.start_urls = [
                     url for url in allowed_urls if tldextract.extract(url).suffix in BasicCrab.allowed_domains
@@ -69,6 +71,32 @@ class BasicCrab(CrawlSpider):
             return tel_set
 
 
+    def is_ecommerce(self, response):
+        """function for findEcommerce"""
+        ecommerce = None
+        full_text = response.xpath('//meta/@content').extract()
+        # TODO we look only for woocommerce right now
+        self.logger.info(QUALIFIER['ecommerce'])
+        while len(QUALIFIER['ecommerce']) > 0:
+            e = QUALIFIER['ecommerce'].pop()
+            r = re.compile(e, re.IGNORECASE)
+            ecommerce = filter(r.match, full_text)
+
+        if ecommerce:
+            return list(ecommerce)
+        else:
+            return []
+
+
+    def extract_description(self, response):
+        return response.xpath('//meta[@name="description"]/@content').extract()
+
+
+    def extract_keywords(self, response):
+        l = response.xpath('//meta[@name="keywords"]/@content').extract()
+        return l
+
+
     def start_requests(self):
         """Returns iterable of Requests"""
         for url in self.start_urls:
@@ -91,8 +119,9 @@ class BasicCrab(CrawlSpider):
         website['link'] = website_link
         website['email'] = website_email
         website['telephone'] = website_telephone
-        website['ecommerce'] = self.find_ecommerce(response.xpath('//meta/@content').extract())
-        website['meta'] = response.xpath('//meta/@content').extract()
+        website['ecommerce'] = self.is_ecommerce(response)
+        website['description'] = self.extract_description(response)
+        website['keywords'] = self.extract_keywords(response)
         #website['scripts'] = response.xpath('//script').extract()
         # TODO search for ecommerce and online payment
         website['last_crawl'] = datetime.now()
@@ -100,9 +129,3 @@ class BasicCrab(CrawlSpider):
         return website
 
 
-    def find_ecommerce(self, full_text):
-        """function for findEcommerce"""
-        # TODO we look only for woocommerce right now
-        r = re.compile('[Ww]oo[Cc]ommerce')
-        ecommerce = filter(r.match, full_text)
-        return list(ecommerce)
