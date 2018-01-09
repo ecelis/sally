@@ -34,6 +34,14 @@ class BasicCrab(CrawlSpider):
         f.close()
 
 
+    def extract_title(self, response):
+        try:
+            return response.css('title::text').extract_first().strip()
+        except err:
+            self.logger.error('Extract title %s' % err)
+            return 'N/T'
+
+
     def extract_email(self, response, elements, email_set=set({})):
         """Extract email from assorted DOM elements"""
         if len(elements) > 0:
@@ -120,7 +128,7 @@ class BasicCrab(CrawlSpider):
         website['base_url'] = parsed_url.netloc
         website['secure_url'] = True if parsed_url.scheme == 'https' else False
         website['url'] = response.url
-        website['title'] = response.css('title::text').extract_first().strip()
+        website['title'] = self.extract_title(response)
         website['link'] = website_link
         website['email'] = website_email
         website['telephone'] = website_telephone
