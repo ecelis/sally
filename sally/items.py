@@ -38,11 +38,17 @@ class WebsiteItem(scrapy.Item):
 
 
     def qualify_product(self):
+        # TODO make it better to store array of useful products in self['keywords']
         products = []
         if type(self['keywords']) is list and len(self['keywords']) > 0 and self['keywords'][0] != '':
             [products.append(p) for p in self['keywords'][0].replace(' ','').split(',') if p in q['products']]
         if type(self['description']) is list and len(self['description']) > 0 and self['description'] != '':
             [products.append(i) for i in self['description'][0].split(' ') if i in q['products']]
+        if type(self['keywords']) is list and len(self['keywords']) > 0 and self['keywords'][0] != '':
+            [products.append(p) for p in self['keywords'][0].replace(' ','').split(',') if p in q['services']]
+        if type(self['description']) is list and len(self['description']) > 0 and self['description'] != '':
+            [products.append(i) for i in self['description'][0].split(' ') if i in q['services']]
+
 
             if len(products) < 1 or products[0] is '':
                 self['score'] -= 0.2
