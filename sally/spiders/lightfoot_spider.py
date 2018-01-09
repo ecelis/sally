@@ -16,18 +16,21 @@ class BasicCrab(CrawlSpider):
 
     name = "lightfoot"
 
-    allowed_domains = ['com', 'com.mx']
+    allowed_domains = ['*', 'com', 'com.mx']
 
     rules = (Rule(LinkExtractor(unique=True), callback='parse_link'))
 
 
-    def __init__(self, csvfile='', *args, **kwargs):
+    def __init__(self, csvfile='./tests/fixtures/very_small_list.txt', *args, **kwargs):
 #        super(BasicCrab, self).__init__(*args, **kwargs)
         with open(csvfile, 'r') as f:
-            allowed_urls = ["http://%s"  % line.rstrip() for line in f]
-            self.start_urls = [
-                    url for url in allowed_urls if tldextract.extract(url).suffix in BasicCrab.allowed_domains
-                    ]
+            if '*' in BasicCrab.allowed_domains:
+                self.start_urls = ["http://%s"  % line.rstrip() for line in f]
+            else:
+                allowed_urls = ["http://%s"  % line.rstrip() for line in f]
+                self.start_urls = [
+                        url for url in allowed_urls if tldextract.extract(url).suffix in BasicCrab.allowed_domains
+                        ]
         f.close()
 
 
@@ -76,18 +79,19 @@ class BasicCrab(CrawlSpider):
         ecommerce = None
         full_text = response.xpath('//meta/@content').extract()
         # TODO we look only for woocommerce right now
-        self.logger.info(QUALIFIER['ecommerce'])
-        while len(QUALIFIER['ecommerce']) > 0:
-            e = QUALIFIER['ecommerce'].pop()
-            r = re.compile(e, re.IGNORECASE)
-            ecommerce = filter(r.match, full_text)
-
-            self.logger.info(ecommerce)
-            if ecommerce:
-                return list(ecommerce)
-            else:
-                return []
-
+        if len(response.xpath('//script/@src').re(r'cdn\.shopify\.com')) > 0:
+            # Look for cdn.shopify.com
+            return 'shopify'
+        if len(response.xpath('//meta[@name="generator"]/@content')
+                .re(r'WooCommerce')) > 0:
+            return 'woocommerce'
+        elif len(response.xpath('//img/@src').re(r'cdn-shoperti\.global')) > 0:
+            return 'shoperti'
+        elif len(response.xpath('//footer').re(r'magento', re.IGNORECASE)) > 0:
+            return 'magento'
+        else:
+            return 'N/E'
+#        elif len(response.xpath(''))
 
     def extract_description(self, response):
         return response.xpath('//meta[@name="description"]/@content').extract()
@@ -123,7 +127,6 @@ class BasicCrab(CrawlSpider):
         website['ecommerce'] = self.is_ecommerce(response)
         website['description'] = self.extract_description(response)
         website['keywords'] = self.extract_keywords(response)
-        #website['scripts'] = response.xpath('//script').extract()
         # TODO search for ecommerce and online payment
         website['last_crawl'] = datetime.now()
 

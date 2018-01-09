@@ -61,10 +61,7 @@ class LightfootPipeline(object):
             telephone = item['telephone'][0]
         else:
             telephone = ''
-        if(len(item['ecommerce']) > 0):
-            ecommerce = item['ecommerce'][0]
-        else:
-            ecommerce = ''
+        ecommerce = item['ecommerce']
         if len(item['keywords']) > 0:
             keywords = item['keywords'][0]
         else:
