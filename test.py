@@ -1,6 +1,5 @@
-from sally import eat
-from tests import test_eat
+from tests import test_spreadsheet
 
 import unittest
 
-unittest.main(test_eat)
+unittest.main(test_spreadsheet)

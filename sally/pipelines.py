@@ -9,7 +9,7 @@ import datetime
 import os
 import pymongo
 import logging
-import sally.spreadsheets as gs
+import sally.spreadsheet as gs
 
 logger = logging.getLogger('sally_lightfoot')
 
@@ -20,33 +20,32 @@ class SallyPipeline(object):
 
 class LightfootPipeline(object):
 
-    collection = 'lightfoot'
-
     def __init__(self, mongo_uri, mongo_db):
         self.mongo_uri = mongo_uri
         self.mongo_db = mongo_db
         self.sheet_rows = []
+        self.spreadsheetId = os.environ['SALLY_SHEET_ID'] or self.setings['SHEET_ID']
+        self.collection = datetime.datetime.now().strftime('%Y%m%d_%H%M%S') #os.environ['SALLY_SHEET_NAME'] or self.settings['SHEET_NAME']
 
 
     @classmethod
     def from_crawler(cls, crawler):
         return cls(
-                mongo_uri=crawler.settings.get('MONGO_HOST'), #'mongodb://127.0.0.1:27017/items',
-                mongo_db=crawler.settings.get('MONGO_DBNAME', 'sally') #'items'
+                mongo_uri = crawler.settings.get('MONGO_HOST'),
+                mongo_db = crawler.settings.get('MONGO_DBNAME', 'sally')
                 )
 
 
     def open_spider(self, spider):
         self.client = pymongo.MongoClient(self.mongo_uri)
         self.db = self.client[self.mongo_db]
-        self.spreadsheetId = os.environ['SALLY_SHEET_ID'] or self.setings['SHEET_ID']
-        self.sheet = os.environ['SALLY_SHEET_NAME'] or self.settings['SHEET_NAME']
-        self.sheet_rows = []
+        # Create sheet in google
+        gs.create_sheet(self.spreadsheetId, self.collection)
 
 
     def close_spider(self, spider):
         self.client.close()
-        gs.insert_to(self.spreadsheetId, self.sheet, self.sheet_rows)
+        gs.insert_to(self.spreadsheetId, self.collection, self.sheet_rows)
 
 
     def process_item(self, item, spider):
@@ -77,5 +76,5 @@ class LightfootPipeline(object):
                 datetime.datetime.now().strftime('%m/%d/%Y')
                 ]
         self.sheet_rows.append(row)
-        logger.info(self.sheet_rows)
+
         return item
