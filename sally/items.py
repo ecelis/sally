@@ -5,8 +5,12 @@
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/items.html
 
+import logging
 import scrapy
 from sally.qualifiers import QUALIFIER as q
+
+logger = logging.getLogger(__name__)
+
 
 class SallyItem(scrapy.Item):
     # define the fields for your item here like:
@@ -34,19 +38,23 @@ class WebsiteItem(scrapy.Item):
 
 
     def qualify_product(self):
-        if type(self['keywords']) is list and len(self['keywords']) > 0:
-            products = [p for p in self['keywords'][0].replace(' ','').split(',') if p in q['products']]
-            if len(products) < 1:
+        products = []
+        if type(self['keywords']) is list and len(self['keywords']) > 0 and self['keywords'][0] != '':
+            [products.append(p) for p in self['keywords'][0].replace(' ','').split(',') if p in q['products']]
+        if type(self['description']) is list and len(self['description']) > 0 and self['description'] != '':
+            [products.append(i) for i in self['description'][0].split(' ') if i in q['products']]
+
+            if len(products) < 1 or products[0] is '':
                 self['score'] -= 0.2
             # return clean list of useful keywords
-            #self['keywords'] = products
+            return products
 
 
     def qualify(self):
         """Qualify item based on score"""
         self['score'] = 1           # Initialize with 1/5 == five *
         ## lessen score if missing keys
-        self.qualify_product()
+        logger.info(self.qualify_product())
         if not self['email'] or len(self['email']) < 1:         # No emails -1 *
             self['score'] -= 0.2
         if not self['telephone'] or len(self['telephone']) < 1:   # No tels -1 *
@@ -58,5 +66,3 @@ class WebsiteItem(scrapy.Item):
             self['score'] += 0.1
 
         return self
-
-

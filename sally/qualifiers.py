@@ -3,7 +3,8 @@ QUALIFIER = {
         'products': [
             'cosméticos',
             'medicina',
-            'tinte*cabello',
+            'tinte',
+            'cabello',
             'mujer',
             'bolsos',
             'libros',
@@ -21,6 +22,7 @@ QUALIFIER = {
             'computo',
             'electrónica',
             'ropa',
+            'vestidos',
             'autopartes',
             'ferreteria',
             'sex shop',
