@@ -74,9 +74,10 @@ class BasicCrab(CrawlSpider):
     def extract_telephone(self, response, elements, tel_set=set({})):
         """Extract telephone list"""
         if len(elements) > 0:
-            tel_334 = response.xpath('//' + elements.pop()).re(
+            element = elements.pop()
+            tel_334 = response.xpath('//' + element).re(
                     r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)')
-            tel_244 = response.xpath('//' + elements.pop()).re(
+            tel_244 = response.xpath('//' + element).re(
                     r'\W(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)')
             return self.extract_telephone(response,
                     elements, set(self.to_tel(tel_334)))
