@@ -79,7 +79,7 @@ class BasicCrab(CrawlSpider):
             tel_244 = response.xpath('//' + elements.pop()).re(
                     r'\W(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)')
             return self.extract_telephone(response,
-                    elements, set(self.to_tel(tel_raw)))
+                    elements, set(self.to_tel(tel_334)))
         else:
             return tel_set
 
