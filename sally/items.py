@@ -56,11 +56,20 @@ class WebsiteItem(scrapy.Item):
             return products
 
 
+    def qualify_social_network(self):
+        networks = []
+
+        if len(networks) < 1 or networks[0] is '':
+            self['score'] -= 0.2
+
+        return networks
+
     def qualify(self):
         """Qualify item based on score"""
         self['score'] = 1           # Initialize with 1/5 == five *
         ## lessen score if missing keys
         logger.info(self.qualify_product())
+        logger.info(self.qualify_social_network())
         if not self['email'] or len(self['email']) < 1:         # No emails -1 *
             self['score'] -= 0.2
         if not self['telephone'] or len(self['telephone']) < 1:   # No tels -1 *

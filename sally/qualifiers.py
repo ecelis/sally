@@ -40,6 +40,11 @@ QUALIFIER = {
             'magento',
             'prestashop',
             'shoperti'
+            ],
+        'network': [
+            'facebook\.com',
+            'instagram\.com',
+            'twitter\.com'
             ]
         }
 

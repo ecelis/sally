@@ -46,7 +46,7 @@ class BasicCrab(CrawlSpider):
         """Extract email from assorted DOM elements"""
         if len(elements) > 0:
             myset = set(response.xpath('//' + elements.pop()).re(
-                        r'[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+\W'))
+                        r'\"?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)\"?'))
             return self.extract_email(response, elements, myset)
         else:
             return email_set
@@ -74,8 +74,10 @@ class BasicCrab(CrawlSpider):
     def extract_telephone(self, response, elements, tel_set=set({})):
         """Extract telephone list"""
         if len(elements) > 0:
-            tel_raw = response.xpath('//' + elements.pop()).re(
+            tel_334 = response.xpath('//' + elements.pop()).re(
                     r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)')
+            tel_244 = response.xpath('//' + elements.pop()).re(
+                    r'\W(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)')
             return self.extract_telephone(response,
                     elements, set(self.to_tel(tel_raw)))
         else:
