@@ -19,6 +19,7 @@ class WebsiteItem(scrapy.Item):
     email = scrapy.Field()              # List of email regex
     last_crawl = scrapy.Field()         # Last time I crawled the site
     link = scrapy.Field()              # <a href> tags
+    network = scrapy.Field()              # <a href> tags
     description = scrapy.Field()               # <meta content> tags
     keywords = scrapy.Field()
     offer = scrapy.Field()
@@ -51,9 +52,7 @@ class WebsiteItem(scrapy.Item):
         return products
 
 
-    def qualify_social_network(self):
-        networks = []
-
+    def qualify_social_network(self, links):
         if len(networks) < 1 or networks[0] is '':
             self['score'] -= 0.2
 

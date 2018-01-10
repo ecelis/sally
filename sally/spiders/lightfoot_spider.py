@@ -49,7 +49,7 @@ class BasicCrab(CrawlSpider):
         """
         if len(elements) > 0:
             myset = set(response.xpath('//' + elements.pop()).re(
-                        r'\"?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)\"?'))
+                        r'\"?([-a-zA-Z0-9.`?{}]+@\w+\.[^png|jpg|gif]\w+\.[\w])\"?'))
             return self.extract_email(response, elements, myset)
         else:
             return email_set
@@ -72,10 +72,7 @@ class BasicCrab(CrawlSpider):
                 # First param here must be empty list always
                 return self.to_tel([], tel_list)
         else:
-            if len(tel_list) > 0:
-                return list(set(tel_list))
-            else:
-                return tel_list
+            return tel_list
 
 
     def extract_telephone(self, response, elements, tel_set=set({})):
@@ -83,6 +80,7 @@ class BasicCrab(CrawlSpider):
 
         Return a set of formated telephones
         """
+        self.logger.info(tel_set)
         if len(elements) > 0:
             element = elements.pop()
             tel_set.update(set(self.to_tel(response.xpath('//' + element).re(
@@ -123,19 +121,36 @@ class BasicCrab(CrawlSpider):
         return response.xpath('//meta[@name="keywords"]/@content').extract()
 
 
+    def extract_social_networks(self, response, base_url,
+            found=set({}), networks=list(QUALIFIER['network'])):
+        if len(networks) > 0:
+            n = networks.pop()
+            found.update(set(response.xpath('//a/@href').re(
+                    r'(\w*\.' + n + '\/' + base_url + '*)')))
+            return self.extract_social_networks(response, base_url, found,
+                    networks)
+
+        return found
+
+
     def start_requests(self):
         """Returns iterable of Requests"""
         for url in self.start_urls:
             yield scrapy.Request(url=url, callback=self.parse_item)
 
 
+    def parse_link(self, link):
+        self.logger.info(link)
+
     def parse_item(self, response):
         website_link = [link for link in response.xpath('//a/@href').extract()]
         website_email = list(self.extract_email(response,
             list(BasicCrab.ELEMENTS)))
         website_telephone = list(self.extract_telephone(response,
-            list(BasicCrab.ELEMENTS)))
+            list(BasicCrab.ELEMENTS), set({})))
         parsed_url = urlparse(response.url)
+        website_network = self.extract_social_networks(response,
+            parsed_url.netloc.split('.')[0])
 
         website = WebsiteItem()
         website['base_url'] = parsed_url.netloc
@@ -143,6 +158,7 @@ class BasicCrab(CrawlSpider):
         website['url'] = response.url
         website['title'] = self.extract_title(response)
         website['link'] = website_link
+        website['network'] = website_network
         website['email'] = website_email
         website['telephone'] = website_telephone
         website['ecommerce'] = self.is_ecommerce(response)
