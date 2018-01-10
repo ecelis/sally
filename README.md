@@ -23,33 +23,27 @@ focuses on very specific type of web sites or social networks.
 
 ## Database
 
-### MongoDB
 
-
-    docker run --name mongodb -p 2017:27017 -v $HOME/mongodb:/data/db mongo
-
-
-### Neo4J
-
-
-    docker run --neo4j -p 7474:7474 -p 7687:7687 \
-      -v $HOME/neo4j/data:/data neo4j
+    docker-compose -up d
 
 
 
 ## Crabs run
 
-In order to run any crab youdo like the following command
+In order to run any crab you do like the following command
 
 
-    scrapy crawl lightfoot
+    . .ENV/bin/activate
+    scrapy crawl lightfoot -a csvfile=</path/to/csv>
 
 
 ## Query data
 
+Download [Robo 3T](https://robomongo.org/)
 
-    docker exec -it mongodb mongo sally
-    db.lightfoot.find()
+
+    docker-compose exec mongodb mongo sally
+    db.<YYYYMMDD_hhmmss>.find()
 
 
 ### Find by base url

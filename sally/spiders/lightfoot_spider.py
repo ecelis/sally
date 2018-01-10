@@ -43,7 +43,10 @@ class BasicCrab(CrawlSpider):
 
 
     def extract_email(self, response, elements, email_set=set({})):
-        """Extract email from assorted DOM elements"""
+        """Extract email from assorted DOM elements
+
+        Returns a set() of emails
+        """
         if len(elements) > 0:
             myset = set(response.xpath('//' + elements.pop()).re(
                         r'\"?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)\"?'))
@@ -52,14 +55,18 @@ class BasicCrab(CrawlSpider):
             return email_set
 
 
-    def to_tel(self, raw, tel_list=[]):
+    def to_tel(self, raw, code, tel_list=[]):
         """Take a list of split telephones and returns a lisf of
-       formated telephones"""
+       formated telephones
+
+       Code 10 3 numbers for LADA
+       Code 12 2 number is country code next 3 LADA
+       """
         if len(raw) > 0:
             try:
-                number = '-'.join(raw[:raw.index('')])
-                if len(number.replace('-','')) == 10:
-                    tel_list.append(number)
+                num = '-'.join(raw[:raw.index('')])
+                if len(num.replace('-','')) == code:
+                    tel_list.append(num)
                 return self.to_tel(raw[raw.index(''):][1:], tel_list)
             except:
                 # First param here must be empty list always
@@ -72,24 +79,28 @@ class BasicCrab(CrawlSpider):
 
 
     def extract_telephone(self, response, elements, tel_set=set({})):
-        """Extract telephone list"""
+        """Extract telephone list
+
+        Return a set of formated telephones
+        """
         if len(elements) > 0:
             element = elements.pop()
-            tel_334 = response.xpath('//' + element).re(
-                    r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)')
-            tel_244 = response.xpath('//' + element).re(
-                    r'\W(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)')
+            tel_set.update(set(self.to_tel(response.xpath('//' + element).re(
+                    r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 10)))
+            tel_set.update(set(self.to_tel(response.xpath('//' + element).re(
+                    r'\W(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)'), 10)))
+            tel_set.update(set(self.to_tel(response.xpath('//' + element).re(
+                    r'\+(\d{2})\W*(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 12)))
             return self.extract_telephone(response,
-                    elements, set(self.to_tel(tel_334)))
+                    elements, tel_set)
         else:
             return tel_set
 
 
     def is_ecommerce(self, response):
-        """function for findEcommerce"""
+        """Very simplistic e-commerce software detection"""
         ecommerce = None
         full_text = response.xpath('//meta/@content').extract()
-        # TODO we look only for woocommerce right now
         if len(response.xpath('//script/@src').re(r'cdn\.shopify\.com')) > 0:
             # Look for cdn.shopify.com
             return 'shopify'
@@ -102,15 +113,14 @@ class BasicCrab(CrawlSpider):
             return 'magento'
         else:
             return 'N/E'
-#        elif len(response.xpath(''))
+
 
     def extract_description(self, response):
         return response.xpath('//meta[@name="description"]/@content').extract()
 
 
     def extract_keywords(self, response):
-        l = response.xpath('//meta[@name="keywords"]/@content').extract()
-        return l
+        return response.xpath('//meta[@name="keywords"]/@content').extract()
 
 
     def start_requests(self):

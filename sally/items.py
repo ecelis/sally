@@ -12,12 +12,6 @@ from sally.qualifiers import QUALIFIER as q
 logger = logging.getLogger(__name__)
 
 
-class SallyItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
-
-
 class WebsiteItem(scrapy.Item):
 
     base_url = scrapy.Field()           # Base URL after any 30x redirection
@@ -27,6 +21,7 @@ class WebsiteItem(scrapy.Item):
     link = scrapy.Field()              # <a href> tags
     description = scrapy.Field()               # <meta content> tags
     keywords = scrapy.Field()
+    offer = scrapy.Field()
     onlinepay_rel = scrapy.Field()      # Any mention of on line payment
     score = scrapy.Field()              # Score based on qualifiers
     secure_url = scrapy.Field()         # +1 if HTTPS
@@ -49,11 +44,11 @@ class WebsiteItem(scrapy.Item):
         if type(self['description']) is list and len(self['description']) > 0 and self['description'] != '':
             [products.append(i) for i in self['description'][0].split(' ') if i in q['services']]
 
-
-            if len(products) < 1 or products[0] is '':
-                self['score'] -= 0.2
-            # return clean list of useful keywords
-            return products
+        if len(products) < 1 or products[0] is '':
+            self['score'] -= 0.2
+        # return clean list of useful keywords
+        self['offer'] = products
+        return products
 
 
     def qualify_social_network(self):
@@ -68,8 +63,8 @@ class WebsiteItem(scrapy.Item):
         """Qualify item based on score"""
         self['score'] = 1           # Initialize with 1/5 == five *
         ## lessen score if missing keys
-        logger.info(self.qualify_product())
-        logger.info(self.qualify_social_network())
+        self.qualify_product()
+        self.qualify_social_network()
         if not self['email'] or len(self['email']) < 1:         # No emails -1 *
             self['score'] -= 0.2
         if not self['telephone'] or len(self['telephone']) < 1:   # No tels -1 *

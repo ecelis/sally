@@ -35,46 +35,59 @@ class LightfootPipeline(object):
                 mongo_db = crawler.settings.get('MONGO_DBNAME', 'sally')
                 )
 
+    def export_spreadsheet(self, item):
+        """Export items to Google Spreadsheets"""
 
-    def open_spider(self, spider):
-        self.client = pymongo.MongoClient(self.mongo_uri)
-        self.db = self.client[self.mongo_db]
-        # Create sheet in google
-        gs.create_sheet(self.spreadsheetId, self.collection)
-
-
-    def close_spider(self, spider):
-        self.client.close()
-        gs.insert_to(self.spreadsheetId, self.collection, self.sheet_rows)
-
-
-    def process_item(self, item, spider):
-        self.db[self.collection].insert_one(dict(item.qualify()))
-        # Send to spreadsheet
-        # TODO put extract of first item in a function
         if(len(item['email']) > 0):
-            email = item['email'][0]
+            email = ''.join(item['email'])
         else:
             email = ''
+
         if(len(item['telephone']) > 0):
-            telephone = item['telephone'][0]
+            telephone = ','.join(item['telephone'])
         else:
             telephone = ''
+
         ecommerce = item['ecommerce']
+
         if len(item['keywords']) > 0:
-            keywords = item['keywords'][0]
+            keywords = ','.join(item['keywords'])
         else:
             keywords = ''
+
+        if len(item['offer']) > 0:
+            offer = ','.join(item['offer'])
+        else:
+            offer = ''
+
         row = [
                 item['score'],
                 item['base_url'],
-                keywords,          # item['oferta']
-                telephone,          # item['telephone']
-                email,          # item['email']
+                offer,
+                keywords,
+                telephone,
+                email,
                 ecommerce,          # item['ecommerce']
                 'N/L',          # item['place']
                 datetime.datetime.now().strftime('%m/%d/%Y')
                 ]
         self.sheet_rows.append(row)
 
+
+    def open_spider(self, spider):
+        self.client = pymongo.MongoClient(self.mongo_uri)
+        self.db = self.client[self.mongo_db]
+
+
+    def close_spider(self, spider):
+        self.client.close()
+        # Create sheet in google
+        gs.create_sheet(self.spreadsheetId, self.collection)
+        gs.insert_to(self.spreadsheetId, self.collection, self.sheet_rows)
+
+
+    def process_item(self, item, spider):
+        self.db[self.collection].insert_one(dict(item.qualify()))
+        # Send to spreadsheet
+        self.export_spreadsheet(item)
         return item
