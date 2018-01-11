@@ -125,6 +125,7 @@ class BasicCrab(CrawlSpider):
 
     def extract_social_networks(self, response, base_url,
             found=set({}), networks=list(QUALIFIER['network'])):
+        s = ''
         if type(base_url) is str:
             s = base_url
         else:
