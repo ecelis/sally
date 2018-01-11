@@ -135,7 +135,7 @@ class BasicCrab(CrawlSpider):
 
         if len(networks) > 0:
             n = networks.pop()
-            self.logger.info(n)
+            found.update(set(response.xpath('//a/@href').re(
                     r'(\w*\.' + n + '\/\w*' + s + '\w*)')))
             found.update(set(response.xpath('//a/@href').re(
                 r'(\w*\.' + n + '\/\w*' + s[:3] + '\w*)')))
