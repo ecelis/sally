@@ -60,6 +60,14 @@ class LightfootPipeline(object):
         else:
             offer = ''
 
+
+        if len(item['network']) > 0:
+            logger.info(item['network'])
+            network = ','.join(item['network'])
+            logger.info(network)
+        else:
+            network = ''
+
         row = [
                 item['score'],
                 item['base_url'],
@@ -68,6 +76,7 @@ class LightfootPipeline(object):
                 telephone,
                 email,
                 ecommerce,          # item['ecommerce']
+                network,
                 'N/L',          # item['place']
                 datetime.datetime.now().strftime('%m/%d/%Y')
                 ]

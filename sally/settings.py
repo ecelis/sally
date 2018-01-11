@@ -19,7 +19,7 @@ BOT_NAME = 'sally'
 ### BEGIN Eve settings
 
 API_VERSION = 'v1'
-DOMAIN = { 'lightfoot': {}}
+DOMAIN = { }
 MONGO_HOST = '127.0.0.1'
 MONGO_PORT = 27017
 MONGO_DBNAME = BOT_NAME + '_' + API_VERSION

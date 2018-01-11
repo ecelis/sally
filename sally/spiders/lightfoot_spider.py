@@ -16,15 +16,18 @@ class BasicCrab(CrawlSpider):
 
     name = "lightfoot"
 
-    allowed_domains = ['com', 'com.mx']
+    allowed_domains = ['com', 'com.mx', 'mx']
+
+    disallowed_domains = []
 
     rules = (Rule(LinkExtractor(unique=True), callback='parse_link'))
 
 
-    def __init__(self, csvfile='./tests/fixtures/very_small_list.txt', *args, **kwargs):
-#        super(BasicCrab, self).__init__(*args, **kwargs)
+    def __init__(self, csvfile='./tests/fixtures/very_small_list.txt',
+            *args, **kwargs):
+
         with open(csvfile, 'r') as f:
-            if '*' in BasicCrab.allowed_domains:
+            if '*' in self.allowed_domains:
                 self.start_urls = ["http://%s"  % line.rstrip() for line in f]
             else:
                 allowed_urls = ["http://%s"  % line.rstrip() for line in f]
@@ -80,7 +83,6 @@ class BasicCrab(CrawlSpider):
 
         Return a set of formated telephones
         """
-        self.logger.info(tel_set)
         if len(elements) > 0:
             element = elements.pop()
             tel_set.update(set(self.to_tel(response.xpath('//' + element).re(
@@ -123,13 +125,24 @@ class BasicCrab(CrawlSpider):
 
     def extract_social_networks(self, response, base_url,
             found=set({}), networks=list(QUALIFIER['network'])):
+        if len(base_url) == 2:
+            s = base_url[0]
+        elif len(base_url) == 3:
+            s = base_url[1]
+        else:
+            s = ''
+
         if len(networks) > 0:
             n = networks.pop()
             found.update(set(response.xpath('//a/@href').re(
-                    r'(\w*\.' + n + '\/' + base_url + '*)')))
-            return self.extract_social_networks(response, base_url, found,
+                    r'(\w*\.' + n + '\/\w*' + s + '\w*)')))
+            found.update(set(response.xpath('//a/@href').re(
+                r'(\w*\.' + n + '\/\w*' + s[:3] + '\w*)')))
+            return self.extract_social_networks(response, s, found,
                     networks)
 
+            self.logger.info(s[:3])
+        self.logger.info(found)
         return found
 
 
@@ -142,6 +155,7 @@ class BasicCrab(CrawlSpider):
     def parse_link(self, link):
         self.logger.info(link)
 
+
     def parse_item(self, response):
         website_link = [link for link in response.xpath('//a/@href').extract()]
         website_email = list(self.extract_email(response,
@@ -149,8 +163,8 @@ class BasicCrab(CrawlSpider):
         website_telephone = list(self.extract_telephone(response,
             list(BasicCrab.ELEMENTS), set({})))
         parsed_url = urlparse(response.url)
-        website_network = self.extract_social_networks(response,
-            parsed_url.netloc.split('.')[0])
+        website_network = list(self.extract_social_networks(response,
+            parsed_url.netloc.split('.')))
 
         website = WebsiteItem()
         website['base_url'] = parsed_url.netloc

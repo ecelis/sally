@@ -52,11 +52,11 @@ class WebsiteItem(scrapy.Item):
         return products
 
 
-    def qualify_social_network(self, links):
-        if len(networks) < 1 or networks[0] is '':
+    def qualify_social_network(self):
+        if type(self['network']) != list or len(self['network']) < 1 or self['network'][0] is '':
             self['score'] -= 0.2
 
-        return networks
+        return self['network']
 
     def qualify(self):
         """Qualify item based on score"""
