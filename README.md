@@ -4,6 +4,13 @@
 Collection of web crawlers (crabs) based on Scrapy framework. Each crab
 focuses on very specific type of web sites or social networks.
 
+
+## NOTES
+
+  * lightfoot does not crawal deeper then one level of links found in
+    each given url
+
+
 ### Crabs
 
 * lightfoot, very basic crab to extract general information from web

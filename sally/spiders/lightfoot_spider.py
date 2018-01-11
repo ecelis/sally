@@ -16,16 +16,20 @@ class BasicCrab(CrawlSpider):
 
     name = "lightfoot"
 
+    # TODO make allowed_domains dynamic
     allowed_domains = ['com', 'com.mx', 'mx']
 
+    # TODO make disallowed_domains dynamic
     disallowed_domains = []
 
+    # TODO I still don't knpw what to do with the rules
     rules = (Rule(LinkExtractor(unique=True), callback='parse_link'))
 
 
     def __init__(self, csvfile='./tests/fixtures/very_small_list.txt',
             *args, **kwargs):
 
+        ## TODO check for file existence or throw exception and exit
         with open(csvfile, 'r') as f:
             if '*' in self.allowed_domains:
                 self.start_urls = ["http://%s"  % line.rstrip() for line in f]
@@ -38,21 +42,24 @@ class BasicCrab(CrawlSpider):
 
 
     def extract_title(self, response):
+        """extract_title from <title> tag
+
+        Returns {str} title"""
         try:
             return response.css('title::text').extract_first().strip()
-        except err:
-            self.logger.error('Extract title %s' % err)
+        except Exception:
+            self.logger.error('Extract title %s' % Exception)
             return 'N/T'
 
 
     def extract_email(self, response, elements, email_set=set({})):
-        """Extract email from assorted DOM elements
+        """Extract email from elements listed in ELEMENTS
 
         Returns a set() of emails
         """
         if len(elements) > 0:
             myset = set(response.xpath('//' + elements.pop()).re(
-                        r'\"?([-a-zA-Z0-9.`?{}]+@\w+\.[^png|jpg|gif]\w+\.[\w])\"?'))
+                        r'\"?([-a-zA-Z0-9.`?{}]+@\w+\.[^png|jpg|gif]\w+\.\w*)"?'))
             return self.extract_email(response, elements, myset)
         else:
             return email_set
@@ -64,22 +71,24 @@ class BasicCrab(CrawlSpider):
 
        Code 10 3 numbers for LADA
        Code 12 2 number is country code next 3 LADA
+
+       Returns a list of telephones
        """
         if len(raw) > 0:
             try:
                 num = '-'.join(raw[:raw.index('')])
                 if len(num.replace('-','')) == code:
                     tel_list.append(num)
-                return self.to_tel(raw[raw.index(''):][1:], tel_list)
+                return self.to_tel(raw[raw.index(''):][1:], code, tel_list)
             except:
                 # First param here must be empty list always
-                return self.to_tel([], tel_list)
+                return self.to_tel([], code, tel_list)
         else:
             return tel_list
 
 
     def extract_telephone(self, response, elements, tel_set=set({})):
-        """Extract telephone list
+        """Extract telephone list from ELEMENTS
 
         Return a set of formated telephones
         """
@@ -98,7 +107,9 @@ class BasicCrab(CrawlSpider):
 
 
     def is_ecommerce(self, response):
-        """Very simplistic e-commerce software detection"""
+        """Very simplistic e-commerce software detection
+
+        Returns str of ecommerce software"""
         ecommerce = None
         full_text = response.xpath('//meta/@content').extract()
         if len(response.xpath('//script/@src').re(r'cdn\.shopify\.com')) > 0:
@@ -116,15 +127,25 @@ class BasicCrab(CrawlSpider):
 
 
     def extract_description(self, response):
+        """extract_description from <meta name="description"> tags
+
+        Returns list of descriptio"""
         return response.xpath('//meta[@name="description"]/@content').extract()
 
 
     def extract_keywords(self, response):
+        """extract_keywords from <meta name="keywords" tag.
+
+        Returns list of keywords"""
         return response.xpath('//meta[@name="keywords"]/@content').extract()
 
 
     def extract_social_networks(self, response, base_url,
             found=set({}), networks=list(QUALIFIER['network'])):
+        """extract_social_networks from <a href> tags, it matches agaist
+        part of the base url.
+
+        Returns set of social networks url found"""
         s = ''
         if type(base_url) is str:
             s = base_url
@@ -157,6 +178,7 @@ class BasicCrab(CrawlSpider):
 
 
     def parse_item(self, response):
+        # Collect all links found in crawled pages
         website_link = [link for link in response.xpath('//a/@href').extract()]
         website_email = list(self.extract_email(response,
             list(BasicCrab.ELEMENTS)))

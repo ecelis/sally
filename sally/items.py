@@ -28,12 +28,20 @@ class WebsiteItem(scrapy.Item):
     secure_url = scrapy.Field()         # +1 if HTTPS
     scripts = scrapy.Field()            # <script> tags
     telephone = scrapy.Field()          # List of regexd telephones
+    country_code = scrapy.Field()
     title = scrapy.Field()              # <title> tag
     url = scrapy.Field()                # start_url given by source
     webstore_rel = scrapy.Field()       # Any metion of ecommerce software
 
 
     def qualify_product(self):
+        """qualify_product eval <meta> tags from item mathing description and
+        keywords parameters of such tags. a href tags are also searched
+
+        If products aren't found in QUALIFIE['product'] -0.2 is substracted
+        from self['score']
+
+        Return products list"""
         # TODO make it better to store array of useful products in self['keywords']
         products = []
         if type(self['keywords']) is list and len(self['keywords']) > 0 and self['keywords'][0] != '':
@@ -53,13 +61,22 @@ class WebsiteItem(scrapy.Item):
 
 
     def qualify_social_network(self):
+        """qualify_social_network substracts -0.2 from self['score'] if
+        self['network'] is empty
+
+        Returns list of social networks"""
         if type(self['network']) != list or len(self['network']) < 1 or self['network'][0] is '':
             self['score'] -= 0.2
 
         return self['network']
 
+
     def qualify(self):
-        """Qualify item based on score"""
+        """Qualify item based on qualify_product, qualify_social_network,
+        if self['email'] is empty, self['telephones'] is empty, self['ecommerce']
+        -0.2 is substracted for each missing value. Score starts at 1.0.
+
+        Extra qualifires: https +0.1"""
         self['score'] = 1           # Initialize with 1/5 == five *
         ## lessen score if missing keys
         self.qualify_product()

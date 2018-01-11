@@ -35,47 +35,27 @@ class LightfootPipeline(object):
                 mongo_db = crawler.settings.get('MONGO_DBNAME', 'sally')
                 )
 
+
+    def to_str(self, item, value):
+        if len(item[value]) > 0:
+            return ','.join(item[value])
+        else:
+            return ''
+
+
     def export_spreadsheet(self, item):
         """Export items to Google Spreadsheets"""
-
-        if(len(item['email']) > 0):
-            email = ','.join(item['email'])
-        else:
-            email = ''
-
-        if(len(item['telephone']) > 0):
-            telephone = ','.join(item['telephone'])
-        else:
-            telephone = ''
-
         ecommerce = item['ecommerce']
-
-        if len(item['keywords']) > 0:
-            keywords = ','.join(item['keywords'])
-        else:
-            keywords = ''
-
-        if len(item['offer']) > 0:
-            offer = ','.join(item['offer'])
-        else:
-            offer = ''
-
-
-        if len(item['network']) > 0:
-            network = ','.join(item['network'])
-        else:
-            network = ''
-
         row = [
                 item['score'],
                 item['base_url'],
-                offer,
-                keywords,
-                telephone,
-                email,
-                ecommerce,          # item['ecommerce']
-                network,
-                'N/L',          # item['place']
+                self.to_str(item, 'offer'),
+                self.to_str(item, 'keywords'),
+                self.to_str(item, 'telephone'),
+                self.to_str(item, 'email'),
+                ecommerce,
+                self.to_str(item, 'network'),
+                'N/L',
                 datetime.datetime.now().strftime('%m/%d/%Y')
                 ]
         self.sheet_rows.append(row)
