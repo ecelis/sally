@@ -39,7 +39,7 @@ class LightfootPipeline(object):
         """Export items to Google Spreadsheets"""
 
         if(len(item['email']) > 0):
-            email = ''.join(item['email'])
+            email = ','.join(item['email'])
         else:
             email = ''
 
@@ -62,9 +62,7 @@ class LightfootPipeline(object):
 
 
         if len(item['network']) > 0:
-            logger.info(item['network'])
             network = ','.join(item['network'])
-            logger.info(network)
         else:
             network = ''
 

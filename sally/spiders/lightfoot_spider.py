@@ -125,24 +125,23 @@ class BasicCrab(CrawlSpider):
 
     def extract_social_networks(self, response, base_url,
             found=set({}), networks=list(QUALIFIER['network'])):
-        if len(base_url) == 2:
-            s = base_url[0]
-        elif len(base_url) == 3:
-            s = base_url[1]
+        if type(base_url) is str:
+            s = base_url
         else:
-            s = ''
+            if len(base_url) == 2:
+                s = base_url[0]
+            elif len(base_url) == 3:
+                s = base_url[1]
 
         if len(networks) > 0:
             n = networks.pop()
-            found.update(set(response.xpath('//a/@href').re(
+            self.logger.info(n)
                     r'(\w*\.' + n + '\/\w*' + s + '\w*)')))
             found.update(set(response.xpath('//a/@href').re(
                 r'(\w*\.' + n + '\/\w*' + s[:3] + '\w*)')))
             return self.extract_social_networks(response, s, found,
                     networks)
 
-            self.logger.info(s[:3])
-        self.logger.info(found)
         return found
 
 
@@ -164,7 +163,7 @@ class BasicCrab(CrawlSpider):
             list(BasicCrab.ELEMENTS), set({})))
         parsed_url = urlparse(response.url)
         website_network = list(self.extract_social_networks(response,
-            parsed_url.netloc.split('.')))
+            parsed_url.netloc.split('.'), set({}), list( QUALIFIER['network'])))
 
         website = WebsiteItem()
         website['base_url'] = parsed_url.netloc
