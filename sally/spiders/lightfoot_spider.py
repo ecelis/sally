@@ -8,6 +8,7 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.loader import ItemLoader
 from sally.items import WebsiteItem
 from sally.qualifiers import QUALIFIER
+import sally.google.spreadsheet as gs
 #import eat
 
 
@@ -16,12 +17,6 @@ class BasicCrab(CrawlSpider):
 
     name = "lightfoot"
 
-    # TODO make allowed_domains dynamic
-    allowed_domains = ['com', 'com.mx', 'mx']
-
-    # TODO make disallowed_domains dynamic
-    disallowed_domains = []
-
     # TODO I still don't knpw what to do with the rules
     rules = (Rule(LinkExtractor(unique=True), callback='parse_link'))
 
@@ -29,14 +24,17 @@ class BasicCrab(CrawlSpider):
     def __init__(self, csvfile='./tests/fixtures/very_small_list.txt',
             *args, **kwargs):
 
+        settings = gs.get_settings()
+        self.logger.info(settings)
+
         ## TODO check for file existence or throw exception and exit
         with open(csvfile, 'r') as f:
-            if '*' in self.allowed_domains:
+            if '*' in settings['allowed_domains']:
                 self.start_urls = ["http://%s"  % line.rstrip() for line in f]
             else:
                 allowed_urls = ["http://%s"  % line.rstrip() for line in f]
                 self.start_urls = [
-                        url for url in allowed_urls if tldextract.extract(url).suffix in BasicCrab.allowed_domains
+                        url for url in allowed_urls if tldextract.extract(url).suffix in settings['allowed_domains']
                         ]
         f.close()
 
@@ -103,6 +101,10 @@ class BasicCrab(CrawlSpider):
             return self.extract_telephone(response,
                     elements, tel_set)
         else:
+            self.logger.info("==================")
+            self.logger.info("==================")
+            self.logger.info("==================")
+            self.logger.info(tel_set)
             return tel_set
 
 
@@ -124,6 +126,14 @@ class BasicCrab(CrawlSpider):
             return 'magento'
         else:
             return 'N/E'
+
+
+    def shoppingcart_detection(self, response):
+        elements = list(BasicCrab.ELEMENTS)
+        result = []
+        r = re.compile(".*cart.*")
+        result = list(filter(r.match, [i for i in elements]))
+        return result
 
 
     def extract_description(self, response):
@@ -177,23 +187,30 @@ class BasicCrab(CrawlSpider):
         self.logger.info(link)
 
 
+    def clearset(self):
+        s = set({})
+        s.clear()
+        return s
+
     def parse_item(self, response):
         # Collect all links found in crawled pages
-        website_link = [link for link in response.xpath('//a/@href').extract()]
+#        website_link = [link for link in response.xpath('//a/@href').extract()]
         website_email = list(self.extract_email(response,
             list(BasicCrab.ELEMENTS)))
         website_telephone = list(self.extract_telephone(response,
-            list(BasicCrab.ELEMENTS), set({})))
+            list(BasicCrab.ELEMENTS),
+            self.clearset()))
         parsed_url = urlparse(response.url)
         website_network = list(self.extract_social_networks(response,
             parsed_url.netloc.split('.'), set({}), list( QUALIFIER['network'])))
+        self.logger.info(self.shoppingcart_detection(response))
 
         website = WebsiteItem()
         website['base_url'] = parsed_url.netloc
         website['secure_url'] = True if parsed_url.scheme == 'https' else False
         website['url'] = response.url
         website['title'] = self.extract_title(response)
-        website['link'] = website_link
+        website['link'] = [link for link in response.xpath('//a/@href').extract()]
         website['network'] = website_network
         website['email'] = website_email
         website['telephone'] = website_telephone

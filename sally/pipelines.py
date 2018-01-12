@@ -9,7 +9,7 @@ import datetime
 import os
 import pymongo
 import logging
-import sally.spreadsheet as gs
+import sally.google.spreadsheet as gs
 
 logger = logging.getLogger('sally_lightfoot')
 
