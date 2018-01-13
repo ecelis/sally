@@ -24,19 +24,23 @@ class BasicCrab(CrawlSpider):
     def __init__(self, csvfile='./tests/fixtures/very_small_list.txt',
             *args, **kwargs):
 
-        settings = gs.get_settings()
-        self.logger.info(settings)
+        self.settings = gs.get_settings()
+        self.logger.info(self.settings)
+
+        # Compile regex
+        allowed_reg = [re.compile(r) for r in self.settings['allowed_domains']]
+        disallowed_reg = [re.compile(r) for r in self.settings['disallowed_domains']]
 
         ## TODO check for file existence or throw exception and exit
         with open(csvfile, 'r') as f:
-            if '*' in settings['allowed_domains']:
-                self.start_urls = ["http://%s"  % line.rstrip() for line in f]
-            else:
-                allowed_urls = ["http://%s"  % line.rstrip() for line in f]
-                self.start_urls = [
-                        url for url in allowed_urls if tldextract.extract(url).suffix in settings['allowed_domains']
-                        ]
-        f.close()
+            allowed_urls = ["http://%s"  % line.rstrip() for line in f]
+            self.start_urls = [
+                    url for url in allowed_urls if tldextract.extract(url).suffix in self.settings['allowed_domains']
+                    ]
+            f.close()
+            self.logger.info(self.settings['allowed_domains'])
+            self.logger.info(self.settings['disallowed_domains'])
+            self.logger.info(self.start_urls)
 
 
     def extract_title(self, response):
@@ -57,7 +61,7 @@ class BasicCrab(CrawlSpider):
         """
         if len(elements) > 0:
             myset = set(response.xpath('//' + elements.pop()).re(
-                        r'\"?([-a-zA-Z0-9.`?{}]+@\w+\.[^png|jpg|gif]\w+\.\w*)"?'))
+                r'\"?([-a-zA-Z0-9.`?{}]+@\w+\.[^png|jpg|gif]\w+\.\w*)"?'))
             return self.extract_email(response, elements, myset)
         else:
             return email_set
@@ -93,18 +97,14 @@ class BasicCrab(CrawlSpider):
         if len(elements) > 0:
             element = elements.pop()
             tel_set.update(set(self.to_tel(response.xpath('//' + element).re(
-                    r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 10)))
+                r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 10)))
             tel_set.update(set(self.to_tel(response.xpath('//' + element).re(
-                    r'\W(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)'), 10)))
+                r'\W(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)'), 10)))
             tel_set.update(set(self.to_tel(response.xpath('//' + element).re(
-                    r'\+(\d{2})\W*(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 12)))
+                r'\+(\d{2})\W*(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 12)))
             return self.extract_telephone(response,
                     elements, tel_set)
         else:
-            self.logger.info("==================")
-            self.logger.info("==================")
-            self.logger.info("==================")
-            self.logger.info(tel_set)
             return tel_set
 
 
@@ -151,7 +151,7 @@ class BasicCrab(CrawlSpider):
 
 
     def extract_social_networks(self, response, base_url,
-            found=set({}), networks=list(QUALIFIER['network'])):
+            found=set({}), networks=[]):
         """extract_social_networks from <a href> tags, it matches agaist
         part of the base url.
 
@@ -202,7 +202,8 @@ class BasicCrab(CrawlSpider):
             self.clearset()))
         parsed_url = urlparse(response.url)
         website_network = list(self.extract_social_networks(response,
-            parsed_url.netloc.split('.'), set({}), list( QUALIFIER['network'])))
+            parsed_url.netloc.split('.'), set({}),
+            ['facebook\.com','instagram\.com','twitter\.com']))
         self.logger.info(self.shoppingcart_detection(response))
 
         website = WebsiteItem()
