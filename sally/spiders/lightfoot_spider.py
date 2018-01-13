@@ -30,17 +30,21 @@ class BasicCrab(CrawlSpider):
         # Compile regex
         allowed_reg = [re.compile(r) for r in self.settings['allowed_domains']]
         disallowed_reg = [re.compile(r) for r in self.settings['disallowed_domains']]
+        lines = []
 
         ## TODO check for file existence or throw exception and exit
         with open(csvfile, 'r') as f:
-            allowed_urls = ["http://%s"  % line.rstrip() for line in f]
-            self.start_urls = [
-                    url for url in allowed_urls if tldextract.extract(url).suffix in self.settings['allowed_domains']
-                    ]
+            lines = ["http://%s" % l.rstrip() for l in f]
             f.close()
-            self.logger.info(self.settings['allowed_domains'])
-            self.logger.info(self.settings['disallowed_domains'])
-            self.logger.info(self.start_urls)
+
+        allowed_url = [filter(r.match, lines)]
+        allowed_urls = ["http://%s"  % line.rstrip() for line in f]
+        self.start_urls = [
+                url for url in allowed_urls if tldextract.extract(url).suffix in self.settings['allowed_domains']
+                ]
+        self.logger.info(self.settings['allowed_domains'])
+        self.logger.info(self.settings['disallowed_domains'])
+        self.logger.info(self.start_urls)
 
 
     def extract_title(self, response):
