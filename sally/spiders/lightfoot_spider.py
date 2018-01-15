@@ -25,6 +25,7 @@ class BasicCrab(CrawlSpider):
             *args, **kwargs):
 
         self.settings = gs.get_settings()
+        self.score = gs.get_score()
 
         # Compile regex
         allowed_reg = [re.compile(r"\.%s" % domain) for domain in self.settings['allowed_domains']]
@@ -211,6 +212,7 @@ class BasicCrab(CrawlSpider):
         self.logger.info(self.shoppingcart_detection(response))
 
         website = WebsiteItem()
+        website.set_score(self.score)
         website['base_url'] = parsed_url.netloc
         website['secure_url'] = True if parsed_url.scheme == 'https' else False
         website['url'] = response.url

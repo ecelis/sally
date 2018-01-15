@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 class WebsiteItem(scrapy.Item):
 
+
     base_url = scrapy.Field()           # Base URL after any 30x redirection
     ecommerce = scrapy.Field()          # Any ecommerce references
     email = scrapy.Field()              # List of email regex
@@ -32,6 +33,12 @@ class WebsiteItem(scrapy.Item):
     title = scrapy.Field()              # <title> tag
     url = scrapy.Field()                # start_url given by source
     webstore_rel = scrapy.Field()       # Any metion of ecommerce software
+    score_values = scrapy.Field()
+
+
+    def set_score(self, scores):
+        self['score_values'] = dict(scores)
+        logger.debug(self['score_values'])
 
 
     def qualify_product(self):
@@ -54,7 +61,7 @@ class WebsiteItem(scrapy.Item):
             [products.append(i) for i in self['description'][0].split(' ') if i in q['services']]
 
         if len(products) < 1 or products[0] is '':
-            self['score'] -= 0.2
+            self['score'] += self['score_values']['offer']
         # return clean list of useful keywords
         self['offer'] = products
         return products
@@ -66,7 +73,7 @@ class WebsiteItem(scrapy.Item):
 
         Returns list of social networks"""
         if type(self['network']) != list or len(self['network']) < 1 or self['network'][0] is '':
-            self['score'] -= 0.2
+            self['score'] += self['score_values']['network']
 
         return self['network']
 
@@ -82,13 +89,13 @@ class WebsiteItem(scrapy.Item):
         self.qualify_product()
         self.qualify_social_network()
         if not self['email'] or len(self['email']) < 1:         # No emails -1 *
-            self['score'] -= 0.2
+            self['score'] += self['score_values']['email']
         if not self['telephone'] or len(self['telephone']) < 1:   # No tels -1 *
-            self['score'] -= 0.2
+            self['score'] += self['score_values']['telephone']
         if not self['ecommerce'] or len(self['ecommerce']) < 1: # no eccomerce -1 *
-            self['score'] -= 0.2
+            self['score'] += self['score_values']['eccomerce']
         ## increase in half * if secondary keys are found
         if self['secure_url']:
-            self['score'] += 0.1
+            self['score'] += self['score_values']['secure_url']
 
         return self
