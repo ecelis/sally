@@ -25,26 +25,26 @@ class BasicCrab(CrawlSpider):
             *args, **kwargs):
 
         self.settings = gs.get_settings()
-        self.logger.info(self.settings)
 
         # Compile regex
-        allowed_reg = [re.compile(r) for r in self.settings['allowed_domains']]
-        disallowed_reg = [re.compile(r) for r in self.settings['disallowed_domains']]
-        lines = []
+        allowed_reg = [re.compile(r"\.%s" % domain) for domain in self.settings['allowed_domains']]
+        disallowed_reg = [re.compile(r"\.%s" % domain) for domain in self.settings['disallowed_domains']]
 
         ## TODO check for file existence or throw exception and exit
+        lines = []
         with open(csvfile, 'r') as f:
             lines = ["http://%s" % l.rstrip() for l in f]
             f.close()
 
-        allowed_url = [filter(r.match, lines)]
-        allowed_urls = ["http://%s"  % line.rstrip() for line in f]
-        self.start_urls = [
-                url for url in allowed_urls if tldextract.extract(url).suffix in self.settings['allowed_domains']
-                ]
-        self.logger.info(self.settings['allowed_domains'])
-        self.logger.info(self.settings['disallowed_domains'])
-        self.logger.info(self.start_urls)
+        allowed_url = []
+        for r in allowed_reg:
+            allowed_url += list(filter(r.search, lines))
+
+        disallowed_url = []
+        for r in disallowed_reg:
+            disallowed_url += list(filter(r.search, list(set(allowed_url))))
+
+        self.start_urls = list(set(allowed_url).difference(set(disallowed_url)))
 
 
     def extract_title(self, response):
@@ -143,7 +143,7 @@ class BasicCrab(CrawlSpider):
     def extract_description(self, response):
         """extract_description from <meta name="description"> tags
 
-        Returns list of descriptio"""
+        Returns list of descriptions"""
         return response.xpath('//meta[@name="description"]/@content').extract()
 
 

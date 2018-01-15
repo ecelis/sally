@@ -1,7 +1,7 @@
 import unittest
 import datetime
 from googleapiclient.errors import HttpError
-import sally.spreadsheet as gs
+import sally.google.spreadsheet as gs
 
 csvs = ['./tests/fixtures/mx.csv',
             './tests/fixtures/sampleab.csv']
@@ -36,11 +36,6 @@ class SpreadsheetTestCase(unittest.TestCase):
                 'Place',
                 '01/09/2018']
                 ]
-
-
-    @unittest.skip("No testing credentials")
-    def test_get_credentials(self):
-        pass
 
 
     def test_get_spreadsheet(self):

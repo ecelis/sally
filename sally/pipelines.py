@@ -13,10 +13,6 @@ import sally.google.spreadsheet as gs
 
 logger = logging.getLogger('sally_lightfoot')
 
-class SallyPipeline(object):
-    def process_item(self, item, spider):
-        return item
-
 
 class LightfootPipeline(object):
 
@@ -25,14 +21,18 @@ class LightfootPipeline(object):
         self.mongo_db = mongo_db
         self.sheet_rows = []
         self.spreadsheetId = os.environ['SALLY_SHEET_ID'] or self.setings['SHEET_ID']
-        self.collection = datetime.datetime.now().strftime('%Y%m%d_%H%M%S') #os.environ['SALLY_SHEET_NAME'] or self.settings['SHEET_NAME']
-
+        self.collection = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 
     @classmethod
     def from_crawler(cls, crawler):
+        if os.environ['MONGO_USER'] and os.environ['MONGO_USER'] != '' and os.environ['MONGO_PASSWORD']:
+            uri = "mongodb://" + os.environ['MONGO_USER'] + ":" + os.environ['MONGO_PASSWORD'] + "@" + os.environ['MONGO_HOST']
+        else:
+            uri = "mongodb://" + os.environ['MONGO_HOST']
+        logger.debug(uri)
         return cls(
-                mongo_uri = crawler.settings.get('MONGO_HOST'),
-                mongo_db = crawler.settings.get('MONGO_DBNAME', 'sally')
+                mongo_uri = uri,
+                mongo_db = os.environ['MONGO_DBNAME']
                 )
 
 
