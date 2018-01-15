@@ -228,7 +228,7 @@ class BasicCrab(CrawlSpider):
         website['title'] = self.extract_title(response)
         website['link'] = [link for link in response.xpath('//a/@href').extract()]
         website['cart'] = self.shoppingcart_detection(
-            response.xpath('//div/@class').extract() + response.xpath('//a/@class').extract())
+            response.xpath('//div/@class').extract() + response.xpath('//a/@class').extract() + response.xpath('//i/@class').extract())
         #self.online_payment(response.xpath('//div/@class').extract())
         website['network'] = website_network
         website['email'] = website_email
