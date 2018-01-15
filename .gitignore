@@ -107,3 +107,4 @@ garbage
 tests/fixtures
 client_secret.json
 storage
+variables.env
