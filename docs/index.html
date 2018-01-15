@@ -3,11 +3,46 @@
   <head>
     <title>Sally</title>
     <script src="https://s3.amazonaws.com/stitch-sdks/js/library/v2/stable/stitch.min.js"></script>
+    <script defer src="bunde.js"></script>
+    <style type="text/css">
+    body {
+      max-width: 800px;
+      margin: 20px auto;
+      font-family: sans-serif;
+    }
+    .gh {
+      text-align: right;
+    }
+    .result  h3 + div {
+      border: 1px solid lightgray;
+      border-radius: 5px;
+      padding: 10px;
+    }
+    h1 code {
+      font-size: 2em;
+    }
+    pre {
+      font-size: 1.5rem;
+      background: #efefef;
+      padding: 1em;
+    }
+    textarea {
+      font-family: monospace;
+    }
+    </style>
+
   </head>
   <body>
     <div id="items"></div>
   </body>
   <script>
+
+const myJSON = {ans: 42};
+
+const formatter = new JSONFormatter(myJSON);
+
+document.body.appendChild(formatter.render());
+
   const client = new stitch.StitchClient('sally-tpbje');
   const db = client.service('mongodb', 'mongodb-atlas').db('test');
   client.login().then(() =>

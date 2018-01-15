@@ -108,3 +108,4 @@ tests/fixtures
 client_secret.json
 storage
 variables.env
+node_modules
