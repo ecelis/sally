@@ -7,12 +7,11 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from scrapy.loader import ItemLoader
 from sally.items import WebsiteItem
-from sally.qualifiers import QUALIFIER
 import sally.google.spreadsheet as gs
-#import eat
 
 
 class BasicCrab(CrawlSpider):
+
     ELEMENTS = ['div', 'p', 'span', 'a', 'li']
 
     name = "lightfoot"
@@ -20,15 +19,17 @@ class BasicCrab(CrawlSpider):
     # TODO I still don't knpw what to do with the rules
     rules = (Rule(LinkExtractor(unique=True), callback='parse_link'))
 
-
     def __init__(self, csvfile='./tests/fixtures/very_small_list.txt',
             *args, **kwargs):
 
+        # Fetch settings from Google spreadsheet
         self.settings = gs.get_settings()
         self.score = gs.get_score()
 
-        # Compile regex
+        # Compile regexes
+        # allowed_reg list of allowed TDLs to crawl
         allowed_reg = [re.compile(r"\.%s" % domain) for domain in self.settings['allowed_domains']]
+        # disallowed_reg list of disallowed TLDs not to crawl
         disallowed_reg = [re.compile(r"\.%s" % domain) for domain in self.settings['disallowed_domains']]
 
         ## TODO check for file existence or throw exception and exit

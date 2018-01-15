@@ -7,8 +7,10 @@ focuses on very specific type of web sites or social networks.
 
 ## NOTES
 
-  * lightfoot does not crawal deeper then one level of links found in
+  * lightfoot does not crawl deeper than one level of links found in
     each given url
+  * From each web page only `div`, `p`, `span`, `a` and `li` elements
+    are searched for data extraction
 
 
 ### Crabs
@@ -38,6 +40,12 @@ focuses on very specific type of web sites or social networks.
 ## Crabs run
 
 In order to run any crab you do like the following command
+
+
+  ./run.sh <spider name> [file.csv]
+
+
+Pure python
 
 
     . .ENV/bin/activate
