@@ -87,6 +87,7 @@ def get_score(spreadsheetId=os.environ['SALLY_SETTINGS_ID']):
             "ecommerce": response['values'][2][1],
             "offer": response['values'][3][1],
             "network": response['values'][4][1],
-            "secure_url": response['values'][5][1]
+            "secure_url": response['values'][5][1],
+            "cart": response['values'][6][1]
             }
     return score

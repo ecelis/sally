@@ -25,6 +25,7 @@ class WebsiteItem(scrapy.Item):
     keywords = scrapy.Field()
     offer = scrapy.Field()
     onlinepay_rel = scrapy.Field()      # Any mention of on line payment
+    cart = scrapy.Field()
     score = scrapy.Field()              # Score based on qualifiers
     secure_url = scrapy.Field()         # +1 if HTTPS
     scripts = scrapy.Field()            # <script> tags
@@ -97,5 +98,7 @@ class WebsiteItem(scrapy.Item):
         ## increase in half * if secondary keys are found
         if self['secure_url']:
             self['score'] += self['score_values']['secure_url']
+        if not self['cart'] or len(self['cart']) < 1:
+            self['score'] += self['score_values']['cart']
 
         return self

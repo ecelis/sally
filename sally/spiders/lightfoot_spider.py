@@ -133,11 +133,20 @@ class BasicCrab(CrawlSpider):
             return 'N/E'
 
 
-    def shoppingcart_detection(self, response):
+    def shoppingcart_detection(self, divs):
+        result = []
+        p = re.compile(r'cart')
+        result += list(filter(p.search, divs))
+
+        self.logger.debug(result)
+        return list(set(result))
+
+
+    def online_payment(self, links):
         elements = list(BasicCrab.ELEMENTS)
         result = []
-        r = re.compile(".*cart.*")
-        result += list(filter(r.match, [i for i in elements]))
+        r = re.compile(r'paypal.me/\w*')
+        result += list(filter(r.match, links))
         self.logger.debug(result)
         return result
 
@@ -210,7 +219,6 @@ class BasicCrab(CrawlSpider):
         website_network = list(self.extract_social_networks(response,
             parsed_url.netloc.split('.'), set({}),
             ['facebook\.com','instagram\.com','twitter\.com']))
-        self.logger.info(self.shoppingcart_detection(response))
 
         website = WebsiteItem()
         website.set_score(self.score)
@@ -219,6 +227,9 @@ class BasicCrab(CrawlSpider):
         website['url'] = response.url
         website['title'] = self.extract_title(response)
         website['link'] = [link for link in response.xpath('//a/@href').extract()]
+        website['cart'] = self.shoppingcart_detection(
+            response.xpath('//div/@class').extract() + response.xpath('//a/@class').extract())
+        #self.online_payment(response.xpath('//div/@class').extract())
         website['network'] = website_network
         website['email'] = website_email
         website['telephone'] = website_telephone

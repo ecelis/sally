@@ -46,6 +46,11 @@ class LightfootPipeline(object):
     def export_spreadsheet(self, item):
         """Export items to Google Spreadsheets"""
         ecommerce = item['ecommerce']
+        if item['cart'] and len(item['cart']) > 0:
+            cart = True
+        else:
+            cart = False
+
         row = [
                 item['score'],
                 item['base_url'],
@@ -54,6 +59,7 @@ class LightfootPipeline(object):
                 self.to_str(item, 'telephone'),
                 self.to_str(item, 'email'),
                 ecommerce,
+                cart,
                 self.to_str(item, 'network'),
                 'N/L',
                 datetime.datetime.now().strftime('%m/%d/%Y')
