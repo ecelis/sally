@@ -137,7 +137,8 @@ class BasicCrab(CrawlSpider):
         elements = list(BasicCrab.ELEMENTS)
         result = []
         r = re.compile(".*cart.*")
-        result = list(filter(r.match, [i for i in elements]))
+        result += list(filter(r.match, [i for i in elements]))
+        self.logger.debug(result)
         return result
 
 
