@@ -49,11 +49,10 @@ class WebsiteItem(scrapy.Item):
         from self['score']
 
         Return products list"""
-        if len(products) < 1 or products[0] is '':
+        if len(self['offer']) < 1 or self['offer'][0] is '':
             self['score'] += self['score_values']['offer']
         # return clean list of useful keywords
-        self['offer'] = products
-        return products
+        return self['offer']
 
 
     def qualify_social_network(self):

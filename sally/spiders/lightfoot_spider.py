@@ -23,14 +23,16 @@ class BasicCrab(CrawlSpider):
             *args, **kwargs):
 
         # Fetch settings from Google spreadsheet
-        self.settings = gs.get_settings()
+        self.config = gs.get_settings()
         self.score = gs.get_score()
 
         # Compile regexes
         # allowed_reg list of allowed TDLs to crawl
-        allowed_reg = [re.compile(r"\.%s" % domain) for domain in self.settings['allowed_domains']]
+        allowed_reg = [re.compile(r"\.%s" % domain) for domain
+                in self.config['allowed_domains']]
         # disallowed_reg list of disallowed TLDs not to crawl
-        disallowed_reg = [re.compile(r"\.%s" % domain) for domain in self.settings['disallowed_domains']]
+        disallowed_reg = [re.compile(r"\.%s" % domain) for domain
+                in self.config['disallowed_domains']]
 
         ## TODO check for file existence or throw exception and exit
         lines = []
@@ -193,18 +195,20 @@ class BasicCrab(CrawlSpider):
         return found
 
 
-    def extract_offer(self,a):
+    def extract_offer(self, website):
         # TODO make it better to store array of useful products in self['keywords']
         products = []
-        if type(self['keywords']) is list and
-            len(self['keywords']) > 0 and self['keywords'][0] != '':
-            [products.append(p) for p in self['keywords'][0].replace(' ','').split(',') if p in q['products']]
-        if type(self['description']) is list and len(self['description']) > 0 and self['description'] != '':
-            [products.append(i) for i in self['description'][0].split(' ') if i in q['products']]
-        if type(self['keywords']) is list and len(self['keywords']) > 0 and self['keywords'][0] != '':
-            [products.append(p) for p in self['keywords'][0].replace(' ','').split(',') if p in q['services']]
-        if type(self['description']) is list and len(self['description']) > 0 and self['description'] != '':
-            [products.append(i) for i in self['description'][0].split(' ') if i in q['services']]
+        if (type(website['keywords']) is list
+            and len(website['keywords']) > 0 and website['keywords'][0] != ''):
+            [products.append(p) for p
+                    in website['keywords'][0].replace(' ','').split(',')
+                    if p in self.config['allowed_keywords']]
+        if (type(website['description']) is list
+                and len(website['description']) > 0 and website['description'] != ''):
+            [products.append(i) for i in website['description'][0].split(' ')
+                    if i in self.config['allowed_keywords']]
+
+        return products
 
 
     def start_requests(self):
@@ -251,7 +255,7 @@ class BasicCrab(CrawlSpider):
         website['ecommerce'] = self.is_ecommerce(response)
         website['description'] = self.extract_description(response)
         website['keywords'] = self.extract_keywords(response)
-        # TODO search for ecommerce and online payment
+        website['offer'] = self.extract_offer(website)
         website['last_crawl'] = datetime.now()
 
         return website
