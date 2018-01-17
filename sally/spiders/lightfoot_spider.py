@@ -97,23 +97,79 @@ class BasicCrab(CrawlSpider):
             return tel_list
 
 
-    def extract_telephone(self, response, elements, tel_set=set({})):
-        """Extract telephone list from ELEMENTS
+    def extract_telephone(self, response, elements, myset=set({})):
+        """Extract telephone from elements listed in ELEMENTS
 
-        Return a set of formated telephones
+        Returns a set() of telephones
         """
+        #myset = ({})
         if len(elements) > 0:
-            element = elements.pop()
-            tel_set.update(set(self.to_tel(response.xpath('//' + element).re(
-                r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 10)))
-            tel_set.update(set(self.to_tel(response.xpath('//' + element).re(
-                r'\W(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)'), 10)))
-            tel_set.update(set(self.to_tel(response.xpath('//' + element).re(
-                r'\+(\d{2})\W*(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 12)))
-            return self.extract_telephone(response,
-                    elements, tel_set)
+            mylist = response.xpath('//' + elements.pop()).re(
+                r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)')
+            tels = []
+            tels.append('-'.join(mylist[:3]))
+            tels.append('-'.join(mylist[3:3]))
+            tels.append('-'.join(mylist[6:3]))
+            tels.append('-'.join(mylist[9:3]))
+            tels.append('-'.join(mylist[12:3]))
+            tels.append('-'.join(mylist[15:3]))
+            myset = set(tels)
+            self.logger.debug(myset)
+            return self.extract_telephone(response, elements, myset)
         else:
-            return tel_set
+            self.logger.debug(myset)
+            return list(myset)
+
+
+#    def extract_telephone(self, response, elements, tel_set=set({})):
+#        """Extract telephone list from ELEMENTS
+#
+#        Return a set of formated telephones
+#        """
+#        if len(elements) > 0:
+#        element = 'div' #elements.pop()
+#        div_334 = set(self.to_tel(response.xpath('//' + element).re(
+#            r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 10))
+#        div_244 = set(self.to_tel(response.xpath('//' + element).re(
+#            r'\W(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)'), 10))
+#        div_12 = set(self.to_tel(response.xpath('//' + element).re(
+#            r'\+(\d{2})\W*(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 12))
+#        element = 'li' #elements.pop()
+#        li_334 = set(self.to_tel(response.xpath('//' + element).re(
+#            r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 10))
+#        li_244 = set(self.to_tel(response.xpath('//' + element).re(
+#            r'\W(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)'), 10))
+#        li_12 = set(self.to_tel(response.xpath('//' + element).re(
+#            r'\+(\d{2})\W*(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 12))
+#        element = 'span' #elements.pop()
+#        span_334 = set(self.to_tel(response.xpath('//' + element).re(
+#            r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 10))
+#        span_244 = set(self.to_tel(response.xpath('//' + element).re(
+#            r'\W(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)'), 10))
+#        span_12 = set(self.to_tel(response.xpath('//' + element).re(
+#            r'\+(\d{2})\W*(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 12))
+#        element = 'a' #elements.pop()
+#        a_334 = set(self.to_tel(response.xpath('//' + element).re(
+#            r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 10))
+#        a_244 = set(self.to_tel(response.xpath('//' + element).re(
+#            r'\W(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)'), 10))
+#        a_12 = set(self.to_tel(response.xpath('//' + element).re(
+#            r'\+(\d{2})\W*(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 12))
+
+
+
+            #num = '-'.join(raw[:raw.index('')])
+#            if len(num.replace('-','')) == 10:
+#                tel_list.append(num)
+#            return self.to_tel(raw[raw.index(''):][1:], code, tel_list)
+
+            #return self.extract_telephone(response,
+#                    elements, tel_set)
+#        else:
+#        return a_334.union(a_244.union(a_12.union(
+#            li_334.union(li_244.union(li_12.union(
+#            span_334.union(span_244.union(span_12.union(
+#            div_334.union(div_244.union(div_12)))))))))))
 
 
     def is_ecommerce(self, response):
@@ -231,9 +287,8 @@ class BasicCrab(CrawlSpider):
 #        website_link = [link for link in response.xpath('//a/@href').extract()]
         website_email = list(self.extract_email(response,
             list(BasicCrab.ELEMENTS)))
-        website_telephone = list(self.extract_telephone(response,
-            list(BasicCrab.ELEMENTS),
-            self.clearset()))
+        website_telephone = self.extract_telephone(response,
+            list(BasicCrab.ELEMENTS))
         parsed_url = urlparse(response.url)
         website_network = list(self.extract_social_networks(response,
             parsed_url.netloc.split('.'), set({}),

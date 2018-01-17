@@ -56,7 +56,7 @@ class LightfootPipeline(object):
                 item['base_url'],
                 self.to_str(item, 'offer'),
                 self.to_str(item, 'keywords'),
-                self.to_str(item, 'telephone'),
+                ','.join(item['telephone']),
                 self.to_str(item, 'email'),
                 ecommerce,
                 cart,
