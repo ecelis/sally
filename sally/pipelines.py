@@ -9,6 +9,9 @@ import datetime
 import os
 import pymongo
 import logging
+#from scrapy.mail import MailSender
+import sendgrid
+from sendgrid.helpers.mail import *
 import sally.google.spreadsheet as gs
 
 logger = logging.getLogger('sally_lightfoot')
@@ -22,6 +25,7 @@ class LightfootPipeline(object):
         self.sheet_rows = []
         self.spreadsheetId = os.environ['SALLY_SHEET_ID'] or self.setings['SHEET_ID']
         self.collection = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -77,6 +81,20 @@ class LightfootPipeline(object):
         # Create sheet in google
         gs.create_sheet(self.spreadsheetId, self.collection)
         gs.insert_to(self.spreadsheetId, self.collection, self.sheet_rows)
+        # Send email with info about the results
+        sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+        from_email = Email(os.environ.get('MAIL_FROM'))
+        to_email = Email(os.environ.get('MAIL_TO'))
+        subject = ("[lightfoot] %s" % self.collection)
+        content = Content("text/plain", "https://docs.google.com/spreadsheets/d/%s" % self.spreadsheetId)
+        mail = Mail(from_email, subject, to_email, content)
+        response = sg.client.mail.send.post(request_body=mail.get())
+        ## TODO Fails with builtins.TypeError: 'str' does not support the buffer interface
+#        body = "https://docs.google.com/spreadsheets/d/%b" % bytes(self.spreadsheetId, 'utf-8')
+#        mailer = MailSender.from_settings(spider.settings)
+#        mailer.send(to=['sample@fake.com.mx'],
+#                subject="[lighfoot] results %s" % self.collection,body=bytes(self.spreadsheetId, 'utf-8'),
+#                attachs=(),mimetype="text/plain",charset='utf-8')
 
 
     def process_item(self, item, spider):

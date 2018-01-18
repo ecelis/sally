@@ -9,11 +9,6 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
-### Test settings
-SHEET_ID='1AxioUWtPJItfnv--JxNg5-oiUUMJgW4uoQopx-JlH00'
-SHEET_NAME='testing'
-### END test settings
-
 BOT_NAME = 'sally'
 
 ### BEGIN Eve settings
@@ -130,3 +125,9 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+#MAIL_FROM='ho@.com.mx'
+#MAIL_HOST = 'smtp.sendgrid.net'
+#MAIL_PORT = 587
+#MAIL_USER = ''
+#MAIL_PASS = ''
+#MAIL_TLS = True
