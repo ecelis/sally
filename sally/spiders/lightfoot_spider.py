@@ -105,7 +105,7 @@ class BasicCrab(CrawlSpider):
         #myset = ({})
         if len(elements) > 0:
             mylist = response.xpath('//' + elements.pop()).re(
-                r'\(+(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
+                r'[\(|\[]+(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
             tels = []
             tels.append('-'.join(mylist[:3]))
             tels.append('-'.join(mylist[3:3]))
@@ -113,7 +113,7 @@ class BasicCrab(CrawlSpider):
             tels.append('-'.join(mylist[9:3]))
             tels.append('-'.join(mylist[12:3]))
             tels.append('-'.join(mylist[15:3]))
-            myset = set(tels)
+            myset.union(set(tels))
             self.logger.debug(myset)
             return self.extract_telephone(response, elements, myset)
         else:
