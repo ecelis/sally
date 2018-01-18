@@ -105,7 +105,7 @@ class BasicCrab(CrawlSpider):
         #myset = ({})
         if len(elements) > 0:
             mylist = response.xpath('//' + elements.pop()).re(
-                r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)')
+                r'\(+(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
             tels = []
             tels.append('-'.join(mylist[:3]))
             tels.append('-'.join(mylist[3:3]))
