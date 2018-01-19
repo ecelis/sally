@@ -17,7 +17,10 @@ class HermitShell(object):
         data = cherrypy.request.json
         # TODO persist data['accessToken']
         # data['userID']
-        connect('sally', host=os.environ.get('MONGO_HOST'),
+        connect(os.environ.get('MONGO_DBNAME'),
+                host=os.environ.get('MONGO_HOST'),
+                port=os.environ.get('MONGO_PORT'),
+                replicaset=os.environ.get('MONGO_REPLICA_SET'),
             username=os.environ.get('MONGO_USER'),
             password=os.environ.get('MONGO_PASSWORD'))
 
