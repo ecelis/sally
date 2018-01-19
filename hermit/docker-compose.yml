@@ -1,0 +1,14 @@
+version: "3.3"
+
+services:
+  hermitapp:
+    build:
+      context: .
+      cache_from:
+      - python:3.6-alpine
+    image: cherrypy/cherrypy
+    volumes:
+      - ".:/app"
+#    ports:
+#      - "127.0.0.1:8080:8080"
+    command: python ${CHERRYPY_APP:-app.py}
