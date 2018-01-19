@@ -3,9 +3,11 @@ import persistence
 
 
 class HermitShell(object):
+
     @cherrypy.expose
     def index(self):
         return open('index.html')
+
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
@@ -15,9 +17,11 @@ class HermitShell(object):
         # data['userID']
 
         user = persistence.User(email='algo@mail.com',
-                fb_userId=date['userID'],
-                fb_accessToken=data['accessToken'])
-        return "Authorize app %s" % data
+                fb_userId = data['userID'],
+                fb_accessToken = data['accessToken'])
+        user.save()
+        return user
+
 
 if __name__ == '__main__':
     config = {
