@@ -185,7 +185,7 @@ class BasicCrab(CrawlSpider):
         elif len(response.xpath('//img/@src').re(r'cdn-shoperti\.global')) > 0:
             return 'shoperti'
         elif (len(response.xpath('//footer').re(r'magento', re.IGNORECASE)) > 0
-              or len(response.xpath('//head').re(r'magento', re.IGNORECASE)) > 0)
+                or len(response.xpath('//head').re(r'magento', re.IGNORECASE)) > 0):
             return 'magento'
         else:
             return 'N/E'
