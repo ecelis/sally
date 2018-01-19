@@ -1,5 +1,5 @@
 import cherrypy
-import hermit.persistence as persist
+import persistence
 
 
 class HermitShell(object):
@@ -13,7 +13,10 @@ class HermitShell(object):
         data = cherrypy.request.json
         # TODO persist data['accessToken']
         # data['userID']
-        cherrypy.log(str(persist))
+
+        user = persistence.User(email='algo@mail.com',
+                fb_userId=date['userID'],
+                fb_accessToken=data['accessToken'])
         return "Authorize app %s" % data
 
 if __name__ == '__main__':
