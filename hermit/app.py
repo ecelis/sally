@@ -100,4 +100,7 @@ class HermitShell(object):
         return "Authorize app %s" % token
 
 if __name__ == '__main__':
-    cherrypy.quickstart(HermitShell())
+    config = {
+            '/': {'server.socket_host': '0.0.0.0'}
+            }
+    cherrypy.quickstart(HermitShell(), '/', "app.conf")
