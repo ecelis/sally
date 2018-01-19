@@ -18,7 +18,7 @@ class HermitShell(object):
         # TODO persist data['accessToken']
         # data['userID']
         connect(os.environ.get('MONGO_DBNAME'),
-                host=os.environ.get('MONGO_HOST'),
+                host="mongodb://" + os.environ.get('MONGO_HOST'),
                 port=int(os.environ.get('MONGO_PORT')),
                 replicaset=os.environ.get('MONGO_REPLICA_SET'),
             username=os.environ.get('MONGO_USER'),

@@ -33,10 +33,14 @@ class LightfootPipeline(object):
 
     @classmethod
     def from_crawler(cls, crawler):
-        if os.environ['MONGO_USER'] and os.environ['MONGO_USER'] != '' and os.environ['MONGO_PASSWORD']:
-            uri = "mongodb://" + os.environ['MONGO_USER'] + ":" + os.environ['MONGO_PASSWORD'] + "@" + os.environ['MONGO_HOST']
+        if os.environ['MONGO_ATLAS_URI']:
+            # Prefer Mongo Atlas URI over anything else
+            uri = os.environ['MONGO_ATLAS_URI']
         else:
-            uri = "mongodb://" + os.environ['MONGO_HOST']
+            if os.environ['MONGO_USER'] and os.environ['MONGO_USER'] != '' and os.environ['MONGO_PASSWORD']:
+                uri = "mongodb://" + os.environ['MONGO_USER'] + ":" + os.environ['MONGO_PASSWORD'] + "@" + os.environ['MONGO_HOST']
+            else:
+                uri = "mongodb://" + os.environ['MONGO_HOST']
         logger.debug(uri)
         return cls(
                 mongo_uri = uri,
