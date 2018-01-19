@@ -9,7 +9,7 @@ class HermitShell(object):
     @cherrypy.expose
     @cherrypy.tools.json_in()
     def authorize(self):
-        data = cherrypy.reques.json
+        data = cherrypy.request.json
         return "Authorize app %s" % data
 
 if __name__ == '__main__':
