@@ -1,0 +1,2 @@
+CherryPy==13.1.0
+mongoengine==0.15.0
