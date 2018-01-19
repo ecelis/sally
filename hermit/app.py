@@ -19,7 +19,7 @@ class HermitShell(object):
         # data['userID']
         connect(os.environ.get('MONGO_DBNAME'),
                 host=os.environ.get('MONGO_HOST'),
-                port=os.environ.get('MONGO_PORT'),
+                port=int(os.environ.get('MONGO_PORT')),
                 replicaset=os.environ.get('MONGO_REPLICA_SET'),
             username=os.environ.get('MONGO_USER'),
             password=os.environ.get('MONGO_PASSWORD'))
