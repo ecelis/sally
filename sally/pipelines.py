@@ -79,14 +79,15 @@ class LightfootPipeline(object):
     def close_spider(self, spider):
         self.client.close()
         # Create sheet in google
-        gs.create_sheet(self.spreadsheetId, self.collection)
+        sheets_response = gs.create_sheet(self.spreadsheetId, self.collection)
         gs.insert_to(self.spreadsheetId, self.collection, self.sheet_rows)
         # Send email with info about the results
         sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
         from_email = Email(os.environ.get('MAIL_FROM'))
         to_email = Email(os.environ.get('MAIL_TO'))
         subject = ("[lightfoot] %s" % self.collection)
-        content = Content("text/plain", "https://docs.google.com/spreadsheets/d/%s" % self.spreadsheetId)
+        content = Content("text/plain", "https://docs.google.com/spreadsheets/d/%s/edit#gid=%s"
+                % (self.spreadsheetId, sheets_response['replies'][0]['addSheet']['properties']['sheetId']))
         mail = Mail(from_email, subject, to_email, content)
         response = sg.client.mail.send.post(request_body=mail.get())
         ## TODO Fails with builtins.TypeError: 'str' does not support the buffer interface
