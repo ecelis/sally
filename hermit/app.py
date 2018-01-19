@@ -7,8 +7,10 @@ class HermitShell(object):
         return open('index.html')
 
     @cherrypy.expose
-    def authorize(self, token=""):
-        return "Authorize app %s" % token
+    @cherrypy.tools.json_in
+    def authorize(self):
+        data = cherrypy.reques.json
+        return "Authorize app %s" % data
 
 if __name__ == '__main__':
     config = {
