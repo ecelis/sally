@@ -16,7 +16,7 @@ class HermitShell(object):
         # TODO persist data['accessToken']
         # data['userID']
 
-        user = persistence.User(email='algo@mail.com',
+        user = persistence.User(email = 'algo@mail.com',
                 fb_userId = data['userID'],
                 fb_accessToken = data['accessToken'])
         user.save()
