@@ -20,7 +20,8 @@ def create_sheet(spreadsheetId, sheet):
                     "title": sheet,
                     "gridProperties": {
                         "rowCount": 100,
-                        "columnCount": 9
+                        "columnCount": 9,
+                        "frozenRowCount": 1
                         }
                     }
                 }
@@ -32,7 +33,7 @@ def create_sheet(spreadsheetId, sheet):
     return response
 
 
-def insert_to(spreadsheetId, sheet, rows=[['','','','','','','','']], offset=2):
+def insert_to(spreadsheetId, sheet, rows=[['','','','','','','','']], offset=1):
     """Insert a new scraped site in a google spreadsheet
 
     spreadsheet = spreadsheet_ID

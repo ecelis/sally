@@ -22,7 +22,11 @@ class LightfootPipeline(object):
     def __init__(self, mongo_uri, mongo_db):
         self.mongo_uri = mongo_uri
         self.mongo_db = mongo_db
-        self.sheet_rows = []
+        self.sheet_rows = [
+                ['SCORE','WEB SITE', 'OFFER', 'META', 'TELPHONE', 'EMAIL',
+                'ECOMMERCE','SHOPPING CART', 'SOCIAL NETWORKS' 'PLACE', 'CRAWL DATE']
+                ]
+#        self.sheet_rows = []
         self.spreadsheetId = os.environ['SALLY_SHEET_ID'] or self.setings['SHEET_ID']
         self.collection = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 

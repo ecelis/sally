@@ -7,6 +7,9 @@ focuses on very specific type of web sites or social networks.
 
 ## NOTES
 
+  * Source data files are read in batches of 1000
+  * One spreadsheet should be created by batch and one sheet for each
+    1000
   * lightfoot does not crawl deeper than one level of links found in
     each given url
   * From each web page only `div`, `p`, `span`, `a` and `li` elements
