@@ -7,7 +7,7 @@ services:
 
   hermitapp:
     build:
-      context: .
+      context: ./hermit
       cache_from:
       - python:3.6-alpine
     image: cherrypy/cherrypy
