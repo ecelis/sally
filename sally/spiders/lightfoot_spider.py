@@ -102,7 +102,6 @@ class BasicCrab(CrawlSpider):
 
         Returns a set() of telephones
         """
-        #myset = ({})
         if len(elements) > 0:
             mylist = response.xpath('//' + elements.pop()).re(
                 r'\(+(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
@@ -113,7 +112,6 @@ class BasicCrab(CrawlSpider):
             tels.append('-'.join(mylist[9:3]))
             tels.append('-'.join(mylist[12:3]))
             tels.append('-'.join(mylist[15:3]))
-            myset = set(tels)
             self.logger.debug(myset)
             return self.extract_telephone(response, elements, myset)
         else:
@@ -186,7 +184,8 @@ class BasicCrab(CrawlSpider):
             return 'woocommerce'
         elif len(response.xpath('//img/@src').re(r'cdn-shoperti\.global')) > 0:
             return 'shoperti'
-        elif len(response.xpath('//footer').re(r'magento', re.IGNORECASE)) > 0:
+        elif (len(response.xpath('//footer').re(r'magento', re.IGNORECASE)) > 0
+              or len(response.xpath('//head').re(r'magento', re.IGNORECASE)) > 0)
             return 'magento'
         else:
             return 'N/E'
