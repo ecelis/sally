@@ -94,7 +94,7 @@
         cache: 'no-store'
       };
 
-      fetch('https://quotes.skydrop.com.mx/?token='
+      fetch('https://quotes.skydrop.com.mx/authorize?token='
           + response.authResponse.accessToken, hInit)
         .then(function(res) {
           console.log(res);
