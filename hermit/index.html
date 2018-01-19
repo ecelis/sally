@@ -94,7 +94,7 @@
         method: 'POST',
         mode: 'cors',
         cache: 'no-store',
-        body: response.authResponse.accessToken
+        body: response.authResponse
       };
 
       fetch('https://quotes.skydrop.com.mx/authorize', hInit)
