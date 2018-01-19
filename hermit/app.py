@@ -17,9 +17,9 @@ class HermitShell(object):
         data = cherrypy.request.json
         # TODO persist data['accessToken']
         # data['userID']
-        connect('sally', host=os.environ.get('MONGO_HOST',
+        connect('sally', host=os.environ.get('MONGO_HOST'),
             username=os.environ.get('MONGO_USER'),
-            password=os.environ.get('MONGO_PASSWORD')))
+            password=os.environ.get('MONGO_PASSWORD'))
 
         user = persistence.User(email = 'algo@mail.com',
                 fb_userId = data['userID'],
