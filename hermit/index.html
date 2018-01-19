@@ -86,11 +86,12 @@
     }
 
     function catchToken(response) {
-      console.log(response.authResponse);
       let hHeaders = new Headers({
         'Content-Type': 'application/json'
       });
+
       let hInit = {
+        headers: hHeaders,
         method: 'POST',
         mode: 'cors',
         cache: 'no-store',
