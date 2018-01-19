@@ -12,5 +12,5 @@ services:
       - python:3.6-alpine
     image: cherrypy/cherrypy
     volumes:
-      - ".:/app"
+      - "./hermit:/app"
     command: python ${CHERRYPY_APP:-app.py}
