@@ -1,5 +1,5 @@
 import os
-from mongoengine import connect
+from mongoengine import *
 
 
 class HermitMongo:
