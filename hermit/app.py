@@ -1,6 +1,7 @@
+import os
 import cherrypy
-import persistence
 from mongoengine import connect
+import persistence
 
 
 class HermitShell(object):

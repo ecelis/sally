@@ -13,4 +13,6 @@ services:
     image: cherrypy/cherrypy
     volumes:
       - "./hermit:/app"
+    env_file:
+      - variables.env
     command: python ${CHERRYPY_APP:-app.py}
