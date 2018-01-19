@@ -87,15 +87,17 @@
 
     function catchToken(response) {
       console.log(response.authResponse);
-      let hHeaders = new Headers();
+      let hHeaders = new Headers({
+        'Content-Type': 'application/json'
+      });
       let hInit = {
         method: 'POST',
         mode: 'cors',
-        cache: 'no-store'
+        cache: 'no-store',
+        body: response.authResponse.accessToken
       };
 
-      fetch('https://quotes.skydrop.com.mx/authorize?token='
-          + response.authResponse.accessToken, hInit)
+      fetch('https://quotes.skydrop.com.mx/authorize', hInit)
         .then(function(res) {
           console.log(res);
         });
