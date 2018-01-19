@@ -4,5 +4,13 @@ services:
     image: mongo:3.6
     volumes:
       - ./storage:/data/db
-    ports:
-      - "27017:27017"
+
+  hermitapp:
+    build:
+      context: .
+      cache_from:
+      - python:3.6-alpine
+    image: cherrypy/cherrypy
+    volumes:
+      - ".:/app"
+    command: python ${CHERRYPY_APP:-app.py}

@@ -1,8 +1,7 @@
 FROM python:3.6-alpine
 
-RUN pip install cherrypy
-
-#COPY . /tutorial
+COPY ./requirements.txt /app
 
 WORKDIR /app
 
+RUN pip install -r requirements.txt
