@@ -1,4 +1,5 @@
 import cherrypy
+import hermit.persistence as persist
 
 
 class HermitShell(object):
@@ -10,7 +11,9 @@ class HermitShell(object):
     @cherrypy.tools.json_in()
     def authorize(self):
         data = cherrypy.request.json
-        cherrypy.log(str(type(data)))
+        # TODO persist data['accessToken']
+        # data['userID']
+        cherrypy.log(str(persist))
         return "Authorize app %s" % data
 
 if __name__ == '__main__':
