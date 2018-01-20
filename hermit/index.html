@@ -96,12 +96,19 @@
           'Content-Type': 'application/json'
         });
 
+        let user = {
+          name: response.name,
+          email: response.email,
+          fb_userId: response.id,
+          fb_accessToken: accessToken
+        };
+
         let hInit = {
           headers: hHeaders,
           method: 'POST',
           mode: 'cors',
           cache: 'no-store',
-          body: JSON.stringify(response.authResponse)
+          body: JSON.stringify(user)
         };
 
         fetch('https://quotes.skydrop.com.mx/authorize', hInit)

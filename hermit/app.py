@@ -24,7 +24,9 @@ class HermitShell(object):
                 username=os.environ.get('MONGO_USER'),
                 password=os.environ.get('MONGO_PASSWORD'))
 
-            user = persistence.User(email = 'algo@mail.com',
+            user = persistence.User(
+                    name = data['name'],
+                    email = data['email'],
                     fb_userId = data['userID'],
                     fb_accessToken = data['accessToken'])
             user.save()
