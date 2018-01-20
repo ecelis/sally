@@ -86,9 +86,7 @@
     }
 
     function catchToken(accessToken) {
-      console.log(accessToken);
       FB.api('/me?fields=id,name,email', function(response) {
-        console.log(response);
         document.getElementById('status').innerHTML =
           'Thanks for logging in, ' + response.name + '!';
 
@@ -111,7 +109,7 @@
           method: 'POST',
           mode: 'cors',
           cache: 'no-store',
-          body: user
+          body: JSON.stringify(user)
         };
 
         fetch('https://quotes.skydrop.com.mx/authorize', hInit)
