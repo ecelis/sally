@@ -13,22 +13,25 @@ class HermitShell(object):
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
     def authorize(self):
         data = cherrypy.request.json
-        # TODO persist data['accessToken']
-        # data['userID']
-        connect(os.environ.get('MONGO_DBNAME'),
-                host="mongodb://" + os.environ.get('MONGO_HOST'),
-                port=int(os.environ.get('MONGO_PORT')),
-                replicaset=os.environ.get('MONGO_REPLICA_SET'),
-            username=os.environ.get('MONGO_USER'),
-            password=os.environ.get('MONGO_PASSWORD'))
+        try:
+            connect(os.environ.get('MONGO_DBNAME'),
+                    host="mongodb://" + os.environ.get('MONGO_HOST'),
+                    port=int(os.environ.get('MONGO_PORT')),
+                    replicaset=os.environ.get('MONGO_REPLICA_SET'),
+                username=os.environ.get('MONGO_USER'),
+                password=os.environ.get('MONGO_PASSWORD'))
 
-        user = persistence.User(email = 'algo@mail.com',
-                fb_userId = data['userID'],
-                fb_accessToken = data['accessToken'])
-        user.save()
-        return user
+            user = persistence.User(email = 'algo@mail.com',
+                    fb_userId = data['userID'],
+                    fb_accessToken = data['accessToken'])
+            user.save()
+            return {'status': 200, 'statusText': 'OK'}
+        except Exception:
+            cherrypy.log("[authorize]", traceback=True)
+            return {'status': 500, 'statusText': 'Internal server error'}
 
 
 if __name__ == '__main__':
