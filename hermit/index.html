@@ -85,24 +85,29 @@
       });
     }
 
-    function catchToken(response) {
-      console.log(response)
-      let hHeaders = new Headers({
-        'Content-Type': 'application/json'
-      });
+    function catchToken() {
+      FB.api('/me?fields=id,name,email', function(response) {
+        console.log(response);
+        document.getElementById('status').innerHTML =
+          'Thanks for logging in, ' + response.name + '!';
 
-      let hInit = {
-        headers: hHeaders,
-        method: 'POST',
-        mode: 'cors',
-        cache: 'no-store',
-        body: JSON.stringify(response.authResponse)
-      };
-
-      fetch('https://quotes.skydrop.com.mx/authorize', hInit)
-        .then(function(res) {
-          console.log(res);
+        let hHeaders = new Headers({
+          'Content-Type': 'application/json'
         });
+
+        let hInit = {
+          headers: hHeaders,
+          method: 'POST',
+          mode: 'cors',
+          cache: 'no-store',
+          body: JSON.stringify(response.authResponse)
+        };
+
+        fetch('https://quotes.skydrop.com.mx/authorize', hInit)
+          .then(function(res) {
+            console.log(res);
+          });
+      });
     }
     </script>
 
