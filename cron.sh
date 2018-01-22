@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "$(dirname $(readlink -f $0))"
-cd /home/ecelis/Projects/sally
-. ./env.sh
-python cron.py
+CWD="$(dirname $(readlink -f $0))"
+cd $CWD
+. $CWD/env.sh
+$CWD/ENV/bin/python $CWD/cron.py
