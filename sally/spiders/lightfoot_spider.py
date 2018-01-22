@@ -1,7 +1,9 @@
 import os
+from copy import deepcopy
 from datetime import datetime
 import re
 from urllib.parse import urlparse
+from itertools import filterfalse
 import tldextract
 import scrapy
 from scrapy.spiders import CrawlSpider, Rule
@@ -105,27 +107,40 @@ class BasicCrab(CrawlSpider):
             return tel_list
 
 
-    def extract_telephone(self, response, elements, myset=set({})):
+    def extract_telephone(self, response, elements, tels=[]):
         """Extract telephone from elements listed in ELEMENTS
 
         Returns a set() of telephones
         """
         if len(elements) > 0:
-            mylist = response.xpath('//' + elements.pop()).re(
+            e = elements.pop()
+            t334 = []
+            t334 = response.xpath('//' + e).re(
                 r'\(+(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
-            tels = []
-            tels.append('-'.join(mylist[:3]))
-            tels.append('-'.join(mylist[3:3]))
-            tels.append('-'.join(mylist[6:3]))
-            tels.append('-'.join(mylist[9:3]))
-            tels.append('-'.join(mylist[12:3]))
-            tels.append('-'.join(mylist[15:3]))
-            self.logger.debug(myset)
-            return self.extract_telephone(response, elements, myset)
+            t224 = []
+            t244 = response.xpath('//' + e).re(
+                r'\(+(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
+            t_2_8 = response.xpath('//' + e).re(
+                r'\(+(\d{2})\W*(\d{8})\W*[^png|jpg|gif]')
+            t10 = []
+            t10 = response.xpath('//' + e).re(
+                r'\W*(\d{10})\W*[^png|jpg|gif]')
+            tels.append('-'.join(t334[:3]))
+            tels.append('-'.join(t334[3:3]))
+            tels.append('-'.join(t334[6:3]))
+            tels.append('-'.join(t244[:3]))
+            tels.append('-'.join(t244[3:3]))
+            tels.append('-'.join(t244[6:3]))
+            # TODO append 10 digit numbers
+            #self.logger.debug(t10)
+            return self.extract_telephone(response, elements, list(filter(None,tels)))
         else:
-            self.logger.debug(myset)
-            return list(myset)
-
+            tset = set(tels)
+            self.logger.debug(tset)
+            if len(tset) > 0:
+                return list(tset)
+            else:
+                return []
 
 #    def extract_telephone(self, response, elements, tel_set=set({})):
 #        """Extract telephone list from ELEMENTS
@@ -292,11 +307,72 @@ class BasicCrab(CrawlSpider):
 
     def parse_item(self, response):
         # Collect all links found in crawled pages
-#        website_link = [link for link in response.xpath('//a/@href').extract()]
         website_email = list(self.extract_email(response,
             list(BasicCrab.ELEMENTS)))
-        website_telephone = self.extract_telephone(response,
-            list(BasicCrab.ELEMENTS))
+        tels = list()
+        t334 = list()
+        t334 = response.xpath('//' + BasicCrab.ELEMENTS[0]).re(
+            r'\(+(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
+        tels.append('-'.join(t334[:3]))
+        tels.append('-'.join(t334[3:3]))
+        tels.append('-'.join(t334[6:3]))
+        t224 = list()
+        t244 = response.xpath('//' + BasicCrab.ELEMENTS[0]).re(
+            r'\(+(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
+        tels.append('-'.join(t244[:3]))
+        tels.append('-'.join(t244[3:3]))
+        tels.append('-'.join(t244[6:3]))
+        t334 = list()
+        t334 = response.xpath('//' + BasicCrab.ELEMENTS[1]).re(
+            r'\(+(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
+        tels.append('-'.join(t334[:3]))
+        tels.append('-'.join(t334[3:3]))
+        tels.append('-'.join(t334[6:3]))
+        t224 = list()
+        t244 = response.xpath('//' + BasicCrab.ELEMENTS[1]).re(
+            r'\(+(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
+        tels.append('-'.join(t244[:3]))
+        tels.append('-'.join(t244[3:3]))
+        tels.append('-'.join(t244[6:3]))
+        t334 = list()
+        t334 = response.xpath('//' + BasicCrab.ELEMENTS[2]).re(
+            r'\(+(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
+        tels.append('-'.join(t334[:3]))
+        tels.append('-'.join(t334[3:3]))
+        tels.append('-'.join(t334[6:3]))
+        t224 = list()
+        t244 = response.xpath('//' + BasicCrab.ELEMENTS[2]).re(
+            r'\(+(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
+        tels.append('-'.join(t244[:3]))
+        tels.append('-'.join(t244[3:3]))
+        tels.append('-'.join(t244[6:3]))
+        t334 = list()
+        t334 = response.xpath('//' + BasicCrab.ELEMENTS[3]).re(
+            r'\(+(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
+        tels.append('-'.join(t334[:3]))
+        tels.append('-'.join(t334[3:3]))
+        tels.append('-'.join(t334[6:3]))
+        t224 = list()
+        t244 = response.xpath('//' + BasicCrab.ELEMENTS[3]).re(
+            r'\(+(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
+        tels.append('-'.join(t244[:3]))
+        tels.append('-'.join(t244[3:3]))
+        tels.append('-'.join(t244[6:3]))
+        t334 = list()
+        t334 = response.xpath('//' + BasicCrab.ELEMENTS[4]).re(
+            r'\(+(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
+        tels.append('-'.join(t334[:3]))
+        tels.append('-'.join(t334[3:3]))
+        tels.append('-'.join(t334[6:3]))
+        t224 = list()
+        t244 = response.xpath('//' + BasicCrab.ELEMENTS[4]).re(
+            r'\(+(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
+        tels.append('-'.join(t244[:3]))
+        tels.append('-'.join(t244[3:3]))
+        tels.append('-'.join(t244[6:3]))
+
+        #website_telephone = list(set(tels)) #self.extract_telephone(response,
+            #list(BasicCrab.ELEMENTS), t224)
         parsed_url = urlparse(response.url)
         website_network = list(self.extract_social_networks(response,
             parsed_url.netloc.split('.'), set({}),
@@ -315,7 +391,7 @@ class BasicCrab(CrawlSpider):
         #self.online_payment(response.xpath('//div/@class').extract())
         website['network'] = website_network
         website['email'] = website_email
-        website['telephone'] = website_telephone
+        website['telephone'] = list(set(tels))
         website['ecommerce'] = self.is_ecommerce(response)
         website['description'] = self.extract_description(response)
         website['keywords'] = self.extract_keywords(response)

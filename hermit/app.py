@@ -1,7 +1,7 @@
 import os
 import cherrypy
 from mongoengine import connect
-import persistence
+import model
 
 
 class HermitShell(object):
@@ -24,7 +24,7 @@ class HermitShell(object):
                 username=os.environ.get('MONGO_USER'),
                 password=os.environ.get('MONGO_PASSWORD'))
 
-            user = persistence.User(
+            user = model.User(
                     name = data['name'],
                     email = data['email'],
                     fb_userId = data['userID'],

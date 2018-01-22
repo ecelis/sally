@@ -11,6 +11,7 @@ class HermitMongo:
 
 class User(Document):
 
+    name = StringField(requied=False)
     email = EmailField(required=True)
     fb_userId = StringField(required=True)
     fb_accessToken = StringField(requied=True)
