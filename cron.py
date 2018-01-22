@@ -22,7 +22,7 @@ def main():
         to_email = Email(os.environ.get('MAIL_TO'))
         subject = "[lightfoot] results %s" % f['name']
         content = Content("text/plain", "https://docs.google.com/spreadsheets/d/%s"
-                % self.spreadsheetId)
+                % ss['spreadsheetId'])
         mail = Mail(from_email, subject, to_email, content)
         response = sg.client.mail.send.post(request_body=mail.get())
 
