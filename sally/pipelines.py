@@ -12,6 +12,7 @@ import logging
 import sendgrid
 from sendgrid.helpers.mail import *
 import sally.google.spreadsheet as gs
+import sally.google.drive as gd
 
 logger = logging.getLogger('sally_lightfoot')
 
@@ -87,17 +88,21 @@ class LightfootPipeline(object):
     def close_spider(self, spider):
         self.client.close()
         # Create sheet in google
-        sheets_response = gs.create_sheet(self.spreadsheetId, self.collection)
-        gs.insert_to(self.spreadsheetId, self.collection, self.sheet_rows)
+        results_spreadsheet = gs.create_sheet(self.spreadsheetId,
+                self.collection)
+        results_spreadsheet = gs.insert_to(self.spreadsheetId, self.collection,
+                self.sheet_rows)
+        results_spreadsheet = gd.mv(self.spreadsheetId,
+                os.environ.get('DRIVE_RESULTS'))
         # Send email with info about the results
-        sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
-        from_email = Email(os.environ.get('MAIL_FROM'))
-        to_email = Email(os.environ.get('MAIL_TO'))
-        subject = ("[lightfoot] %s" % self.collection)
-        content = Content("text/plain", "https://docs.google.com/spreadsheets/d/%s/edit#gid=%s"
-                % (self.spreadsheetId, sheets_response['replies'][0]['addSheet']['properties']['sheetId']))
-        mail = Mail(from_email, subject, to_email, content)
-        response = sg.client.mail.send.post(request_body=mail.get())
+        #sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+        #from_email = Email(os.environ.get('MAIL_FROM'))
+        #to_email = Email(os.environ.get('MAIL_TO'))
+        #subject = ("[lightfoot] %s" % self.collection)
+        #content = Content("text/plain", "https://docs.google.com/spreadsheets/d/%s/edit#gid=%s"
+        #        % (self.spreadsheetId, sheets_response['replies'][0]['addSheet']['properties']['sheetId']))
+        #mail = Mail(from_email, subject, to_email, content)
+        #response = sg.client.mail.send.post(request_body=mail.get())
 
 
     def process_item(self, item, spider):

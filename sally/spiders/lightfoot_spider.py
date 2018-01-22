@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 import re
 from urllib.parse import urlparse
@@ -8,6 +9,7 @@ from scrapy.linkextractors import LinkExtractor
 from scrapy.loader import ItemLoader
 from sally.items import WebsiteItem
 import sally.google.spreadsheet as gs
+import sally.google.drive as gd
 
 
 class BasicCrab(CrawlSpider):
@@ -22,6 +24,7 @@ class BasicCrab(CrawlSpider):
     def __init__(self, csvfile, spreadsheet,
             *args, **kwargs):
 
+        self.source_urls = csvfile
         self.spreadsheetId = spreadsheet
         # Fetch settings from Google spreadsheet
         self.config = gs.get_settings()
@@ -271,6 +274,12 @@ class BasicCrab(CrawlSpider):
         return products
 
 
+    def clearset(self):
+        s = set({})
+        s.clear()
+        return s
+
+
     def start_requests(self):
         """Returns iterable of Requests"""
         for url in self.start_urls:
@@ -280,11 +289,6 @@ class BasicCrab(CrawlSpider):
     def parse_link(self, link):
         self.logger.info(link)
 
-
-    def clearset(self):
-        s = set({})
-        s.clear()
-        return s
 
     def parse_item(self, response):
         # Collect all links found in crawled pages
@@ -321,3 +325,5 @@ class BasicCrab(CrawlSpider):
         return website
 
 
+    def closed(self, reason):
+        response = gd.mv(self.source_urls, os.environ.get('DRIVE_DONE'))
