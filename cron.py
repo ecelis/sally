@@ -3,6 +3,7 @@ import sally.google.spreadsheet as gs
 import sally.google.drive as gd
 import scrapy
 import sendgrid
+from sendgrid.helpers.mail import *
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 from sally.spiders.lightfoot_spider import BasicCrab
