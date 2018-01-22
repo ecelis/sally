@@ -36,9 +36,13 @@ class BasicCrab(CrawlSpider):
 
         ## TODO check for file existence or throw exception and exit
         lines = []
-        with open(csvfile, 'r') as f:
-            lines = ["http://%s" % l.rstrip() for l in f]
-            f.close()
+
+        # TODO maybe we no longer need csv files
+        #with open(csvfile, 'r') as f:
+        #    lines = ["http://%s" % l.rstrip() for l in f]
+        #    f.close()
+
+        lines = ["http://%s" % l.rstrip() for l in gs.get_urls(csvfile)]
 
         allowed_url = []
         for r in allowed_reg:
