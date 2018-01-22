@@ -9,7 +9,6 @@ import datetime
 import os
 import pymongo
 import logging
-#from scrapy.mail import MailSender
 import sendgrid
 from sendgrid.helpers.mail import *
 import sally.google.spreadsheet as gs
@@ -26,9 +25,9 @@ class LightfootPipeline(object):
                 ['SCORE','WEB SITE', 'OFFER', 'META', 'TELPHONE', 'EMAIL',
                 'ECOMMERCE','SHOPPING CART', 'SOCIAL NETWORKS' 'PLACE', 'CRAWL DATE']
                 ]
-#        self.sheet_rows = []
-        self.spreadsheetId = os.environ['SALLY_SHEET_ID'] or self.setings['SHEET_ID']
+        #self.spreadsheetId = os.environ['SALLY_SHEET_ID'] or self.setings['SHEET_ID']
         self.collection = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        self.spreadsheetId = None
 
 
     @classmethod
@@ -59,9 +58,9 @@ class LightfootPipeline(object):
         """Export items to Google Spreadsheets"""
         ecommerce = item['ecommerce']
         if item['cart'] and len(item['cart']) > 0:
-            cart = True
+            cart = 'CART'
         else:
-            cart = False
+            cart = ''
 
         row = [
                 item['score'],
@@ -77,6 +76,7 @@ class LightfootPipeline(object):
                 datetime.datetime.now().strftime('%m/%d/%Y')
                 ]
         self.sheet_rows.append(row)
+        self.spreadsheetId = item['spreadsheetId']
 
 
     def open_spider(self, spider):
@@ -98,12 +98,6 @@ class LightfootPipeline(object):
                 % (self.spreadsheetId, sheets_response['replies'][0]['addSheet']['properties']['sheetId']))
         mail = Mail(from_email, subject, to_email, content)
         response = sg.client.mail.send.post(request_body=mail.get())
-        ## TODO Fails with builtins.TypeError: 'str' does not support the buffer interface
-#        body = "https://docs.google.com/spreadsheets/d/%b" % bytes(self.spreadsheetId, 'utf-8')
-#        mailer = MailSender.from_settings(spider.settings)
-#        mailer.send(to=['sample@fake.com.mx'],
-#                subject="[lighfoot] results %s" % self.collection,body=bytes(self.spreadsheetId, 'utf-8'),
-#                attachs=(),mimetype="text/plain",charset='utf-8')
 
 
     def process_item(self, item, spider):

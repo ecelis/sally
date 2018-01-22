@@ -1,7 +1,10 @@
 import unittest
 import datetime
+import logging
 from googleapiclient.errors import HttpError
 import sally.google.spreadsheet as gs
+
+logger = logging.getLogger(__name__)
 
 csvs = ['./tests/fixtures/mx.csv',
             './tests/fixtures/sampleab.csv']
@@ -75,6 +78,10 @@ class SpreadsheetTestCase(unittest.TestCase):
 
             return ex_response
 
+    def test_create_spreadsheet(self):
+        response = gs.create_spreadsheet('test')
+        logger.info(response)
+        self.assertEqual(type(response), dict)
 
 if __name__ == '__main__':
     unittest.main()

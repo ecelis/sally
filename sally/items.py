@@ -35,6 +35,7 @@ class WebsiteItem(scrapy.Item):
     url = scrapy.Field()                # start_url given by source
     webstore_rel = scrapy.Field()       # Any metion of ecommerce software
     score_values = scrapy.Field()
+    spreadsheetId = scrapy.Field()
 
 
     def set_score(self, scores):

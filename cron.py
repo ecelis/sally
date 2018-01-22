@@ -11,7 +11,10 @@ def main():
     uploads = gd.get_uploads(os.environ.get('DRIVE_UPLOADS'))
     process = CrawlerProcess(get_project_settings())
     for f in uploads:
-        process.crawl(BasicCrab, csvfile=f['id'])
+        ss = gs.create_spreadsheet(f['name'])
+        print(ss)
+        process.crawl(BasicCrab, csvfile=f['id'],
+                spreadsheet=ss['spreadsheetId'])
     process.start()
 
 if __name__ == '__main__':

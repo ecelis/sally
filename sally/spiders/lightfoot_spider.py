@@ -19,9 +19,10 @@ class BasicCrab(CrawlSpider):
     # TODO I still don't knpw what to do with the rules
     rules = (Rule(LinkExtractor(unique=True), callback='parse_link'))
 
-    def __init__(self, csvfile,
+    def __init__(self, csvfile, spreadsheet,
             *args, **kwargs):
 
+        self.spreadsheetId = spreadsheet
         # Fetch settings from Google spreadsheet
         self.config = gs.get_settings()
         self.score = gs.get_score()
@@ -299,6 +300,7 @@ class BasicCrab(CrawlSpider):
 
         website = WebsiteItem()
         website.set_score(self.score)
+        website['spreadsheetId'] = self.spreadsheetId
         website['base_url'] = parsed_url.netloc
         website['secure_url'] = True if parsed_url.scheme == 'https' else False
         website['url'] = response.url

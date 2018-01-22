@@ -12,6 +12,17 @@ def get_spreadsheet(spreadsheetId):
     response = request.execute()
     return response
 
+def create_spreadsheet(name):
+    service = authorize.get_service('sheets', 'v4')
+    body_ = {
+        "properties": {
+            "title": name
+        }
+    }
+
+    request = service.spreadsheets().create(body=body_)
+    response = request.execute()
+    return response
 
 def create_sheet(spreadsheetId, sheet):
     body = {
