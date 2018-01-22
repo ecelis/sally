@@ -19,7 +19,7 @@ class BasicCrab(CrawlSpider):
     # TODO I still don't knpw what to do with the rules
     rules = (Rule(LinkExtractor(unique=True), callback='parse_link'))
 
-    def __init__(self, csvfile='./tests/fixtures/very_small_list.txt',
+    def __init__(self, csvfile,
             *args, **kwargs):
 
         # Fetch settings from Google spreadsheet
