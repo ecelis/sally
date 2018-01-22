@@ -1,13 +1,11 @@
+import logging
 import sally.google.authorize as authorize
 
-def get_uploads():
+def get_uploads(folder_id):
     service = authorize.get_service('drive', 'v3')
     results = service.files().list(
-            pageSize=10,fields="nextPageToken, files(id, name)").execute()
+            pageSize=100,fields="nextPageToken, files(id, name)",
+            q="'%s' in parents and mimeType != 'application/vnd.google-apps.folder'"
+            % folder_id).execute()
     items = results.get('files', [])
-    if not items:
-        print('No files found')
-    else:
-        print('Files:')
-        for item in items:
-            print('{0} ({1})'.format(item['name'], item['id']))
+    return items
