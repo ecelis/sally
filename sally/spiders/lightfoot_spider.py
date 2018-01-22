@@ -322,6 +322,10 @@ class BasicCrab(CrawlSpider):
         tels.append('-'.join(t244[:3]))
         tels.append('-'.join(t244[3:3]))
         tels.append('-'.join(t244[6:3]))
+        t_2_8 = list()
+        t_2_8 = response.xpath('//' + BasicCrab.ELEMENTS[0]).re(
+            r'\(+(\d{2})\W*(\d{8})\W*[^png|jpg|gif]')
+        self.logger.debug(t_2_8)
         t334 = list()
         t334 = response.xpath('//' + BasicCrab.ELEMENTS[1]).re(
             r'\(+(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
