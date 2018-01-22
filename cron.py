@@ -12,7 +12,6 @@ def main():
     process = CrawlerProcess(get_project_settings())
     for f in uploads:
         ss = gs.create_spreadsheet(f['name'])
-        print(ss)
         process.crawl(BasicCrab, csvfile=f['id'],
                 spreadsheet=ss['spreadsheetId'])
     process.start()
