@@ -5,12 +5,14 @@ import sally.google.authorize as authorize
 
 logger = logging.getLogger(__name__)
 
+
 def get_spreadsheet(spreadsheetId):
     service = authorize.get_service('sheets', 'v4')
     request = service.spreadsheets().get(spreadsheetId=spreadsheetId, ranges=[],
             includeGridData=False)
     response = request.execute()
     return response
+
 
 def create_spreadsheet(name):
     service = authorize.get_service('sheets', 'v4')
@@ -23,6 +25,7 @@ def create_spreadsheet(name):
     request = service.spreadsheets().create(body=body_)
     response = request.execute()
     return response
+
 
 def create_sheet(spreadsheetId, sheet):
     body = {
@@ -63,7 +66,6 @@ def insert_to(spreadsheetId, sheet, rows=[['','','','','','','','']], offset=1):
         valueInputOption=value_input_option, body=body).execute()
     # {'updatedRows': 2, 'updatedRange': 'Sheet1!A2:H3', 'spreadsheetId': '1AxioUWtPJItfnv--JxNg5-oiUUMJgW4uoQopx-JlH00', 'updatedCells': 16, 'updatedColumns': 8}
     # TODO log this
-    print('{0} cells updated.'.format(result.get('updatedRows')))
     return result
 
 
@@ -86,7 +88,7 @@ def get_settings(spreadsheetId=os.environ['SALLY_SETTINGS_ID']):
 
 
 def get_urls(spreadsheetId):
-    range_ = 'Sheet1!A1:A1000'
+    range_ = 'A1:A1000'
     service = authorize.get_service('sheets', 'v4')
     request = service.spreadsheets().values().get(spreadsheetId=spreadsheetId,
             range=range_, majorDimension='COLUMNS', valueRenderOption='UNFORMATTED_VALUE',
