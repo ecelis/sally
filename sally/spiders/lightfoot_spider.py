@@ -48,7 +48,7 @@ class BasicCrab(CrawlSpider):
         #    lines = ["http://%s" % l.rstrip() for l in f]
         #    f.close()
 
-        lines = ["http://%s" % l.rstrip() for l in gs.get_urls(csvfile)]
+        lines = ["http://%s" % str(l).rstrip() for l in gs.get_urls(csvfile)]
 
         allowed_url = []
         for r in allowed_reg:
