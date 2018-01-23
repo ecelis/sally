@@ -22,18 +22,14 @@ class HermitShell(object):
 
 
     @cherrypy.expose
-    @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def page(self):
+    def page(self, page, fb_user_id):
 
-        print(cherrypy.request)
         data = cherrypy.request
         fields = str('?fields=about,category,contact_address,engagement,'
-        'emails,location,phone?fields=about,category,contact_address,'
-        'engagement,emails,location,phone&access_token=')
+        'emails,location,phone&access_token=')
 
         try:
-            cherrypy.log('connect ===')
             connect(os.environ.get('MONGO_DBNAME'),
                     host="mongodb://" + os.environ.get('MONGO_HOST'),
                     port=int(os.environ.get('MONGO_PORT')),
@@ -41,23 +37,22 @@ class HermitShell(object):
                 username=os.environ.get('MONGO_USER'),
                 password=os.environ.get('MONGO_PASSWORD'))
         except Exception:
-            cherrypy.log("[page]", traceback=True)
-            return {'status': 500, 'statusText': 'Can\'t connect to MongoDB'}
+            cherrypy.error("[page] Can't connect to MongoDB", traceback=True)
+            return {'status': 500, 'statusText': "Can't connect to MongoDB"}
 
         try:
-            user = model.User.objects(fb_userId=data['fb_user_id']).get()
+            user = model.User.objects(fb_userId=fb_user_id).get()
         except:
-            cherrypy.log("[page]", traceback=True)
-            cherrypy.log("Can't get Facebook user token")
+            cherrypy.error("[page] Can't get Facebook user token", traceback=True)
             return {'status': 500, 'statusText': "Can't get Facebook user token"}
-
-        r = requests.get("%s/%s%s%s", (self.graph, data['page'], fields,
+        print("%s/%s%s%s" % (self.graph, page, fields,
             user.fb_accessToken))
-        cherrypy.log(r)
+        r = requests.get("%s/%s%s%s" % (self.graph, page, fields,
+            user.fb_accessToken))
         cherrypy.log(r.text)
         cherrypy.log('===')
-        cherrypy.log(r)
-        return r.json()
+        print(r.json())
+        return {'status': 200, 'statusText': 'algo'}
 
 
     @cherrypy.expose
