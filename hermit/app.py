@@ -24,12 +24,16 @@ class HermitShell(object):
                 username=os.environ.get('MONGO_USER'),
                 password=os.environ.get('MONGO_PASSWORD'))
 
-            user = model.User(
-                    name = data['name'],
-                    email = data['email'],
-                    fb_userId = data['fb_userId'],
-                    fb_accessToken = data['fb_accessToken'])
-            user.save()
+            #upsert_one
+
+            user = model.User.objects(name=data['email'], fb_userId=data['fb_userId'])
+            cherrypy.log(user)
+            #user = model.User(
+            #        name = data['name'],
+            #        email = data['email'],
+            #        fb_userId = data['fb_userId'],
+            #        fb_accessToken = data['fb_accessToken'])
+            #user.save()
             return {'status': 200, 'statusText': 'OK'}
         except Exception:
             cherrypy.log("[authorize]", traceback=True)
