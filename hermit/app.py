@@ -27,8 +27,8 @@ class HermitShell(object):
             user = model.User(
                     name = data['name'],
                     email = data['email'],
-                    fb_userId = data['userID'],
-                    fb_accessToken = data['accessToken'])
+                    fb_userId = data['fb_userId'],
+                    fb_accessToken = data['fb_accessToken'])
             user.save()
             return {'status': 200, 'statusText': 'OK'}
         except Exception:
