@@ -1,10 +1,17 @@
 import os
 import cherrypy
+import requests
 from mongoengine import connect
 import model
 
 
 class HermitShell(object):
+
+    def get_long_ttl_token(self, accessToken):
+        r = requests.get("%s/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s"
+                % ('https://graph.facebook.com', os.environ.get('FACEBOOK_APP_ID'), os.environ.get('FACEBOOK_APP_SECRET'), accessToken))
+        return r.json()
+
 
     @cherrypy.expose
     def index(self):
@@ -26,14 +33,18 @@ class HermitShell(object):
 
             #upsert_one
 
-            user = model.User.objects(name=data['email'], fb_userId=data['fb_userId'])
-            cherrypy.log(user)
-            #user = model.User(
-            #        name = data['name'],
-            #        email = data['email'],
-            #        fb_userId = data['fb_userId'],
-            #        fb_accessToken = data['fb_accessToken'])
-            #user.save()
+            try:
+                user = model.User.objects(email=data['email'], fb_userId=data['fb_userId']).get()
+            except:
+                user = model.User(
+                        name = data['name'],
+                        email = data['email'],
+                        fb_userId = data['fb_userId'],
+                        fb_accessToken = data['fb_accessToken'])
+                user.save()
+            token = self.get_long_ttl_token(user.fb_accessToken)
+            user.fb_accessToken = token['access_token']
+            user.save()
             return {'status': 200, 'statusText': 'OK'}
         except Exception:
             cherrypy.log("[authorize]", traceback=True)
