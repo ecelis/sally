@@ -34,10 +34,10 @@ class BasicCrab(CrawlSpider):
 
         # Compile regexes
         # allowed_reg list of allowed TDLs to crawl
-        allowed_reg = [re.compile(r"\.%s" % domain) for domain
+        allowed_reg = [re.compile(r"\.%s" % domain, re.IGNORECASE) for domain
                 in self.config['allowed_domains']]
         # disallowed_reg list of disallowed TLDs not to crawl
-        disallowed_reg = [re.compile(r"\.%s" % domain) for domain
+        disallowed_reg = [re.compile(r"\.%s" % domain, re.IGNORECASE) for domain
                 in self.config['disallowed_domains']]
 
         ## TODO check for file existence or throw exception and exit
@@ -49,16 +49,28 @@ class BasicCrab(CrawlSpider):
         #    f.close()
 
         lines = ["http://%s" % str(l).rstrip() for l in gs.get_urls(csvfile)]
+        self.logger.debug(lines)
+        self.logger.debug("=========")
+        self.logger.debug("=========")
 
         allowed_url = []
         for r in allowed_reg:
             allowed_url += list(filter(r.search, lines))
+        self.logger.debug(allowed_url)
+        self.logger.debug("=========")
+        self.logger.debug("=========")
 
         disallowed_url = []
         for r in disallowed_reg:
             disallowed_url += list(filter(r.search, list(set(allowed_url))))
+        self.logger.debug(disallowed_url)
+        self.logger.debug("=========")
+        self.logger.debug("=========")
 
         self.start_urls = list(set(allowed_url).difference(set(disallowed_url)))
+        self.logger.debug(self.start_urls)
+        self.logger.debug("=========")
+        self.logger.debug("=========")
 
 
     def extract_title(self, response):
