@@ -50,7 +50,7 @@ class LightfootPipeline(object):
 
     def to_str(self, item, value):
         if len(item[value]) > 0:
-            return ','.join(item[value])
+            return ','.join(item[value])[:4999]
         else:
             return ''
 
@@ -71,7 +71,7 @@ class LightfootPipeline(object):
                 ','.join(item['telephone']),
                 self.to_str(item, 'email'),
                 ecommerce,
-                cart,
+                cart[:4999],
                 self.to_str(item, 'network'),
                 'N/L',
                 datetime.datetime.now().strftime('%m/%d/%Y')
