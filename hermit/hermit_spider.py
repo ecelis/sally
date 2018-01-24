@@ -1,5 +1,6 @@
 import os
 import re
+import datetime
 import time
 import logging
 import requests
@@ -17,12 +18,13 @@ class HermitCrab(object):
         self.spreadsheetId = spreadsheet
         self.config = gs.get_settings()
         self.score = gs.get_score()
+        self.collection = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
         self.fb_user_id = fb_user_id
         self.access_token = self.get_token()
         self.graph = 'https://graph.facebook.com'
         self.sheet_rows = [
-                ['SCORE','WEB SITE', 'OFFER', 'META', 'TELPHONE', 'EMAIL',
-                'ECOMMERCE','SHOPPING CART', 'SOCIAL NETWORKS' 'PLACE', 'CRAWL DATE']
+                ['SCORE','WEB SITE', 'ABOUT', 'CATEGORY', 'LIKES', 'TELPHONE',
+                    'EMAIL', 'ADDRESS','CITY', 'COUNTRY', 'CRAWL DATE']
                 ]
 
         lines = ["%s" % str(l).rstrip() for l in gs.get_urls(source_file)]
@@ -48,7 +50,7 @@ class HermitCrab(object):
 
                 row = [
                         0,
-                        "https://www.facebook.com/%s" % item,
+                        "https://www.facebook.com/%s" % item.split('/')[1],
                         response['about'] if'about' in response else None,
                         response['category'] if 'category' in response else None,
                         response['engagement']['count'] if 'engagement' in response else None,
@@ -56,11 +58,19 @@ class HermitCrab(object):
                         ','.join(response['emails']) if 'emails' in response else None,
                         address,
                         city,
-                        country
+                        country,
+                        datetime.now()
                         ]
                 print(row)
                 self.sheet_rows.append(row)
             time.sleep(3)
+
+        if len(self.sheet_rows) > 1:
+            spreadsheet = gs.create_spreadsheet("fb%s" % self.collection)
+            sheet = gs.create_sheet(spreadsheet['spreadsheetId'], self.collection)
+            results = gs.insert_to(spreadsheet['spreadsheetId'], self.collection,
+                    self.sheet_rows)
+            print(results)
 
 
     def get_token(self):
@@ -84,8 +94,6 @@ class HermitCrab(object):
 
         fields = str('?fields=about,category,contact_address,engagement,'
         'emails,location,phone&access_token=')
-        #print("%s/%s%s%s" % (self.graph, page, fields,
-        #    self.access_token))
         r = requests.get("%s/%s%s%s" % (self.graph, page, fields,
             self.access_token))
         return r.json()
