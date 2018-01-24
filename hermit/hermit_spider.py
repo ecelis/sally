@@ -77,9 +77,9 @@ class HermitCrab(object):
 
     def qualify(self, item):
         score = 1
-        if not item['emails']:
+        if ('emails' not in item and not item['emails']):
             score += gs.score['email']
-        if not item['phone']:
+        if ('phone' not in item and not item['phone']):
             score += gs.score['telephone']
 
         return score
