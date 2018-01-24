@@ -115,9 +115,13 @@ class HermitCrab(object):
         product_catalogs    Product catalogs owned by this page
         """
 
-        fields = str('?fields=about,category,contact_address,engagement,'
-        'emails,location,phone&access_token=')
-        #
+#        fields = str('?fields=about,category,contact_address,engagement,'
+#        'emails,location,phone&access_token=')
+        fields = str('fields=about,category,contact_address,engagement,emails,
+                location,phone,website,category_list,description,
+                has_whatsapp_number,whatsapp_number,hometown,name,products,
+                rating_count,overall_star_rating,link,c
+                onnected_instagram_account')
         r = requests.get("%s/%s%s%s" % (self.graph, page, fields,
             self.access_token))
         return r.json()
