@@ -128,7 +128,7 @@ class HermitCrab(object):
                 'location,phone,website,category_list,description,'
                 'has_whatsapp_number,whatsapp_number,hometown,name,products,'
                 'rating_count,overall_star_rating,link,'
-                'connected_instagram_account')
+                'connected_instagram_account&access_token=')
         r = requests.get("%s/%s%s%s" % (self.graph, page, fields,
             self.access_token))
         return r.json()
