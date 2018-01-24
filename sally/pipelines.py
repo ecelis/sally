@@ -9,8 +9,6 @@ import datetime
 import os
 import pymongo
 import logging
-import sendgrid
-from sendgrid.helpers.mail import *
 import sally.google.spreadsheet as gs
 import sally.google.drive as gd
 
@@ -26,7 +24,6 @@ class LightfootPipeline(object):
                 ['SCORE','WEB SITE', 'OFFER', 'META', 'TELPHONE', 'EMAIL',
                 'ECOMMERCE','SHOPPING CART', 'SOCIAL NETWORKS' 'PLACE', 'CRAWL DATE']
                 ]
-        #self.spreadsheetId = os.environ['SALLY_SHEET_ID'] or self.setings['SHEET_ID']
         self.collection = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
         self.spreadsheetId = None
 
@@ -37,7 +34,8 @@ class LightfootPipeline(object):
             # Prefer Mongo Atlas URI over anything else
             uri = os.environ['MONGO_ATLAS_URI']
         else:
-            if os.environ['MONGO_USER'] and os.environ['MONGO_USER'] != '' and os.environ['MONGO_PASSWORD']:
+            if (os.environ['MONGO_USER'] and os.environ['MONGO_USER'] != ''
+                    and os.environ['MONGO_PASSWORD']):
                 uri = "mongodb://" + os.environ['MONGO_USER'] + ":" + os.environ['MONGO_PASSWORD'] + "@" + os.environ['MONGO_HOST']
             else:
                 uri = "mongodb://" + os.environ['MONGO_HOST']
@@ -94,15 +92,6 @@ class LightfootPipeline(object):
                 self.sheet_rows)
         results_spreadsheet = gd.mv(self.spreadsheetId,
                 os.environ.get('DRIVE_RESULTS'))
-        # Send email with info about the results
-        #sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
-        #from_email = Email(os.environ.get('MAIL_FROM'))
-        #to_email = Email(os.environ.get('MAIL_TO'))
-        #subject = ("[lightfoot] %s" % self.collection)
-        #content = Content("text/plain", "https://docs.google.com/spreadsheets/d/%s/edit#gid=%s"
-        #        % (self.spreadsheetId, sheets_response['replies'][0]['addSheet']['properties']['sheetId']))
-        #mail = Mail(from_email, subject, to_email, content)
-        #response = sg.client.mail.send.post(request_body=mail.get())
 
 
     def process_item(self, item, spider):

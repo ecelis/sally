@@ -5,6 +5,8 @@ import re
 from urllib.parse import urlparse
 from itertools import filterfalse
 import tldextract
+import sendgrid
+from sendgrid.helpers.mail import *
 import scrapy
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
@@ -40,13 +42,8 @@ class BasicCrab(CrawlSpider):
         disallowed_reg = [re.compile(r"\.%s" % domain, re.IGNORECASE) for domain
                 in self.config['disallowed_domains']]
 
-        ## TODO check for file existence or throw exception and exit
-        lines = []
-
-        # TODO maybe we no longer need csv files
-        #with open(csvfile, 'r') as f:
-        #    lines = ["http://%s" % l.rstrip() for l in f]
-        #    f.close()
+        ## TODO maybe unused if uninitialized
+        #lines = []
 
         lines = ["http://%s" % str(l).rstrip() for l in gs.get_urls(csvfile)]
 
@@ -101,7 +98,6 @@ class BasicCrab(CrawlSpider):
                     tel_list.append(num)
                 return self.to_tel(raw[raw.index(''):][1:], code, tel_list)
             except:
-                # First param here must be empty list always
                 return self.to_tel([], code, tel_list)
         else:
             return tel_list
@@ -132,7 +128,6 @@ class BasicCrab(CrawlSpider):
             tels.append('-'.join(t244[3:3]))
             tels.append('-'.join(t244[6:3]))
             # TODO append 10 digit numbers
-            #self.logger.debug(t10)
             return self.extract_telephone(response, elements, list(filter(None,tels)))
         else:
             tset = set(tels)
@@ -141,56 +136,6 @@ class BasicCrab(CrawlSpider):
                 return list(tset)
             else:
                 return []
-
-#    def extract_telephone(self, response, elements, tel_set=set({})):
-#        """Extract telephone list from ELEMENTS
-#
-#        Return a set of formated telephones
-#        """
-#        if len(elements) > 0:
-#        element = 'div' #elements.pop()
-#        div_334 = set(self.to_tel(response.xpath('//' + element).re(
-#            r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 10))
-#        div_244 = set(self.to_tel(response.xpath('//' + element).re(
-#            r'\W(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)'), 10))
-#        div_12 = set(self.to_tel(response.xpath('//' + element).re(
-#            r'\+(\d{2})\W*(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 12))
-#        element = 'li' #elements.pop()
-#        li_334 = set(self.to_tel(response.xpath('//' + element).re(
-#            r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 10))
-#        li_244 = set(self.to_tel(response.xpath('//' + element).re(
-#            r'\W(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)'), 10))
-#        li_12 = set(self.to_tel(response.xpath('//' + element).re(
-#            r'\+(\d{2})\W*(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 12))
-#        element = 'span' #elements.pop()
-#        span_334 = set(self.to_tel(response.xpath('//' + element).re(
-#            r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 10))
-#        span_244 = set(self.to_tel(response.xpath('//' + element).re(
-#            r'\W(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)'), 10))
-#        span_12 = set(self.to_tel(response.xpath('//' + element).re(
-#            r'\+(\d{2})\W*(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 12))
-#        element = 'a' #elements.pop()
-#        a_334 = set(self.to_tel(response.xpath('//' + element).re(
-#            r'(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 10))
-#        a_244 = set(self.to_tel(response.xpath('//' + element).re(
-#            r'\W(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)'), 10))
-#        a_12 = set(self.to_tel(response.xpath('//' + element).re(
-#            r'\+(\d{2})\W*(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)'), 12))
-
-
-
-            #num = '-'.join(raw[:raw.index('')])
-#            if len(num.replace('-','')) == 10:
-#                tel_list.append(num)
-#            return self.to_tel(raw[raw.index(''):][1:], code, tel_list)
-
-            #return self.extract_telephone(response,
-#                    elements, tel_set)
-#        else:
-#        return a_334.union(a_244.union(a_12.union(
-#            li_334.union(li_244.union(li_12.union(
-#            span_334.union(span_244.union(span_12.union(
-#            div_334.union(div_244.union(div_12)))))))))))
 
 
     def is_ecommerce(self, response):
@@ -207,8 +152,8 @@ class BasicCrab(CrawlSpider):
             return 'woocommerce'
         elif len(response.xpath('//img/@src').re(r'cdn-shoperti\.global')) > 0:
             return 'shoperti'
-        elif (len(response.xpath('//footer').re(r'magento', re.IGNORECASE)) > 0
-                or len(response.xpath('//head').re(r'magento', re.IGNORECASE)) > 0):
+        elif (len(response.xpath('//footer').re(r'[Mm]agento', re.IGNORECASE)) > 0
+                or len(response.xpath('//head').re(r'[Mm]agento', re.IGNORECASE)) > 0):
             return 'magento'
         else:
             return 'N/E'
@@ -218,7 +163,6 @@ class BasicCrab(CrawlSpider):
         result = []
         p = re.compile(r'cart')
         result += list(filter(p.search, divs))
-
         self.logger.debug(result)
         return list(set(result))
 
@@ -374,9 +318,7 @@ class BasicCrab(CrawlSpider):
         tels.append('-'.join(t244[:3]))
         tels.append('-'.join(t244[3:3]))
         tels.append('-'.join(t244[6:3]))
-
-        #website_telephone = list(set(tels)) #self.extract_telephone(response,
-            #list(BasicCrab.ELEMENTS), t224)
+        ## Social network detection TODO move it to function
         parsed_url = urlparse(response.url)
         website_network = list(self.extract_social_networks(response,
             parsed_url.netloc.split('.'), set({}),
@@ -407,3 +349,14 @@ class BasicCrab(CrawlSpider):
 
     def closed(self, reason):
         response = gd.mv(self.source_urls, os.environ.get('DRIVE_DONE'))
+        # Send email with info about the results
+        sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+        from_email = Email(os.environ.get('MAIL_FROM'))
+        to_email = Email(os.environ.get('MAIL_TO'))
+        subject = ("[lightfoot] terminó") #%s" % self.collection)
+        content = Content("text/plain", "https://docs.google.com/spreadsheets/d/%s"
+                % self.spreadsheetId)
+        mail = Mail(from_email, subject, to_email, content)
+        response = sg.client.mail.send.post(request_body=mail.get())
+
+

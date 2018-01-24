@@ -1,10 +1,8 @@
 import os
-import sys
 import cherrypy
 import requests
 from mongoengine import connect
 import model
-#from google import spreadsheet as gs
 
 
 class HermitShell(object):
@@ -32,7 +30,6 @@ class HermitShell(object):
     @cherrypy.tools.json_out()
     def page(self, page, fb_user_id):
 
-        data = cherrypy.request
         fields = str('?fields=about,category,contact_address,engagement,'
         'emails,location,phone&access_token=')
 
