@@ -51,8 +51,9 @@ class HermitCrab(object):
 
                 row = [
                         0,
-                        "https://www.facebook.com/%s" % item.split('/')[1],
-                        response['about'] if'about' in response else None,
+#                        "https://www.facebook.com/%s" % item.split('/')[1],
+                        response['website'] if 'website' in response else "https://www.facebook.com/%s" % item.split('/')[1],
+                        response['about'] if 'about' in response else None,
                         response['category'] if 'category' in response else None,
                         response['engagement']['count'] if 'engagement' in response else None,
                         response['phone'] if 'phone' in response else None,
@@ -90,6 +91,12 @@ class HermitCrab(object):
             return None
 
 
+    def qualify(self, item):
+        score = 1
+        if not item['emails']:
+            score += gs.score['']
+
+
     def parse_item(self, page):
         """Extract data from facebook pages
 
@@ -117,11 +124,11 @@ class HermitCrab(object):
 
 #        fields = str('?fields=about,category,contact_address,engagement,'
 #        'emails,location,phone&access_token=')
-        fields = str('fields=about,category,contact_address,engagement,emails,
-                location,phone,website,category_list,description,
-                has_whatsapp_number,whatsapp_number,hometown,name,products,
-                rating_count,overall_star_rating,link,c
-                onnected_instagram_account')
+        fields = str('fields=about,category,contact_address,engagement,emails,'
+                'location,phone,website,category_list,description,'
+                'has_whatsapp_number,whatsapp_number,hometown,name,products,'
+                'rating_count,overall_star_rating,link,'
+                'connected_instagram_account')
         r = requests.get("%s/%s%s%s" % (self.graph, page, fields,
             self.access_token))
         return r.json()
