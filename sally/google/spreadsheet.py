@@ -2,7 +2,7 @@ import os
 import sys
 import datetime
 import logging
-import google.authorize as authorize
+from google import authorize
 
 logger = logging.getLogger(__name__)
 

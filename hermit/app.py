@@ -4,7 +4,7 @@ import cherrypy
 import requests
 from mongoengine import connect
 import model
-from google import spreadsheet as gs
+#from google import spreadsheet as gs
 
 
 class HermitShell(object):
@@ -21,6 +21,11 @@ class HermitShell(object):
                     os.environ.get('FACEBOOK_APP_SECRET'),
                     accessToken))
         return r.json()
+
+
+    @cherrypy.expose
+    def index(self):
+        return open('index.html')
 
 
     @cherrypy.expose
@@ -55,11 +60,6 @@ class HermitShell(object):
         cherrypy.log('===')
         print(r.json())
         return {'status': 200, 'statusText': 'algo'}
-
-
-    @cherrypy.expose
-    def index(self):
-        return open('index.html')
 
 
     @cherrypy.expose
