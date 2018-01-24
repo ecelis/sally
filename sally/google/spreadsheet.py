@@ -1,7 +1,8 @@
 import os
+import sys
 import datetime
 import logging
-import sally.google.authorize as authorize
+import google.authorize as authorize
 
 logger = logging.getLogger(__name__)
 
