@@ -50,7 +50,7 @@ class HermitCrab(object):
                     country = None
 
                 row = [
-                        0,
+                        self.qualify(response),
 #                        "https://www.facebook.com/%s" % item.split('/')[1],
                         response['website'] if 'website' in response else "https://www.facebook.com/%s" % item.split('/')[1],
                         response['about'] if 'about' in response else None,
@@ -75,6 +75,16 @@ class HermitCrab(object):
             print(results)
 
 
+    def qualify(self, item):
+        score = 1
+        if not item['emails']:
+            score += gs.score['email']
+        if not item['phone']:
+            score += gs.score['telephone']
+
+        return score
+
+
     def get_token(self):
 
         try:
@@ -89,12 +99,6 @@ class HermitCrab(object):
         except Exception as ex:
             print(ex)
             return None
-
-
-    def qualify(self, item):
-        score = 1
-        if not item['emails']:
-            score += gs.score['']
 
 
     def parse_item(self, page):
