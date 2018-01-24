@@ -124,7 +124,7 @@ class HermitCrab(object):
 
 #        fields = str('?fields=about,category,contact_address,engagement,'
 #        'emails,location,phone&access_token=')
-        fields = str('fields=about,category,contact_address,engagement,emails,'
+        fields = str('?fields=about,category,contact_address,engagement,emails,'
                 'location,phone,website,category_list,description,'
                 'has_whatsapp_number,whatsapp_number,hometown,name,products,'
                 'rating_count,overall_star_rating,link,'
