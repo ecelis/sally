@@ -90,13 +90,17 @@ def get_settings(spreadsheetId=os.environ['SALLY_SETTINGS_ID']):
 
 def get_urls(spreadsheetId):
     range_ = 'A1:A1000'
-    service = authorize.get_service('sheets', 'v4')
-    request = service.spreadsheets().values().get(spreadsheetId=spreadsheetId,
-            range=range_, majorDimension='COLUMNS', valueRenderOption='UNFORMATTED_VALUE',
-            dateTimeRenderOption='FORMATTED_STRING')
-    response = request.execute()
-    logger.debug(response['values'][0])
-    return response['values'][0]
+    try:
+        service = authorize.get_service('sheets', 'v4')
+        request = service.spreadsheets().values().get(spreadsheetId=spreadsheetId,
+                range=range_, majorDimension='COLUMNS', valueRenderOption='UNFORMATTED_VALUE',
+                dateTimeRenderOption='FORMATTED_STRING')
+        response = request.execute()
+        logger.debug(response['values'][0])
+        return response['values'][0]
+    except Exception as ex:
+        logger.error(ex)
+        return []
 
 
 def get_score(spreadsheetId=os.environ['SALLY_SETTINGS_ID']):
