@@ -14,6 +14,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 class HermitCrab(object):
 
+    # TODO OJO Search related
+    # search?q=educacion&type=page&fields=about,category,location,contact_address,emails,phone,engagement
     def __init__(self, source_file, spreadsheet, fb_user_id, *args, **kwargs):
         self.spreadsheetId = spreadsheet
         self.config = gs.get_settings()
@@ -34,8 +36,7 @@ class HermitCrab(object):
         for item in self.start_urls:
             response = self.parse_item(item.split('/')[1])
             if 'error' in response:
-#                print(response['error']['message'])
-                continue
+                print(response['error']['message'])
             else:
                 if 'location' in response:
                     city = response['location']['city'] if 'city' in response['location'] else None
@@ -59,7 +60,7 @@ class HermitCrab(object):
                         address,
                         city,
                         country,
-                        datetime.now()
+                        datetime.datetime.now().strftime("%m%d%Y")
                         ]
                 print(row)
                 self.sheet_rows.append(row)
@@ -90,10 +91,33 @@ class HermitCrab(object):
 
 
     def parse_item(self, page):
-        """Extract data from facebook pages"""
+        """Extract data from facebook pages
+
+        id    Page ID. No access token is required to access this field
+        best_page    The best available Page on Facebook for the concept represented by this Page. The best available Page takes into account authenticity and the number of likes
+        category    The Page's category. e.g. Product/Service, Computers/Technology
+        category_list    The Page's sub-categories
+        description    The description of the Page
+        has_whatsapp_number    has whatsapp number
+        hometown    Hometown of the band. Applicable to Bands
+        name    The name of the Page
+        phone    Phone number provided by a Page
+        products    The products of this company. Applicable to Companies
+        rating_count    Number of ratings for the page.
+        website    The URL of the Page's website
+        whatsapp_number    whatsapp number
+        overall_star_rating    Overall page rating based on rating survey from users on a scale of 1-5. This value is normalized and is not guaranteed to be a strict average of user ratings.
+        likes    The pages that this page liked
+        link    The Page's Facebook URL
+        connected_instagram_account    Instagram account connected to page via page settings
+        emails    Update the emails field
+        contact_address    The mailing or contact address for this page. This field will be blank if the contact address is the same as the physical address
+        product_catalogs    Product catalogs owned by this page
+        """
 
         fields = str('?fields=about,category,contact_address,engagement,'
         'emails,location,phone&access_token=')
+        #
         r = requests.get("%s/%s%s%s" % (self.graph, page, fields,
             self.access_token))
         return r.json()
