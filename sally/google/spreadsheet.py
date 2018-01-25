@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Google spreadsheets interface for Sally crawler."""
 import os
 import logging
