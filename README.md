@@ -51,9 +51,9 @@ Facebook pages crab, fetches contact info, location and likes
   N. TODO ...authorize app from command line
 
 
-    git clone TODO
+    git clone git@github.com:ecelis/sally.git
     cd sally
-    virtualenv -p python3 ENV
+    python3 -m venv ENV
     ./ENV/bin/pip3 install --upgrade pip
     . .ENV/bin/activate
     pip install -r requirements.txt
