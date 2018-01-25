@@ -30,13 +30,15 @@ class HermitCrab(object):
                 ]
 
         lines = ["%s" % str(l).rstrip() for l in gs.get_urls(source_file)]
+        logger.debug(','.join(lines).split(','))
         fb = re.compile(r'facebook', re.IGNORECASE)
-        self.start_urls = list(filter(fb.search, list(filter(None, lines))))
+        self.start_urls = list(filter(fb.search, list(filter(None, ','.join(lines).split(',')))))
+        logger.debug(self.start_urls)
 
         for item in self.start_urls:
             response = self.parse_item(item.split('/')[1])
             if 'error' in response:
-                print(response['error']['message'])
+                logger.debug(response['error']['message'])
             else:
                 if 'location' in response:
                     city = response['location']['city'] if 'city' in response['location'] else None
@@ -77,10 +79,10 @@ class HermitCrab(object):
 
     def qualify(self, item):
         score = 1
-        if ('emails' not in item and not item['emails']):
-            score += gs.score['email']
-        if ('phone' not in item and not item['phone']):
-            score += gs.score['telephone']
+        if ('emails' not in item or not item['emails']):
+            score += self.score['email']
+        if ('phone' not in item or not item['phone']):
+            score += self.score['telephone']
 
         return score
 
@@ -97,7 +99,7 @@ class HermitCrab(object):
             user = model.User.objects(fb_userId=self.fb_user_id).get()
             return user.fb_accessToken
         except Exception as ex:
-            print(ex)
+            logger.error(__name__, exc_info=True)
             return None
 
 
