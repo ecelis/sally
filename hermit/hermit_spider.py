@@ -20,6 +20,7 @@ class HermitCrab(object):
         self.spreadsheetId = spreadsheet
         self.config = gs.get_settings()
         self.score = gs.get_score()
+        logger.debug(self.score)
         self.collection = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
         self.fb_user_id = fb_user_id
         self.access_token = self.get_token()
