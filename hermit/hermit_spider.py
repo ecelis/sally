@@ -39,6 +39,7 @@ class HermitCrab(object):
             if 'error' in response:
                 logger.debug(response['error']['message'])
             else:
+                logger.debug(response)
                 if 'location' in response:
                     city = response['location']['city'] if 'city' in response['location'] else None
                     street = response['location']['street'] if 'street' in response['location'] else ''
@@ -52,7 +53,6 @@ class HermitCrab(object):
 
                 row = [
                         self.qualify(response),
-#                        "https://www.facebook.com/%s" % item.split('/')[1],
                         response['website'] if 'website' in response else "https://www.facebook.com/%s" % item.split('/')[1],
                         response['about'] if 'about' in response else None,
                         response['category'] if 'category' in response else None,
@@ -73,7 +73,15 @@ class HermitCrab(object):
             sheet = gs.create_sheet(spreadsheet['spreadsheetId'], self.collection)
             results = gs.insert_to(spreadsheet['spreadsheetId'], self.collection,
                     self.sheet_rows)
-            print(results)
+            logger.debug(results)
+
+
+    def mongo_connect(self):
+        connect(os.environ.get('MONGO_DBNAME'),
+                host="mongodb://" + os.environ.get('MONGO_HOST'),
+                port=int(os.environ.get('MONGO_PORT')),
+                replicaset=os.environ.get('MONGO_REPLICA_SET'),
+                username=os.environ.get('MONGO_USER'),
 
 
     def qualify(self, item):
@@ -91,12 +99,12 @@ class HermitCrab(object):
     def get_token(self):
 
         try:
-            connect(os.environ.get('MONGO_DBNAME'),
-                    host="mongodb://" + os.environ.get('MONGO_HOST'),
-                    port=int(os.environ.get('MONGO_PORT')),
-                    replicaset=os.environ.get('MONGO_REPLICA_SET'),
-                username=os.environ.get('MONGO_USER'),
-                password=os.environ.get('MONGO_PASSWORD'))
+#            connect(os.environ.get('MONGO_DBNAME'),
+#                    host="mongodb://" + os.environ.get('MONGO_HOST'),
+#                    port=int(os.environ.get('MONGO_PORT')),
+#                    replicaset=os.environ.get('MONGO_REPLICA_SET'),
+#                username=os.environ.get('MONGO_USER'),
+#                password=os.environ.get('MONGO_PASSWORD'))
             user = model.User.objects(fb_userId=self.fb_user_id).get()
             return user.fb_accessToken
         except Exception as ex:

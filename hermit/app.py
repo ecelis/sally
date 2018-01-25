@@ -1,9 +1,11 @@
 import os
+import logging
 import cherrypy
 import requests
 from mongoengine import connect
 import model
 
+logger = logging.getLogger(__name__)
 
 class HermitShell(object):
 
@@ -47,10 +49,9 @@ class HermitShell(object):
         try:
             user = model.User.objects(fb_userId=fb_user_id).get()
         except:
-            cherrypy.error("[page] Can't get Facebook user token", traceback=True)
+            cherrypy.error("[page] Can't get Facebook user token",
+                    traceback=True)
             return {'status': 500, 'statusText': "Can't get Facebook user token"}
-        print("%s/%s%s%s" % (self.graph, page, fields,
-            user.fb_accessToken))
         r = requests.get("%s/%s%s%s" % (self.graph, page, fields,
             user.fb_accessToken))
         cherrypy.log(r.text)
@@ -64,6 +65,7 @@ class HermitShell(object):
     @cherrypy.tools.json_out()
     def authorize(self):
         data = cherrypy.request.json
+        logger.debug(data)
         try:
             connect(os.environ.get('MONGO_DBNAME'),
                     host="mongodb://" + os.environ.get('MONGO_HOST'),
