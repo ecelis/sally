@@ -30,7 +30,6 @@ class HermitCrab(object):
                 ]
 
         lines = ["%s" % str(l).rstrip() for l in gs.get_urls(source_file)]
-        logger.debug(','.join(lines).split(','))
         fb = re.compile(r'facebook', re.IGNORECASE)
         self.start_urls = list(filter(fb.search, list(filter(None, ','.join(lines).split(',')))))
         logger.debug(self.start_urls)
@@ -65,7 +64,7 @@ class HermitCrab(object):
                         country,
                         datetime.datetime.now().strftime("%m%d%Y")
                         ]
-                print(row)
+                logger.debug(row)
                 self.sheet_rows.append(row)
             time.sleep(3)
 
@@ -83,6 +82,8 @@ class HermitCrab(object):
             score += self.score['email']
         if ('phone' not in item or not item['phone']):
             score += self.score['telephone']
+        if ('engagement' not in item or item['engagement']['count'] < 1000):
+            score += 0.5
 
         return score
 
