@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_spreadsheet(spreadsheetId):
+    """Return an existing spreadsheet given by the ID."""
     service = authorize.get_service('sheets', 'v4')
     request = service.spreadsheets().get(spreadsheetId=spreadsheetId, ranges=[],
             includeGridData=False)
@@ -15,24 +16,26 @@ def get_spreadsheet(spreadsheetId):
     return response
 
 
-def create_spreadsheet(name):
+def create_spreadsheet(title):
+    """Return a new spreadsheet with given _title_."""
     service = authorize.get_service('sheets', 'v4')
     body_ = {
         "properties": {
-            "title": name
+            "title": title
         }
     }
 
-    request = service.spreadsheets().create(body=body_)
+    request = service.spreadsheets().create(body = body_)
     response = request.execute()
     return response
 
 
-def create_sheet(spreadsheetId, sheet):
+def create_sheet(spreadsheetId, title):
+    """Return a new sheet with given _title_ at given spreadsheet ID."""
     body = {
             "addSheet": {
                 "properties": {
-                    "title": sheet,
+                    "title": title,
                     "gridProperties": {
                         "rowCount": 100,
                         "columnCount": 9,
@@ -49,28 +52,29 @@ def create_sheet(spreadsheetId, sheet):
 
 
 def insert_to(spreadsheetId, sheet, rows=[['','','','','','','','']], offset=1):
-    """Insert a new scraped site in a google spreadsheet
+    """
+    Insert a new item in a google spreadsheet. Return updated spreadshet.
 
-    spreadsheet = spreadsheet_ID
-    row = [CALIFICACION,SITIO,OFERTA,TELÉFONO,EMAIL,ECOMMERCE,LUGAR,FECHA]
-    offsset = row number to insert
+    Arguments:
+    spreadsheetId - ID of target spreadsheet
+    row - I.E. [SCORE,URL,OFFER,META,TELEPHONE,EMAIL,ECOMMERCE,SHOPING CART,
+        SOCIAL NETWORKS, LOCATION, CRAWLING DATE]
+    offsset - row number to skip in the preadsheet before insert, like in headers
     """
     service = authorize.get_service('sheets', 'v4')
-
     rangeName = sheet + '!A' + str(offset)
     majorDimension = 'ROWS'
     value_input_option = 'RAW' ## USER_ENTERED
     today = datetime.datetime.now().strftime('%m/%d/%Y')
     body = { 'values': rows }
-    result = service.spreadsheets().values().update(
+    response = service.spreadsheets().values().update(
         spreadsheetId=spreadsheetId, range=rangeName,
         valueInputOption=value_input_option, body=body).execute()
-    # {'updatedRows': 2, 'updatedRange': 'Sheet1!A2:H3', 'spreadsheetId': '1AxioUWtPJItfnv--JxNg5-oiUUMJgW4uoQopx-JlH00', 'updatedCells': 16, 'updatedColumns': 8}
-    # TODO log this
-    return result
+    return response
 
 
-def get_settings(spreadsheetId=os.environ['SALLY_SETTINGS_ID']):
+def get_settings(spreadsheetId = os.environ['SALLY_SETTINGS_ID']):
+    """Return crawler settings from given spreadsheet ID."""
     range_ = 'settings!A1:F1000'
     service = authorize.get_service('sheets', 'v4')
     request = service.spreadsheets().values().get(spreadsheetId=spreadsheetId,
@@ -89,6 +93,7 @@ def get_settings(spreadsheetId=os.environ['SALLY_SETTINGS_ID']):
 
 
 def get_urls(spreadsheetId):
+    """Return URLs to crawl from given Google spreadsheet ID."""
     range_ = 'A1:A1000'
     try:
         service = authorize.get_service('sheets', 'v4')
@@ -99,11 +104,12 @@ def get_urls(spreadsheetId):
         logger.debug(response['values'][0])
         return response['values'][0]
     except Exception as ex:
-        logger.error(ex)
+        logger.error(ex, exc_info=True)
         return []
 
 
-def get_score(spreadsheetId=os.environ['SALLY_SETTINGS_ID']):
+def get_score(spreadsheetId = os.environ['SALLY_SETTINGS_ID']):
+    """Return score values from given Google spreadsheet ID."""
     range_ = 'score!A2:B1000'
     service = authorize.get_service('sheets', 'v4')
     request = service.spreadsheets().values().get(spreadsheetId=spreadsheetId,

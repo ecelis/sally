@@ -23,14 +23,14 @@ focuses on very specific type of web sites or social networks.
 
 Very basic crab to extract general information from web sites.
 
-  * Source: Google spreadsheet, 1000 rows max, only column *A* from
+  * Source: Google spreadsheet, 1000 rows max, only column **A** from
     first sheet
 
 ### hermit
 
 Facebook pages crab, fetches contact info, location and likes
 
-  * Source: Google spreadsheet, 1000 rows max, only column *A* from first
+  * Source: Google spreadsheet, 1000 rows max, only column **A** from first
     sheet
 
 
@@ -44,7 +44,7 @@ Facebook pages crab, fetches contact info, location and likes
 
   1. Create or select a project in the [Google developers console](https://console.developers.google.com/)
   2. Turn on Google Sheets and Google Drive APIs
-  3. Create *OAuth client ID* in *Credentials*
+  3. Create **OAuth client ID** in **Credentials**
   4. Download JSON for Client ID and save it as `client_secret.json` in
      the root directory of sally
   5. Create an app at [facebook for ddevelopers](https://developers.facebook.com/)
