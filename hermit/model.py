@@ -17,7 +17,7 @@ class User(Document):
     fb_accessToken = StringField(requied=True)
 
 
-class Page(DynamicDocument):
+class FbPage(DynamicDocument):
     title = StringField()
     about = StringField()
     category = StringField()

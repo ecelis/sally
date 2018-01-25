@@ -34,12 +34,11 @@ class HermitCrab(object):
         self.start_urls = list(filter(fb.search, list(filter(None, ','.join(lines).split(',')))))
         logger.debug(self.start_urls)
 
-        for item in self.start_urls:
-            response = self.parse_item(item.split('/')[1])
+        for url in self.start_urls:
+            response = self.parse_item(url.split('/')[1])
             if 'error' in response:
                 logger.debug(response['error']['message'])
             else:
-                logger.debug(response)
                 if 'location' in response:
                     city = response['location']['city'] if 'city' in response['location'] else None
                     street = response['location']['street'] if 'street' in response['location'] else ''
@@ -50,10 +49,12 @@ class HermitCrab(object):
                     city = None
                     address = None
                     country = None
+                score = self.qualify(response)
 
+                self.persist(response)
                 row = [
-                        self.qualify(response),
-                        response['website'] if 'website' in response else "https://www.facebook.com/%s" % item.split('/')[1],
+                        score,
+                        response['website'] if 'website' in response else "https://www.facebook.com/%s" % url.split('/')[1],
                         response['about'] if 'about' in response else None,
                         response['category'] if 'category' in response else None,
                         response['engagement']['count'] if 'engagement' in response else None,
@@ -82,6 +83,7 @@ class HermitCrab(object):
                 port=int(os.environ.get('MONGO_PORT')),
                 replicaset=os.environ.get('MONGO_REPLICA_SET'),
                 username=os.environ.get('MONGO_USER'),
+                password=os.environ.get('MONGO_PASSWORD'))
 
 
     def qualify(self, item):
@@ -98,17 +100,35 @@ class HermitCrab(object):
 
     def get_token(self):
 
+        self.mongo_connect()
         try:
-#            connect(os.environ.get('MONGO_DBNAME'),
-#                    host="mongodb://" + os.environ.get('MONGO_HOST'),
-#                    port=int(os.environ.get('MONGO_PORT')),
-#                    replicaset=os.environ.get('MONGO_REPLICA_SET'),
-#                username=os.environ.get('MONGO_USER'),
-#                password=os.environ.get('MONGO_PASSWORD'))
             user = model.User.objects(fb_userId=self.fb_user_id).get()
             return user.fb_accessToken
         except Exception as ex:
             logger.error(__name__, exc_info=True)
+            return None
+
+
+    def persist(self, item):
+        try:
+            page = model.FbPage(
+                title = item['name'] if 'name' in item else None,
+                about = item['about'] if 'about' in item else None,
+                category = item['category'] if 'category' in item else None,
+                engagement = item['engagement'] if 'engagement' in item else None,
+                emails = item['emails'] if 'emails' in item else None,
+                location = item['location'] if 'location' in item else None,
+                phone = item['phone'] if 'phone' in item else None,
+                website = item['website'] if 'website' in item else None,
+                category_list = item['category_list'] if 'category_list' in item else None,
+                whatsapp_number = item['whatsapp_number'] if 'whatsapp_number' in item else None,
+                link = item['link'] if 'link' in item else None,
+                score_values = item['score_values'] if 'score_values' in item else None,
+                score = item['score'] if 'score' in item else None,
+                )
+            return page.save()
+        except Exception as ex:
+            logger.error(ex, exc_info=True)
             return None
 
 
@@ -144,6 +164,9 @@ class HermitCrab(object):
                 'has_whatsapp_number,whatsapp_number,hometown,name,products,'
                 'rating_count,overall_star_rating,link,'
                 'connected_instagram_account&access_token=')
+        logger.debug("%s/%s%s%s" % (self.graph, page, fields,
+            self.access_token))
         r = requests.get("%s/%s%s%s" % (self.graph, page, fields,
             self.access_token))
+        #logger.debug(r.text)
         return r.json()

@@ -67,6 +67,15 @@ Facebook pages crab, fetches contact info, location and likes
 
 ## Crab settings and data sources
 
+In Google drive you must create a folder hierarchy like the following:
+
+
+    sally
+    ├── done
+    ├── results
+    └── uploads
+
+
 Crabs read configuration settings from a google spreadsheet... TODO
 describe spreadsheet format and columns
 
@@ -150,6 +159,7 @@ Download [Robo 3T](https://robomongo.org/)
 
 ## Reference
 
+  * [Scrapy docs](https://scrapy.readthedocs.org)
   * [Google Developers](https://developers.google.com/)
   * [Facebook Graph API](https://developers.facebook.com/docs/graph-api)
   * [MongoDB Docs](https://docs.mongodb.com/)
