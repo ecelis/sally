@@ -93,7 +93,7 @@ class HermitCrab(object):
         if ('phone' not in item or not item['phone']):
             score += self.score['telephone']
         if ('engagement' not in item or item['engagement']['count'] < 1000):
-            score += 0.5
+            score += self.score['likes']
 
         return score
 
