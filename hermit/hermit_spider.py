@@ -13,6 +13,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 class HermitCrab(object):
+    """Facebook pages crawler"""
 
     # TODO OJO Search related
     # search?q=educacion&type=page&fields=about,category,location,contact_address,emails,phone,engagement
@@ -26,13 +27,15 @@ class HermitCrab(object):
         self.access_token = self.get_token()
         self.graph = 'https://graph.facebook.com'
         self.sheet_rows = [
-                ['SCORE','WEB SITE', 'ABOUT', 'CATEGORY', 'LIKES', 'TELPHONE',
-                    'EMAIL', 'ADDRESS','CITY', 'COUNTRY', 'CRAWL DATE']
+                ['SCORE', 'WEB SITE', 'ABOUT', 'CATEGORY', 'LIKES', 'TELPHONE',
+                    'EMAIL', 'ADDRESS', 'CITY', 'COUNTRY', 'CRAWL DATE']
                 ]
 
         lines = ["%s" % str(l).rstrip() for l in gs.get_urls(source_file)]
         fb = re.compile(r'facebook', re.IGNORECASE)
-        self.start_urls = list(filter(fb.search, list(filter(None, ','.join(lines).split(',')))))
+        self.start_urls = list(filter(
+            fb.search,
+            list(filter(None, ','.join(lines).split(',')))))
         logger.debug(self.start_urls)
 
         for url in self.start_urls:
@@ -40,30 +43,19 @@ class HermitCrab(object):
             if 'error' in response:
                 logger.debug(response['error']['message'])
             else:
-                if 'location' in response:
-                    city = response['location']['city'] if 'city' in response['location'] else None
-                    street = response['location']['street'] if 'street' in response['location'] else ''
-                    zip_code = response['location']['zip'] if 'zip' in response['location'] else ''
-                    address = street +', '+zip_code
-                    country = response['location']['country'] if 'country' in response['location'] else None
-                else:
-                    city = None
-                    address = None
-                    country = None
-                score = self.qualify(response)
-
                 self.persist(response)
+                item = self.process_response(response)
                 row = [
-                        score,
-                        response['website'] if 'website' in response else "https://www.facebook.com/%s" % url.split('/')[1],
-                        response['about'] if 'about' in response else None,
-                        response['category'] if 'category' in response else None,
-                        response['engagement']['count'] if 'engagement' in response else None,
-                        response['phone'] if 'phone' in response else None,
-                        ','.join(response['emails']) if 'emails' in response else None,
-                        address,
-                        city,
-                        country,
+                        item['score'],
+                        item['website'] if 'website' in item else "https://www.facebook.com/%s" % url.split('/')[1],
+                        item['about'],
+                        item['category'],
+                        item['likes'],
+                        item['phone'],
+                        item['emails'],
+                        item['address'],
+                        item['city'],
+                        item['country'],
                         datetime.datetime.now().strftime("%m%d%Y")
                         ]
                 logger.debug(row)
@@ -79,6 +71,7 @@ class HermitCrab(object):
 
 
     def mongo_connect(self):
+        """Establish a MongoDB connection."""
         connect(os.environ.get('MONGO_DBNAME'),
                 host="mongodb://" + os.environ.get('MONGO_HOST'),
                 port=int(os.environ.get('MONGO_PORT')),
@@ -88,6 +81,7 @@ class HermitCrab(object):
 
 
     def qualify(self, item):
+        """Return score for given item."""
         score = 1
         if ('emails' not in item or not item['emails']):
             score += self.score['email']
@@ -100,7 +94,7 @@ class HermitCrab(object):
 
 
     def get_token(self):
-
+        """Return Facebook user token from data base."""
         self.mongo_connect()
         try:
             user = model.User.objects(fb_userId=self.fb_user_id).get()
@@ -111,6 +105,7 @@ class HermitCrab(object):
 
 
     def persist(self, item):
+        """Persist item to database."""
         try:
             page = model.FbPage(
                 title = item['name'] if 'name' in item else None,
@@ -133,33 +128,53 @@ class HermitCrab(object):
             return None
 
 
+    def search_alike(self, category):
+        """Return related pages by category."""
+        pass
+
+
+    def process_response(self, response):
+        """Return valid values for response items."""
+        item = {}
+        if 'website' in response:
+            item['website'] = response['website']
+        if 'about' in response:
+            item['about'] = response['about']
+        else:
+            item['about'] = None
+        if 'category' in response:
+            item['category'] = response['category']
+        else:
+            item['category'] = None
+        if 'engagement' in response:
+            item['likes'] = response['engagement']['count']
+        else:
+            item['engagement'] = None
+        if 'phone' in response:
+            item['phone'] = response['phone']
+        else:
+            item['phone'] = None
+        if 'emails' in response:
+            item['emails'] = ','.join(response['emails'])
+        else:
+            item['emails'] = None
+
+        if 'location' in response:
+            item['city'] = response['location']['city'] if 'city' in response['location'] else None
+            item['street'] = response['location']['street'] if 'street' in response['location'] else ''
+            item['zip_code'] = response['location']['zip'] if 'zip' in response['location'] else ''
+            item['address'] = item['street'] + ', ' + item['zip_code']
+            item['country'] = response['location']['country'] if 'country' in response['location'] else None
+        else:
+            item['city'] = None
+            item['address'] = None
+            item['country'] = None
+        item['score'] = self.qualify(response)
+        return item
+
+
     def parse_item(self, page):
-        """Extract data from facebook pages
-
-        id    Page ID. No access token is required to access this field
-        best_page    The best available Page on Facebook for the concept represented by this Page. The best available Page takes into account authenticity and the number of likes
-        category    The Page's category. e.g. Product/Service, Computers/Technology
-        category_list    The Page's sub-categories
-        description    The description of the Page
-        has_whatsapp_number    has whatsapp number
-        hometown    Hometown of the band. Applicable to Bands
-        name    The name of the Page
-        phone    Phone number provided by a Page
-        products    The products of this company. Applicable to Companies
-        rating_count    Number of ratings for the page.
-        website    The URL of the Page's website
-        whatsapp_number    whatsapp number
-        overall_star_rating    Overall page rating based on rating survey from users on a scale of 1-5. This value is normalized and is not guaranteed to be a strict average of user ratings.
-        likes    The pages that this page liked
-        link    The Page's Facebook URL
-        connected_instagram_account    Instagram account connected to page via page settings
-        emails    Update the emails field
-        contact_address    The mailing or contact address for this page. This field will be blank if the contact address is the same as the physical address
-        product_catalogs    Product catalogs owned by this page
-        """
-
-#        fields = str('?fields=about,category,contact_address,engagement,'
-#        'emails,location,phone&access_token=')
+        """Extract data from facebook pages"""
         fields = str('?fields=about,category,contact_address,engagement,emails,'
                 'location,phone,website,category_list,description,'
                 'has_whatsapp_number,whatsapp_number,hometown,name,products,'
@@ -169,5 +184,4 @@ class HermitCrab(object):
             self.access_token))
         r = requests.get("%s/%s%s%s" % (self.graph, page, fields,
             self.access_token))
-        #logger.debug(r.text)
         return r.json()
