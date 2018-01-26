@@ -47,6 +47,9 @@
         version    : 'v2.11' // use graph api version 2.8
       });
 
+      // FB Analytics
+      FB.AppEvents.logPageView();
+
       // Now that we've initialized the JavaScript SDK, we call
       // FB.getLoginStatus().  This function gets the state of the
       // person visiting this page and can return one of three states to

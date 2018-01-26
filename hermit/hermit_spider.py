@@ -1,4 +1,5 @@
 import os
+import sys
 import re
 import datetime
 import time
@@ -15,8 +16,6 @@ logging.basicConfig(level=logging.DEBUG)
 class HermitCrab(object):
     """Facebook pages crawler"""
 
-    # TODO OJO Search related
-    # search?q=educacion&type=page&fields=about,category,location,contact_address,emails,phone,engagement
     def __init__(self, source_file, spreadsheet, fb_user_id, *args, **kwargs):
         self.spreadsheetId = spreadsheet
         self.config = gs.get_settings()
@@ -30,6 +29,7 @@ class HermitCrab(object):
                 ['SCORE', 'WEB SITE', 'ABOUT', 'CATEGORY', 'LIKES', 'TELPHONE',
                     'EMAIL', 'ADDRESS', 'CITY', 'COUNTRY', 'CRAWL DATE']
                 ]
+        self.categories = []
 
         lines = ["%s" % str(l).rstrip() for l in gs.get_urls(source_file)]
         fb = re.compile(r'facebook', re.IGNORECASE)
@@ -45,29 +45,35 @@ class HermitCrab(object):
             else:
                 self.persist(response)
                 item = self.process_response(response)
-                row = [
-                        item['score'],
-                        item['website'] if 'website' in item else "https://www.facebook.com/%s" % url.split('/')[1],
-                        item['about'],
-                        item['category'],
-                        item['likes'],
-                        item['phone'],
-                        item['emails'],
-                        item['address'],
-                        item['city'],
-                        item['country'],
-                        datetime.datetime.now().strftime("%m%d%Y")
-                        ]
-                logger.debug(row)
+                row = self.build_row(item)
                 self.sheet_rows.append(row)
             time.sleep(3)
 
+        # Send to google spreadsheet
         if len(self.sheet_rows) > 1:
             spreadsheet = gs.create_spreadsheet("fb%s" % self.collection)
             sheet = gs.create_sheet(spreadsheet['spreadsheetId'], self.collection)
             results = gs.insert_to(spreadsheet['spreadsheetId'], self.collection,
                     self.sheet_rows)
             logger.debug(results)
+
+        # Go get pages alike
+        if len(self.categories) > 1:
+            for cat in list(set(self.categories)):
+                rows = []
+                for i in self.search_alike(cat)['data']:
+                    self.persist(i)
+                    rows.append(self.build_row(self.process_response(i)))
+                    time.sleep(3)
+                if len(rows) > 1:
+                    spreadsheet = gs.create_spreadsheet("fb%s" % self.collection)
+                    sheet = gs.create_sheet(spreadsheet['spreadsheetId'], self.collection)
+                    results = gs.insert_to(spreadsheet['spreadsheetId'], self.collection,
+                            self.sheet_rows)
+                    logger.debug(results)
+
+        sys.exit(0)
+
 
 
     def mongo_connect(self):
@@ -130,7 +136,18 @@ class HermitCrab(object):
 
     def search_alike(self, category):
         """Return related pages by category."""
-        pass
+        query = "search?q=%s&limit=1000&metadata=1" % category
+        #fields=about,category,contact_address,engagement,emails,location,phone,website,category_list,description,has_whatsapp_number,whatsapp_number,hometown,name,products,rating_count,overall_star_rating,link,connected_instagram_account
+        fields = str('&fields=about,category,contact_address,engagement,emails,'
+                'location,phone,website,category_list,description,'
+                'has_whatsapp_number,whatsapp_number,hometown,name,products,'
+                'rating_count,overall_star_rating,link,'
+                'connected_instagram_account&access_token=')
+        logger.debug("%s/%s&type=page%s%s" % (self.graph, query, fields,
+            self.access_token))
+        r = requests.get("%s/%s&type=page%s%s" % (self.graph, query, fields,
+            self.access_token))
+        return r.json()
 
 
     def process_response(self, response):
@@ -144,6 +161,7 @@ class HermitCrab(object):
             item['about'] = None
         if 'category' in response:
             item['category'] = response['category']
+            self.categories.append(item['category'])
         else:
             item['category'] = None
         if 'engagement' in response:
@@ -171,6 +189,22 @@ class HermitCrab(object):
             item['country'] = None
         item['score'] = self.qualify(response)
         return item
+
+
+    def build_row(self, item):
+        return [
+                item['score'],
+                item['website'] if 'website' in item else '',
+                item['about'],
+                item['category'],
+                item['likes'],
+                item['phone'],
+                item['emails'],
+                item['address'],
+                item['city'],
+                item['country'],
+                datetime.datetime.now().strftime("%m%d%Y")
+                ]
 
 
     def parse_item(self, page):
