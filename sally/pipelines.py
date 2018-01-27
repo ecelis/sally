@@ -48,6 +48,7 @@ class LightfootPipeline(object):
 
     def to_str(self, item, value):
         if len(item[value]) > 0:
+            # Truncate at less than 5000 google spreadsheets cell limit
             return ','.join(item[value])[:4999]
         else:
             return ''

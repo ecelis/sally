@@ -46,7 +46,7 @@ class HermitCrab(object):
                 item = self.process_response(response)
                 row = self.build_row(item)
                 self.sheet_rows.append(row)
-            time.sleep(3)
+            time.sleep(2)
 
         # Send to google spreadsheet
         self.insert_sheet(self.sheet_rows)
@@ -58,7 +58,7 @@ class HermitCrab(object):
                 for i in self.search_alike(cat)['data']:
                     self.persist(i)
                     rows.append(self.build_row(self.process_response(i)))
-                    time.sleep(3)
+                    time.sleep(2)
                 logger.debug(rows)
                 self.insert_sheet(rows)
 
