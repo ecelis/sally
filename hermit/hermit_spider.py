@@ -20,7 +20,6 @@ class HermitCrab(object):
         self.spreadsheetId = spreadsheet
         self.config = gs.get_settings()
         self.score = gs.get_score()
-        logger.debug(self.score)
         self.collection = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
         self.fb_user_id = fb_user_id
         self.access_token = self.get_token()
@@ -41,7 +40,7 @@ class HermitCrab(object):
         for url in self.start_urls:
             response = self.parse_item(url.split('/')[1])
             if 'error' in response:
-                logger.debug(response['error']['message'])
+                logger.info(response['error']['message'])
             else:
                 self.persist(response)
                 item = self.process_response(response)
@@ -50,12 +49,7 @@ class HermitCrab(object):
             time.sleep(3)
 
         # Send to google spreadsheet
-        if len(self.sheet_rows) > 1:
-            spreadsheet = gs.create_spreadsheet("fb%s" % self.collection)
-            sheet = gs.create_sheet(spreadsheet['spreadsheetId'], self.collection)
-            results = gs.insert_to(spreadsheet['spreadsheetId'], self.collection,
-                    self.sheet_rows)
-            logger.debug(results)
+        self.insert_sheet(self.sheet_rows)
 
         # Go get pages alike
         if len(self.categories) > 1:
@@ -65,15 +59,23 @@ class HermitCrab(object):
                     self.persist(i)
                     rows.append(self.build_row(self.process_response(i)))
                     time.sleep(3)
-                if len(rows) > 1:
-                    spreadsheet = gs.create_spreadsheet("fb%s" % self.collection)
-                    sheet = gs.create_sheet(spreadsheet['spreadsheetId'], self.collection)
-                    results = gs.insert_to(spreadsheet['spreadsheetId'], self.collection,
-                            self.sheet_rows)
-                    logger.debug(results)
+                self.insert_sheet(rows)
 
         sys.exit(0)
 
+
+    def insert_sheet(self, rows):
+        """Create a Google spreadhseet and insert given rows to it."""
+        if len(rows) > 1:
+            spreadsheet = gs.create_spreadsheet("fb%s" % self.collection)
+            sheet = gs.create_sheet(
+                    spreadsheet['spreadsheetId'],
+                    self.collection)
+            results = gs.insert_to(
+                    spreadsheet['spreadsheetId'],
+                    self.collection,
+                    self.sheet_rows)
+            logger.debug(results)
 
 
     def mongo_connect(self):
@@ -137,14 +139,11 @@ class HermitCrab(object):
     def search_alike(self, category):
         """Return related pages by category."""
         query = "search?q=%s&limit=1000&metadata=1" % category
-        #fields=about,category,contact_address,engagement,emails,location,phone,website,category_list,description,has_whatsapp_number,whatsapp_number,hometown,name,products,rating_count,overall_star_rating,link,connected_instagram_account
         fields = str('&fields=about,category,contact_address,engagement,emails,'
                 'location,phone,website,category_list,description,'
                 'has_whatsapp_number,whatsapp_number,hometown,name,products,'
                 'rating_count,overall_star_rating,link,'
                 'connected_instagram_account&access_token=')
-        logger.debug("%s/%s&type=page%s%s" % (self.graph, query, fields,
-            self.access_token))
         r = requests.get("%s/%s&type=page%s%s" % (self.graph, query, fields,
             self.access_token))
         return r.json()
@@ -176,7 +175,6 @@ class HermitCrab(object):
             item['emails'] = ','.join(response['emails'])
         else:
             item['emails'] = None
-
         if 'location' in response:
             item['city'] = response['location']['city'] if 'city' in response['location'] else None
             item['street'] = response['location']['street'] if 'street' in response['location'] else ''
@@ -192,6 +190,7 @@ class HermitCrab(object):
 
 
     def build_row(self, item):
+        """Return a row for insert_to google spreadsheet"""
         return [
                 item['score'],
                 item['website'] if 'website' in item else '',
@@ -214,8 +213,6 @@ class HermitCrab(object):
                 'has_whatsapp_number,whatsapp_number,hometown,name,products,'
                 'rating_count,overall_star_rating,link,'
                 'connected_instagram_account&access_token=')
-        logger.debug("%s/%s%s%s" % (self.graph, page, fields,
-            self.access_token))
         r = requests.get("%s/%s%s%s" % (self.graph, page, fields,
             self.access_token))
         return r.json()
