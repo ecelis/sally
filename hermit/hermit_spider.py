@@ -21,6 +21,7 @@ class HermitCrab(object):
     """Facebook pages crawler"""
 
     def __init__(self, source_file, spreadsheet, fb_user_id, *args, **kwargs):
+        self.allowed_countries = ['Mexico']
         self.spreadsheetId = spreadsheet
         self.config = gs.get_settings()
         self.score = gs.get_score()
@@ -49,9 +50,11 @@ class HermitCrab(object):
             else:
                 logger.debug(response)
                 self.persist(response)
-                item = self.process_response(response)
-                row = self.build_row(item)
-                self.sheet_rows.append(row)
+                if (response['location']['country']
+                        and response['location']['country'] in self.allowed_countries):
+                    item = self.process_response(response)
+                    row = self.build_row(item)
+                    self.sheet_rows.append(row)
             time.sleep(2)
 
         # Send to google spreadsheet
@@ -61,12 +64,17 @@ class HermitCrab(object):
         # Go get pages alike
         if len(self.categories) > 1:
             for cat in list(set(self.categories)):
-                rows = []
+                rows = [
+                    ['SCORE', 'WEB SITE', 'ABOUT', 'CATEGORY', 'LIKES', 'TELPHONE',
+                    'EMAIL', 'ADDRESS', 'CITY', 'COUNTRY', 'CRAWL DATE']
+                        ]
                 for i in self.search_alike(cat)['data']:
                     logger.debug(i)
                     self.persist(i)
-                    rows.append(self.build_row(self.process_response(i)))
-                    time.sleep(2)
+                    if (i['location']['country']
+                            and i['location']['country'] in self.allowed_countries):
+                        rows.append(self.build_row(self.process_response(i)))
+                    #time.sleep(2)
                 logger.debug(rows)
                 self.insert_sheet(rows)
 
@@ -97,7 +105,7 @@ class HermitCrab(object):
             score += self.score['email']
         if ('phone' not in item or not item['phone']):
             score += self.score['telephone']
-        if ('engagement' not in item or item['engagement']['count'] < 1000):
+        if ('engagement' not in item or item['engagement']['count'] < 2000):
             score += self.score['likes']
 
         return score
