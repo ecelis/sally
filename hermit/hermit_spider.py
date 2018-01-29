@@ -50,7 +50,8 @@ class HermitCrab(object):
             else:
                 logger.debug(response)
                 self.persist(response)
-                if (response['location']['country']
+                if ('location' in response
+                        and 'country' in response['location']
                         and response['location']['country'] in self.allowed_countries):
                     item = self.process_response(response)
                     row = self.build_row(item)
@@ -71,7 +72,8 @@ class HermitCrab(object):
                 for i in self.search_alike(cat)['data']:
                     logger.debug(i)
                     self.persist(i)
-                    if (i['location']['country']
+                    if ('location' in i
+                            and 'country' in i['location']
                             and i['location']['country'] in self.allowed_countries):
                         rows.append(self.build_row(self.process_response(i)))
                     #time.sleep(2)

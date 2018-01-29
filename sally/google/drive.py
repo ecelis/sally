@@ -2,6 +2,7 @@ import logging
 import sally.google.authorize as authorize
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
 def get_uploads(folder_id):
     service = authorize.get_service('drive', 'v3')
@@ -11,7 +12,6 @@ def get_uploads(folder_id):
             % folder_id).execute()
     items = results.get('files', [])
     return items
-# application/vnd.google-apps.spreadsheet
 
 
 def mv(file_id, to_folder):
@@ -28,5 +28,5 @@ def mv(file_id, to_folder):
 
         return file_
     except Exception as ex:
-        logging.error("Can't mv file in drive: %s" % ex, exc_info=True)
+        logger.error("Can't mv file in drive: %s" % ex, exc_info=True)
         return None
