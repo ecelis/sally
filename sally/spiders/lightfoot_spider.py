@@ -78,30 +78,6 @@ class BasicCrab(CrawlSpider):
             return self.extract_email(response, elements, myset)
         return email_set
 
-    def to_tel(self, raw, code, tel_list=None):
-        """
-        Take a list of split telephones and returns a lisf of
-       formated telephones
-
-       Code 10 3 numbers for LADA
-       Code 12 2 number is country code next 3 LADA
-
-       Returns a list of telephones
-       """
-        if tel_list is None:
-            tel_list = []
-        if raw:
-            try:
-                num = '-'.join(raw[:raw.index('')])
-                if len(num.replace('-', '')) == code:
-                    tel_list.append(num)
-                return self.to_tel(raw[raw.index(''):][1:], code, tel_list)
-            except Exception as ex:
-                self.logger.error(ex, exc_info=True)
-                return self.to_tel([], code, tel_list)
-        else:
-            return tel_list
-
     def extract_telephone(self, response, elements, tels=None):
         """Extract telephone from elements listed in ELEMENTS
 
@@ -138,20 +114,21 @@ class BasicCrab(CrawlSpider):
 
     def is_ecommerce(self, response):
         """Very simplistic e-commerce software detection."""
+        ecommerce = ''
         if response.xpath('//script/@src').re(r'cdn\.shopify\.com'):
-            return 'shopify'
+            eccomerce = 'shopify'
         if response.xpath(
                 '//meta[@name="generator"]/@content').re(r'WooCommerce'):
-            return 'woocommerce'
+            ecommerce = 'woocommerce'
         elif response.xpath('//img/@src').re(r'cdn-shoperti\.global'):
-            return 'shoperti'
+            ecommerce = 'shoperti'
         elif (
                 response.xpath('//footer').re(r'[Mm]agento', re.IGNORECASE)
                 or response.xpath('//head').re(
                     r'[Mm]agento',
                     re.IGNORECASE)):
-            return 'magento'
-        return ''
+            ecommerce = 'magento'
+        return ecommerce
 
     def shoppingcart_detection(self, divs):
         """Simplistic shopping cart detection."""

@@ -110,3 +110,4 @@ storage
 variables.env
 node_modules
 data
+newrelic.ini
