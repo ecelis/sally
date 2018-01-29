@@ -67,15 +67,14 @@ class HermitCrab(object):
 
         # Go get pages alike
         if len(self.categories) > 1:
+            pg_limit = 0
+            rows = [
+                ['SCORE', 'WEB SITE', 'ABOUT', 'CATEGORY', 'LIKES', 'TELPHONE',
+                'EMAIL', 'ADDRESS', 'CITY', 'COUNTRY', 'CRAWL DATE']
+                    ]
             for cat in list(set(self.categories)):
-                rows = [
-                    ['SCORE', 'WEB SITE', 'ABOUT', 'CATEGORY', 'LIKES', 'TELPHONE',
-                    'EMAIL', 'ADDRESS', 'CITY', 'COUNTRY', 'CRAWL DATE']
-                        ]
                 pages = self.search_alike(cat)
                 for i in pages['data']:
-                    pg_count = 0
-                    pg_page = len(pages['data'])
                     logger.debug(i)
                     self.persist(i)
                     if ('location' in i
@@ -85,7 +84,15 @@ class HermitCrab(object):
                         rows.append(self.build_row(self.process_response(i)))
                     #time.sleep(2)
                 logger.debug(rows)
-                self.insert_sheet(rows)
+                if pg_limit == 1000:
+                    self.insert_sheet(rows)
+                    rows = [
+                        ['SCORE', 'WEB SITE', 'ABOUT', 'CATEGORY', 'LIKES', 'TELPHONE',
+                        'EMAIL', 'ADDRESS', 'CITY', 'COUNTRY', 'CRAWL DATE']
+                            ]
+                    pg_limit = 0
+                else:
+                    pg_limit += 1
 
         sys.exit(0)
 
@@ -155,7 +162,7 @@ class HermitCrab(object):
 
     def search_alike(self, category):
         """Return related pages by category."""
-        query = "search?q=%s&metadata=1" % category
+        query = "search?q=%slimit=2000&metadata=1" % category
         fields = str(
                 '&fields=about,category,contact_address,engagement,emails,'
                 'location,phone,website,category_list,description,'
