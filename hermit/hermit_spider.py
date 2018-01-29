@@ -13,7 +13,7 @@ import sally.google.drive as gd
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
-handler = logging.handlers.SysLogHandler(address='/dev/log')
+handler = logging.handlers.SysLogHandler(facility=logging.handlers.SysLogHandler.LOG_DAEMON)
 logger.addHandler(handler)
 
 
