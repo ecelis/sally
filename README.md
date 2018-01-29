@@ -48,7 +48,8 @@ Facebook pages crab, fetches contact info, location and likes
   4. Download JSON for Client ID and save it as `client_secret.json` in
      the root directory of sally
   5. Create an app at [facebook for ddevelopers](https://developers.facebook.com/)
-  N. TODO ...authorize app from command line
+  6. Edit `variables.env`
+  7. Authorize app from command line
 
 
     git clone git@github.com:ecelis/sally.git
@@ -57,6 +58,9 @@ Facebook pages crab, fetches contact info, location and likes
     ./ENV/bin/pip3 install --upgrade pip
     . .ENV/bin/activate
     pip install -r requirements.txt
+    cp variables.env.sample variables.env
+    vi variables.env
+    python sally/google/authorize.py --noauth_local_webserver
 
 
 ## Database
@@ -142,19 +146,29 @@ Download [Robo 3T](https://robomongo.org/)
 
 
     docker-compose exec mongodb mongo sally
-    db.<YYYYMMDD_hhmmss>.find()
+    db.<YYYYMMDD_hhmmss>.find();
 
 
 ### Find by base url
 
 
-    db.lightfoot.find({ base_url: 'somesite.com'})
+    db.lightfoot.find({ base_url: 'somesite.com'});
 
 
 ### Find emails by base_url
 
 
-    db.lightfoot.find({ base_url: 'somesite.com'}, {email: 1})
+    db.lightfoot.find({ base_url: 'somesite.com'}, {email: 1});
+
+
+### Build sites index
+
+
+    db.getCollection('YYYYMMDD_HHmmss').aggregate(
+      [{ $project: {_id:1, base_url: 1, spreadsheetId: 1}},
+      { $out: "index_"}]
+    );
+    db.index_.createIndex({ 'base_url': 1 }, { unique: true});
 
 
 ## Reference
