@@ -79,7 +79,7 @@ def insert_to(
 
 def get_settings(spreadsheetId=os.environ['SALLY_SETTINGS_ID']):
     """Return crawler settings from given spreadsheet ID."""
-    range_ = 'settings!A1:F1000'
+    range_ = 'settings!A1:G1000'
     service = authorize.get_service('sheets', 'v4')
     request = service.spreadsheets().values().get(
         spreadsheetId=spreadsheetId,
@@ -87,13 +87,15 @@ def get_settings(spreadsheetId=os.environ['SALLY_SETTINGS_ID']):
         valueRenderOption='UNFORMATTED_VALUE',
         dateTimeRenderOption='FORMATTED_STRING')
     response = request.execute()
+    logger.debug(response)
     settings = {
         "allowed_domains": response['values'][0][1:],
         "disallowed_domains": response['values'][1][1:],
         "allowed_keywords": response['values'][2][1:],
         "disallowed_keywords": response['values'][3][1:],
         "networks": response['values'][4][1:],
-        "ecommerce": response['values'][5][1:]
+        "ecommerce": response['values'][5][1:],
+        "allowed_countries": response['values'][6][1:]
         }
     return settings
 

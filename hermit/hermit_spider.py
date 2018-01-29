@@ -21,9 +21,9 @@ class HermitCrab(object):
     """Facebook pages crawler"""
 
     def __init__(self, source_file, spreadsheet, fb_user_id, *args, **kwargs):
-        self.allowed_countries = ['Mexico']
         self.spreadsheetId = spreadsheet
         self.config = gs.get_settings()
+        logger.debug(self.config)
         self.score = gs.get_score()
         self.collection = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
         self.fb_user_id = fb_user_id
@@ -52,11 +52,12 @@ class HermitCrab(object):
                 self.persist(response)
                 if ('location' in response
                         and 'country' in response['location']
-                        and response['location']['country'] in self.allowed_countries):
+                        and response['location']['country']
+                        in self.config['allowed_countries']):
                     item = self.process_response(response)
                     row = self.build_row(item)
                     self.sheet_rows.append(row)
-            time.sleep(2)
+            #time.sleep(2)
 
         # Send to google spreadsheet
         self.insert_sheet(self.sheet_rows)
@@ -74,7 +75,8 @@ class HermitCrab(object):
                     self.persist(i)
                     if ('location' in i
                             and 'country' in i['location']
-                            and i['location']['country'] in self.allowed_countries):
+                            and i['location']['country']
+                            in self.config['allowed_countries']):
                         rows.append(self.build_row(self.process_response(i)))
                     #time.sleep(2)
                 logger.debug(rows)
