@@ -28,7 +28,7 @@ SPIDER_MODULES = ['sally.spiders']
 NEWSPIDER_MODULE = 'sally.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = 'sally (+http://www.shipkraken.com)'
+USER_AGENT = 'Mozilla/5.0 (FreeBSD 11.1; rv:41.0) Gecko/41.0 Firefox/41.0 sally/1.3'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
