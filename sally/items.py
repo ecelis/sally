@@ -82,7 +82,7 @@ class WebsiteItem(scrapy.Item):
         if not self['telephone'] or len(self['telephone']) < 1:   # No tels -1 *
             self['score'] += self['score_values']['telephone']
         if not self['ecommerce'] or len(self['ecommerce']) < 1: # no eccomerce -1 *
-            self['score'] += self['score_values']['eccomerce']
+            self['score'] += self['score_values']['ecommerce']
         ## increase in half * if secondary keys are found
         if self['secure_url']:
             self['score'] += self['score_values']['secure_url']

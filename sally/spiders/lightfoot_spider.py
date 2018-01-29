@@ -44,6 +44,7 @@ class BasicCrab(CrawlSpider):
             in self.config['disallowed_domains']]
         # Get lines from csv file and append http schema
         lines = ["http://%s" % str(l).rstrip() for l in gs.get_urls(csvfile)]
+        gd.mv(csvfile, os.environ.get('DRIVE_PROC'))
         # Filter allowed TLDs from lines
         allowed_url = []
         for alreg in allowed_reg:
@@ -108,18 +109,15 @@ class BasicCrab(CrawlSpider):
         """
         if tels is None:
             tels = []
-        if len(elements) > 0:
-            e = elements.pop()
+        if elements:
+            element = elements.pop()
             t334 = []
-            t334 = response.xpath('//' + e).re(
+            t334 = response.xpath('//' + element).re(
                 r'\(+(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
-            t244 = response.xpath('//' + e).re(
+            t244 = response.xpath('//' + element).re(
                 r'\(+(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
-            t_2_8 = response.xpath('//' + e).re(
+            t_2_8 = response.xpath('//' + element).re(
                 r'\(+(\d{2})\W*(\d{8})\W*[^png|jpg|gif]')
-            t10 = []
-            t10 = response.xpath('//' + e).re(
-                r'\W*(\d{10})\W*[^png|jpg|gif]')
             tels.append('-'.join(t334[:3]))
             tels.append('-'.join(t334[3:3]))
             tels.append('-'.join(t334[6:3]))
@@ -129,18 +127,11 @@ class BasicCrab(CrawlSpider):
             tels.append('-'.join(t_2_8[:2]))
             tels.append('-'.join(t_2_8[2:2]))
             tels.append('-'.join(t_2_8[4:2]))
-            tels.append('-'.join(t10[:1]))
-            tels.append('-'.join(t10[2:1]))
-            tels.append('-'.join(t10[3:1]))
-            # TODO append 10 digit numbers
             return self.extract_telephone(response, elements, list(
                 filter(None, tels)))
         else:
             tset = set(tels)
             self.logger.debug(tset)
-            self.logger.debug("===========")
-            self.logger.debug("===========")
-            self.logger.debug("===========")
             if tset:
                 return list(tset)
             return []
@@ -148,7 +139,6 @@ class BasicCrab(CrawlSpider):
     def is_ecommerce(self, response):
         """Very simplistic e-commerce software detection."""
         if response.xpath('//script/@src').re(r'cdn\.shopify\.com'):
-            # Look for cdn.shopify.com
             return 'shopify'
         if response.xpath(
                 '//meta[@name="generator"]/@content').re(r'WooCommerce'):
@@ -161,8 +151,7 @@ class BasicCrab(CrawlSpider):
                     r'[Mm]agento',
                     re.IGNORECASE)):
             return 'magento'
-        else:
-            return 'N/E'
+        return ''
 
     def shoppingcart_detection(self, divs):
         """Simplistic shopping cart detection."""
@@ -198,23 +187,23 @@ class BasicCrab(CrawlSpider):
             found = set({})
         if networks is None:
             networks = []
-        s = ''
+        guess_string = ''
         if type(base_url) is str:
-            s = base_url
+            guess_string = base_url
         else:
             if len(base_url) == 2:
-                s = base_url[0]
+                guess_string = base_url[0]
             elif len(base_url) == 3:
-                s = base_url[1]
+                guess_string = base_url[1]
 
         if networks:
             network = networks.pop()
             found.update(set(response.xpath('//a/@href').re(
-                r'(\w*\.' + network + '\/\w*' + s + '\w*)')))
+                r'(\w*\.' + network + '\/\w*' + guess_string + '\w*)')))
             found.update(set(response.xpath('//a/@href').re(
-                r'(\w*\.' + network + '\/\w*' + s[:3] + '\w*)')))
+                r'(\w*\.' + network + '\/\w*' + guess_string[:3] + '\w*)')))
             return self.extract_social_networks(
-                response, s, found, networks)
+                response, guess_string, found, networks)
 
         return found
 
@@ -245,66 +234,6 @@ class BasicCrab(CrawlSpider):
         # Collect all links found in crawled pages
         website_email = list(
             self.extract_email(response, list(BasicCrab.ELEMENTS)))
-        tels = list()
-        t334 = list()
-        t334 = response.xpath('//' + BasicCrab.ELEMENTS[0]).re(
-            r'\(+(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
-        tels.append('-'.join(t334[:3]))
-        tels.append('-'.join(t334[3:3]))
-        tels.append('-'.join(t334[6:3]))
-        t244 = response.xpath('//' + BasicCrab.ELEMENTS[0]).re(
-            r'\(+(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
-        tels.append('-'.join(t244[:3]))
-        tels.append('-'.join(t244[3:3]))
-        tels.append('-'.join(t244[6:3]))
-        t_2_8 = list()
-        t_2_8 = response.xpath('//' + BasicCrab.ELEMENTS[0]).re(
-            r'\(+(\d{2})\W*(\d{8})\W*[^png|jpg|gif]')
-        self.logger.debug(t_2_8)
-        t334 = list()
-        t334 = response.xpath('//' + BasicCrab.ELEMENTS[1]).re(
-            r'\(+(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
-        tels.append('-'.join(t334[:3]))
-        tels.append('-'.join(t334[3:3]))
-        tels.append('-'.join(t334[6:3]))
-        t244 = response.xpath('//' + BasicCrab.ELEMENTS[1]).re(
-            r'\(+(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
-        tels.append('-'.join(t244[:3]))
-        tels.append('-'.join(t244[3:3]))
-        tels.append('-'.join(t244[6:3]))
-        t334 = list()
-        t334 = response.xpath('//' + BasicCrab.ELEMENTS[2]).re(
-            r'\(+(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
-        tels.append('-'.join(t334[:3]))
-        tels.append('-'.join(t334[3:3]))
-        tels.append('-'.join(t334[6:3]))
-        t244 = response.xpath('//' + BasicCrab.ELEMENTS[2]).re(
-            r'\(+(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
-        tels.append('-'.join(t244[:3]))
-        tels.append('-'.join(t244[3:3]))
-        tels.append('-'.join(t244[6:3]))
-        t334 = list()
-        t334 = response.xpath('//' + BasicCrab.ELEMENTS[3]).re(
-            r'\(+(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
-        tels.append('-'.join(t334[:3]))
-        tels.append('-'.join(t334[3:3]))
-        tels.append('-'.join(t334[6:3]))
-        t244 = response.xpath('//' + BasicCrab.ELEMENTS[3]).re(
-            r'\(+(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
-        tels.append('-'.join(t244[:3]))
-        tels.append('-'.join(t244[3:3]))
-        tels.append('-'.join(t244[6:3]))
-        t334 = list()
-        t334 = response.xpath('//' + BasicCrab.ELEMENTS[4]).re(
-            r'\(+(\d{3})\W*(\d{3})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
-        tels.append('-'.join(t334[:3]))
-        tels.append('-'.join(t334[3:3]))
-        tels.append('-'.join(t334[6:3]))
-        t244 = response.xpath('//' + BasicCrab.ELEMENTS[4]).re(
-            r'\(+(\d{2})\W*(\d{4})\W*(\d{4})\W*(\d*)\W*[^png|jpg|gif]')
-        tels.append('-'.join(t244[:3]))
-        tels.append('-'.join(t244[3:3]))
-        tels.append('-'.join(t244[6:3]))
         # Social network detection TODO move it to function
         parsed_url = urlparse(response.url)
         website_network = list(
@@ -327,7 +256,8 @@ class BasicCrab(CrawlSpider):
             + response.xpath('//i/@class').extract())
         website['network'] = website_network
         website['email'] = website_email
-        website['telephone'] = self.extract_telephone(response, list(BasicCrab.ELEMENTS)) #list(set(tels))
+        website['telephone'] = self.extract_telephone(
+            response, list(BasicCrab.ELEMENTS))
         website['ecommerce'] = self.is_ecommerce(response)
         website['description'] = self.extract_description(response)
         website['keywords'] = self.extract_keywords(response)
