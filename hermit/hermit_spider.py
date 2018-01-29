@@ -51,6 +51,7 @@ class HermitCrab(object):
             else:
                 logger.debug(response)
                 item = self.process_response(response)
+                logger.debug(self.categories)
                 if self.persist(response):
                     if ('location' in response
                             and 'country' in response['location']
