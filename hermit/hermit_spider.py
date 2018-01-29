@@ -49,7 +49,6 @@ class HermitCrab(object):
             if 'error' in response:
                 logger.info(response['error']['message'])
             else:
-                logger.debug(response)
                 item = self.process_response(response)
                 logger.debug(self.categories)
                 if self.persist(response):
@@ -60,14 +59,13 @@ class HermitCrab(object):
                         row = self.build_row(item)
                         self.sheet_rows.append(row)
 
-            #time.sleep(2)
-
         # Send to google spreadsheet
         self.insert_sheet(self.sheet_rows)
         gd.mv(source_file, os.environ.get('DRIVE_DONE'))
 
         # Go get pages alike
         if len(self.categories) > 0:
+            logger.debug("====YAY=====")
             pg_limit = 0
             rows = [
                 ['SCORE', 'WEB SITE', 'ABOUT', 'CATEGORY', 'LIKES', 'TELPHONE',
