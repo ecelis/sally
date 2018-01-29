@@ -9,6 +9,7 @@ import model
 logger = logging.getLogger(__name__)
 
 
+
 class HermitShell(object):
     """Facebook web shell for Hermit"""
     def __init__(self):

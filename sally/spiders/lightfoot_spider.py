@@ -1,5 +1,6 @@
 """Sally lightfoot web crawler"""
 import os
+import logging
 from datetime import datetime
 import re
 from urllib.parse import urlparse
@@ -13,6 +14,9 @@ from sally.items import WebsiteItem
 import sally.google.spreadsheet as gs
 import sally.google.drive as gd
 
+logger = logging.getLogger()
+handler = logging.handlers.SysLogHandler(address='/dev/log')
+logger.addHandler(handler)
 
 class BasicCrab(CrawlSpider):
     """Generic web crawler"""

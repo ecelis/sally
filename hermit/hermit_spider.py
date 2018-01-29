@@ -4,6 +4,7 @@ import re
 import datetime
 import time
 import logging
+import logging.handlers
 import requests
 from mongoengine import connect
 import hermit.model as model
@@ -12,6 +13,8 @@ import sally.google.drive as gd
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
+handler = logging.handlers.SysLogHandler(address='/dev/log')
+logger.addHandler(handler)
 
 
 class HermitCrab(object):

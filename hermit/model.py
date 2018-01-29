@@ -1,7 +1,12 @@
 import os
+import logging
+import logging.handlers
 from mongoengine import *
 
-
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+handler = logging.handlers.SysLogHandler(address='/dev/log')
+logger.addHandler(handler)
 #class HermitMongo:
 #
 #    def __init__(self):
