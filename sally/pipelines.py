@@ -22,7 +22,8 @@ class LightfootPipeline(object):
         self.mongo_db = mongo_db
         self.sheet_rows = [
                 ['SCORE','WEB SITE', 'OFFER', 'META', 'TELPHONE', 'EMAIL',
-                'ECOMMERCE','SHOPPING CART', 'SOCIAL NETWORKS' 'PLACE', 'CRAWL DATE']
+                'ECOMMERCE','SHOPPING CART', 'SOCIAL NETWORKS', 'PLACE',
+                'CRAWL DATE']
                 ]
         self.collection = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
         self.spreadsheetId = None
