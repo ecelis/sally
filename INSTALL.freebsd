@@ -1,0 +1,5 @@
+# MongoDB
+
+
+    sudo pkg install mongodb34
+    sudo pkg install python3

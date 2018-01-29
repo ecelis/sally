@@ -1,4 +1,4 @@
-# Sally lightfoot
+# Sally
 
 
 Collection of web crawlers (crabs) based on Scrapy framework. Each crab
