@@ -51,11 +51,11 @@ class HermitCrab(object):
             else:
                 logger.debug(response)
                 if self.persist(response):
+                    item = self.process_response(response)
                     if ('location' in response
                             and 'country' in response['location']
                             and response['location']['country']
                             in self.config['allowed_countries']):
-                        item = self.process_response(response)
                         row = self.build_row(item)
                         self.sheet_rows.append(row)
 
@@ -76,12 +76,12 @@ class HermitCrab(object):
                 pages = self.search_alike(cat)
                 for i in pages['data']:
                     logger.debug(i)
-                    self.persist(i)
-                    if ('location' in i
-                            and 'country' in i['location']
-                            and i['location']['country']
-                            in self.config['allowed_countries']):
-                        rows.append(self.build_row(self.process_response(i)))
+                    if self.persist(i):
+                        if ('location' in i
+                                and 'country' in i['location']
+                                and i['location']['country']
+                                in self.config['allowed_countries']):
+                            rows.append(self.build_row(self.process_response(i)))
                     #time.sleep(2)
                 logger.debug(rows)
                 if pg_limit == 1000:
