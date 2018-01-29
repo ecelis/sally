@@ -14,12 +14,6 @@ BOT_NAME = 'sally'
 ### BEGIN Eve settings
 
 API_VERSION = 'v1'
-DOMAIN = { }
-MONGO_HOST = '127.0.0.1'
-MONGO_PORT = 27017
-MONGO_DBNAME = BOT_NAME + '_' + API_VERSION
-#MONGO_USERNAME =
-#MONGO_PASSWORD =
 ALLOWED_FILTERS = []
 
 ### END Eve settings
@@ -63,7 +57,7 @@ AJAXCRAWL_ENABLED = True
 COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
-#TELNETCONSOLE_ENABLED = False
+TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
 #DEFAULT_REQUEST_HEADERS = {
