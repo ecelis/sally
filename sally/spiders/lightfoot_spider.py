@@ -231,17 +231,11 @@ class BasicCrab(CrawlSpider):
 
     def parse_item(self, response):
         """Return parsed websites"""
-        # Collect all links found in crawled pages
-        #parsed_url = urlparse(response.url)
-        #website_network = list(
-        #    self.extract_social_networks(
-        #        response, parsed_url.netloc.split('.'), set({}),
-        #        ['facebook\.com', 'instagram\.com', 'twitter\.com']))
-
+        parsed_url = urlparse(response.url)
         website = WebsiteItem()
         website.set_score(self.score)
         website['spreadsheetId'] = self.spreadsheetId
-        website['base_url'] = urlparse(response.url).netloc
+        website['base_url'] = parsed_url.netloc
         website['secure_url'] = True if parsed_url.scheme == 'https' else False
         website['url'] = response.url
         website['title'] = self.extract_title(response)
@@ -253,8 +247,8 @@ class BasicCrab(CrawlSpider):
             + response.xpath('//i/@class').extract())
         website['network'] = list(
             self.extract_social_networks(
-                response, parsed_url.netloc.split('.'), set({}),
-                ['facebook\.com', 'instagram\.com', 'twitter\.com']))
+            response, parsed_url.netloc.split('.'), set({}),
+            ['facebook\.com', 'instagram\.com', 'twitter\.com']))
         website['email'] = list(
             self.extract_email(response, list(BasicCrab.ELEMENTS)))
         website['telephone'] = self.extract_telephone(
@@ -264,7 +258,6 @@ class BasicCrab(CrawlSpider):
         website['keywords'] = self.extract_keywords(response)
         website['offer'] = self.extract_offer(website)
         website['last_crawl'] = datetime.now()
-
         return website
 
     def closed(self, reason):
