@@ -36,7 +36,7 @@ class FbPage(DynamicDocument):
     about = StringField()
     category = StringField()
     engagement = DictField()
-    emails = ListField(EmailField())
+    emails = ListField(StringField())
     location = DictField()
     phone = StringField()
     website = StringField()

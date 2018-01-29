@@ -155,7 +155,7 @@ class HermitCrab(object):
         if 'engagement' in response:
             item['likes'] = response['engagement']['count']
         else:
-            item['engagement'] = None
+            item['likes'] = None
         if 'phone' in response:
             item['phone'] = response['phone']
         else:
