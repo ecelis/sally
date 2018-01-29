@@ -154,7 +154,7 @@ class HermitCrab(object):
 
     def search_alike(self, category):
         """Return related pages by category."""
-        query = "search?q=%s&limit=25&metadata=1" % category
+        query = "search?q=%s&metadata=1" % category
         fields = str(
                 '&fields=about,category,contact_address,engagement,emails,'
                 'location,phone,website,category_list,description,'
