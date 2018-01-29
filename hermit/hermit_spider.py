@@ -50,8 +50,8 @@ class HermitCrab(object):
                 logger.info(response['error']['message'])
             else:
                 logger.debug(response)
+                item = self.process_response(response)
                 if self.persist(response):
-                    item = self.process_response(response)
                     if ('location' in response
                             and 'country' in response['location']
                             and response['location']['country']
@@ -66,7 +66,7 @@ class HermitCrab(object):
         gd.mv(source_file, os.environ.get('DRIVE_DONE'))
 
         # Go get pages alike
-        if len(self.categories) > 1:
+        if len(self.categories) > 0:
             pg_limit = 0
             rows = [
                 ['SCORE', 'WEB SITE', 'ABOUT', 'CATEGORY', 'LIKES', 'TELPHONE',
