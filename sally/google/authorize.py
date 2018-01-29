@@ -8,8 +8,12 @@ from apiclient import discovery
 from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
-## TODO flags comes from sheets quickstart, check and remove if needed
-flags = None
+
+try:
+    import argparse
+    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
+except ImportError:
+    flags = None
 
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/sheets.googleapis.com-python-quickstart.json
@@ -61,3 +65,6 @@ def get_service(service, api_version):
         service_response = discovery.build(service, api_version, http=http,
             cache_discovery=False)
     return service_response
+
+if __name__ == '__main__':
+    get_credentials()
