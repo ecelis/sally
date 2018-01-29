@@ -31,7 +31,7 @@ class LightfootPipeline(object):
 
     @classmethod
     def from_crawler(cls, crawler):
-        if os.environ['MONGO_ATLAS_URI']:
+        if os.environ.get('MONGO_ATLAS_URI'):
             # Prefer Mongo Atlas URI over anything else
             uri = os.environ['MONGO_ATLAS_URI']
         else:
