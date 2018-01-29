@@ -8,6 +8,7 @@ import requests
 from mongoengine import connect
 import hermit.model as model
 import sally.google.spreadsheet as gs
+import sally.google.drive as gd
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -31,6 +32,7 @@ class HermitCrab(object):
         self.categories = []
 
         lines = ["%s" % str(l).rstrip() for l in gs.get_urls(source_file)]
+        gd.mv(source_file, os.environ.get('DRIVE_PROC'))
         fb = re.compile(r'facebook', re.IGNORECASE)
         self.start_urls = list(filter(
             fb.search,
@@ -50,6 +52,7 @@ class HermitCrab(object):
 
         # Send to google spreadsheet
         self.insert_sheet(self.sheet_rows)
+        gd.mv(source_file, os.environ.get('DRIVE_DONE'))
 
         # Go get pages alike
         if len(self.categories) > 1:
@@ -77,6 +80,9 @@ class HermitCrab(object):
                     spreadsheet['spreadsheetId'],
                     self.collection,
                     rows)
+            gd.mv(
+                    spreadsheet['spreadsheetId'],
+                    os.environ.get('DRIVE_RESULTS'))
             logger.debug(results)
 
     def qualify(self, item):
@@ -126,7 +132,7 @@ class HermitCrab(object):
 
     def search_alike(self, category):
         """Return related pages by category."""
-        query = "search?q=%s&limit=1000&metadata=1" % category
+        query = "search?q=%s&limit=25&metadata=1" % category
         fields = str(
                 '&fields=about,category,contact_address,engagement,emails,'
                 'location,phone,website,category_list,description,'
@@ -141,6 +147,7 @@ class HermitCrab(object):
     def process_response(self, response):
         """Return valid values for response items."""
         item = {}
+        item['id'] = response['id']
         if 'website' in response:
             item['website'] = response['website']
         if 'about' in response:
