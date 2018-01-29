@@ -37,6 +37,7 @@ class User(Document):
 
 
 class FbPage(DynamicDocument):
+    page_id = StringField()
     title = StringField()
     about = StringField()
     category = StringField()

@@ -7,6 +7,7 @@ import logging
 import logging.handlers
 import requests
 from mongoengine import connect
+from mongoengine import errors
 import hermit.model as model
 import sally.google.spreadsheet as gs
 import sally.google.drive as gd
@@ -70,7 +71,10 @@ class HermitCrab(object):
                     ['SCORE', 'WEB SITE', 'ABOUT', 'CATEGORY', 'LIKES', 'TELPHONE',
                     'EMAIL', 'ADDRESS', 'CITY', 'COUNTRY', 'CRAWL DATE']
                         ]
-                for i in self.search_alike(cat)['data']:
+                pages = self.search_alike(cat)
+                for i in pages['data']:
+                    pg_count = 0
+                    pg_page = len(pages['data'])
                     logger.debug(i)
                     self.persist(i)
                     if ('location' in i
@@ -128,6 +132,7 @@ class HermitCrab(object):
         """Persist item to database."""
         try:
             page = model.FbPage(
+                page_id=item['id'],
                 title=item['name'] if 'name' in item else None,
                 about=item['about'] if 'about' in item else None,
                 category=item['category'] if 'category' in item else None,
@@ -143,7 +148,7 @@ class HermitCrab(object):
                 score=item['score'] if 'score' in item else None,
                 )
             return page.save()
-        except Exception as ex:
+        except errors.NotUniqueError as ex:
             logger.error(ex, exc_info=True)
             return None
 
