@@ -79,15 +79,6 @@ class HermitCrab(object):
                     rows)
             logger.debug(results)
 
-    def mongo_connect(self):
-        """Establish a MongoDB connection."""
-        connect(os.environ.get('MONGO_DBNAME'),
-                host="mongodb://" + os.environ.get('MONGO_HOST'),
-                port=int(os.environ.get('MONGO_PORT')),
-                replicaset=os.environ.get('MONGO_REPLICA_SET'),
-                username=os.environ.get('MONGO_USER'),
-                password=os.environ.get('MONGO_PASSWORD'))
-
     def qualify(self, item):
         """Return score for given item."""
         score = 1
@@ -102,7 +93,7 @@ class HermitCrab(object):
 
     def get_token(self):
         """Return Facebook user token from data base."""
-        self.mongo_connect()
+        model.mongo_connect()
         try:
             user = model.User.objects(fb_userId=self.fb_user_id).get()
             return user.fb_accessToken

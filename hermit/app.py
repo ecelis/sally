@@ -14,19 +14,6 @@ class HermitShell(object):
     def __init__(self):
         self.graph = 'https://graph.facebook.com'
 
-    def mongo_connect(self):
-        """Ëstablish a MongoDB connetion"""
-        try:
-            connect(os.environ.get('MONGO_DBNAME'),
-                    host="mongodb://" + os.environ.get('MONGO_HOST'),
-                    port=int(os.environ.get('MONGO_PORT')),
-                    replicaset=os.environ.get('MONGO_REPLICA_SET'),
-                    username=os.environ.get('MONGO_USER'),
-                    password=os.environ.get('MONGO_PASSWORD'))
-        except Exception:
-            cherrypy.log("[authorize]", traceback=True)
-            return {'status': 500, 'statusText': 'Can\'t connect to MongoDB'}
-
     def get_long_ttl_token(self, accessToken):
         """Exchange short lived Facebook user token for long lived one"""
         request = requests.get(
@@ -55,7 +42,7 @@ class HermitShell(object):
         """Authorize or register user with Facebook account"""
         data = cherrypy.request.json
         logger.debug(data)
-        self.mongo_connect()
+        model.mongo_connect()
 
         try:
             user = model.User.objects(
