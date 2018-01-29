@@ -44,6 +44,7 @@ class HermitCrab(object):
             if 'error' in response:
                 logger.info(response['error']['message'])
             else:
+                logger.debug(response)
                 self.persist(response)
                 item = self.process_response(response)
                 row = self.build_row(item)
@@ -59,6 +60,7 @@ class HermitCrab(object):
             for cat in list(set(self.categories)):
                 rows = []
                 for i in self.search_alike(cat)['data']:
+                    logger.debug(i)
                     self.persist(i)
                     rows.append(self.build_row(self.process_response(i)))
                     time.sleep(2)
