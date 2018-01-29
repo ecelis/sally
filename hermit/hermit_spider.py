@@ -64,7 +64,6 @@ class HermitCrab(object):
 
         sys.exit(0)
 
-
     def insert_sheet(self, rows):
         """Create a Google spreadhseet and insert given rows to it."""
         if len(rows) > 1:
@@ -80,7 +79,6 @@ class HermitCrab(object):
                     rows)
             logger.debug(results)
 
-
     def mongo_connect(self):
         """Establish a MongoDB connection."""
         connect(os.environ.get('MONGO_DBNAME'),
@@ -89,7 +87,6 @@ class HermitCrab(object):
                 replicaset=os.environ.get('MONGO_REPLICA_SET'),
                 username=os.environ.get('MONGO_USER'),
                 password=os.environ.get('MONGO_PASSWORD'))
-
 
     def qualify(self, item):
         """Return score for given item."""
@@ -103,7 +100,6 @@ class HermitCrab(object):
 
         return score
 
-
     def get_token(self):
         """Return Facebook user token from data base."""
         self.mongo_connect()
@@ -111,46 +107,45 @@ class HermitCrab(object):
             user = model.User.objects(fb_userId=self.fb_user_id).get()
             return user.fb_accessToken
         except Exception as ex:
-            logger.error(__name__, exc_info=True)
+            logger.error(ex, exc_info=True)
             return None
-
 
     def persist(self, item):
         """Persist item to database."""
         try:
             page = model.FbPage(
-                title = item['name'] if 'name' in item else None,
-                about = item['about'] if 'about' in item else None,
-                category = item['category'] if 'category' in item else None,
-                engagement = item['engagement'] if 'engagement' in item else None,
-                emails = item['emails'] if 'emails' in item else None,
-                location = item['location'] if 'location' in item else None,
-                phone = item['phone'] if 'phone' in item else None,
-                website = item['website'] if 'website' in item else None,
-                category_list = item['category_list'] if 'category_list' in item else None,
-                whatsapp_number = item['whatsapp_number'] if 'whatsapp_number' in item else None,
-                link = item['link'] if 'link' in item else None,
-                score_values = item['score_values'] if 'score_values' in item else None,
-                score = item['score'] if 'score' in item else None,
+                title=item['name'] if 'name' in item else None,
+                about=item['about'] if 'about' in item else None,
+                category=item['category'] if 'category' in item else None,
+                engagement=item['engagement'] if 'engagement' in item else None,
+                emails=item['emails'] if 'emails' in item else None,
+                location=item['location'] if 'location' in item else None,
+                phone=item['phone'] if 'phone' in item else None,
+                website=item['website'] if 'website' in item else None,
+                category_list=item['category_list'] if 'category_list' in item else None,
+                whatsapp_number=item['whatsapp_number'] if 'whatsapp_number' in item else None,
+                link=item['link'] if 'link' in item else None,
+                score_values=item['score_values'] if 'score_values' in item else None,
+                score=item['score'] if 'score' in item else None,
                 )
             return page.save()
         except Exception as ex:
             logger.error(ex, exc_info=True)
             return None
 
-
     def search_alike(self, category):
         """Return related pages by category."""
         query = "search?q=%s&limit=1000&metadata=1" % category
-        fields = str('&fields=about,category,contact_address,engagement,emails,'
+        fields = str(
+                '&fields=about,category,contact_address,engagement,emails,'
                 'location,phone,website,category_list,description,'
                 'has_whatsapp_number,whatsapp_number,hometown,name,products,'
                 'rating_count,overall_star_rating,link,'
                 'connected_instagram_account&access_token=')
-        r = requests.get("%s/%s&type=page%s%s" % (self.graph, query, fields,
+        request = requests.get("%s/%s&type=page%s%s" % (
+            self.graph, query, fields,
             self.access_token))
-        return r.json()
-
+        return request.json()
 
     def process_response(self, response):
         """Return valid values for response items."""
@@ -191,7 +186,6 @@ class HermitCrab(object):
         item['score'] = self.qualify(response)
         return item
 
-
     def build_row(self, item):
         """Return a row for insert_to google spreadsheet"""
         return [
@@ -208,14 +202,15 @@ class HermitCrab(object):
                 datetime.datetime.now().strftime("%m%d%Y")
                 ]
 
-
     def parse_item(self, page):
         """Extract data from facebook pages"""
-        fields = str('?fields=about,category,contact_address,engagement,emails,'
+        fields = str(
+                '?fields=about,category,contact_address,engagement,emails,'
                 'location,phone,website,category_list,description,'
                 'has_whatsapp_number,whatsapp_number,hometown,name,products,'
                 'rating_count,overall_star_rating,link,'
                 'connected_instagram_account&access_token=')
-        r = requests.get("%s/%s%s%s" % (self.graph, page, fields,
+        request = requests.get("%s/%s%s%s" % (
+            self.graph, page, fields,
             self.access_token))
-        return r.json()
+        return request.json()
