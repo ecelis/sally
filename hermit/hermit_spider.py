@@ -50,14 +50,15 @@ class HermitCrab(object):
                 logger.info(response['error']['message'])
             else:
                 logger.debug(response)
-                self.persist(response)
-                if ('location' in response
-                        and 'country' in response['location']
-                        and response['location']['country']
-                        in self.config['allowed_countries']):
-                    item = self.process_response(response)
-                    row = self.build_row(item)
-                    self.sheet_rows.append(row)
+                if self.persist(response):
+                    if ('location' in response
+                            and 'country' in response['location']
+                            and response['location']['country']
+                            in self.config['allowed_countries']):
+                        item = self.process_response(response)
+                        row = self.build_row(item)
+                        self.sheet_rows.append(row)
+
             #time.sleep(2)
 
         # Send to google spreadsheet
