@@ -232,19 +232,16 @@ class BasicCrab(CrawlSpider):
     def parse_item(self, response):
         """Return parsed websites"""
         # Collect all links found in crawled pages
-        website_email = list(
-            self.extract_email(response, list(BasicCrab.ELEMENTS)))
-        # Social network detection TODO move it to function
-        parsed_url = urlparse(response.url)
-        website_network = list(
-            self.extract_social_networks(
-                response, parsed_url.netloc.split('.'), set({}),
-                ['facebook\.com', 'instagram\.com', 'twitter\.com']))
+        #parsed_url = urlparse(response.url)
+        #website_network = list(
+        #    self.extract_social_networks(
+        #        response, parsed_url.netloc.split('.'), set({}),
+        #        ['facebook\.com', 'instagram\.com', 'twitter\.com']))
 
         website = WebsiteItem()
         website.set_score(self.score)
         website['spreadsheetId'] = self.spreadsheetId
-        website['base_url'] = parsed_url.netloc
+        website['base_url'] = urlparse(response.url).netloc
         website['secure_url'] = True if parsed_url.scheme == 'https' else False
         website['url'] = response.url
         website['title'] = self.extract_title(response)
@@ -254,8 +251,12 @@ class BasicCrab(CrawlSpider):
             response.xpath('//div/@class').extract()
             + response.xpath('//a/@class').extract()
             + response.xpath('//i/@class').extract())
-        website['network'] = website_network
-        website['email'] = website_email
+        website['network'] = list(
+            self.extract_social_networks(
+                response, parsed_url.netloc.split('.'), set({}),
+                ['facebook\.com', 'instagram\.com', 'twitter\.com']))
+        website['email'] = list(
+            self.extract_email(response, list(BasicCrab.ELEMENTS)))
         website['telephone'] = self.extract_telephone(
             response, list(BasicCrab.ELEMENTS))
         website['ecommerce'] = self.is_ecommerce(response)
