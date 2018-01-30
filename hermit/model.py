@@ -42,7 +42,7 @@ class FbPage(DynamicDocument):
     website = StringField()
     category_list = ListField(DictField())
     whatsapp_number = StringField()
-    link = URLField()
+    link = StringField()
     score_values = DictField()
     score = FloatField()
     last_crawl = DateTimeField()
