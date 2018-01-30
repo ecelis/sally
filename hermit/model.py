@@ -7,12 +7,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 handler = logging.handlers.SysLogHandler(address='/dev/log')
 logger.addHandler(handler)
-#class HermitMongo:
-#
-#    def __init__(self):
-#        connect('sally', host=os.environ.get('MONGO_HOST',
-#            username=os.environ.get('MONGO_USER'),
-#            password=os.environ.get('MONGO_PASSWORD')))
 
 def mongo_connect():
     """Ëstablish a MongoDB connetion"""

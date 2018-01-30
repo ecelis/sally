@@ -22,7 +22,7 @@ def main():
             process.crawl(BasicCrab, csvfile=source_file['id'],
                     spreadsheet=spreadsheet['spreadsheetId'])
         elif prefix_[0] == 'fb':
-            fb = hermit_spider.HermitCrab(source_file['id'], '','10156018569427673')
+            fb = hermit_spider.HermitCrab(source_file['id'], '10156018569427673')
 
     process.start()
 

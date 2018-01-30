@@ -21,10 +21,8 @@ logger.addHandler(handler)
 class HermitCrab(object):
     """Facebook pages crawler"""
 
-    def __init__(self, source_file, spreadsheet, fb_user_id, *args, **kwargs):
-        self.spreadsheetId = spreadsheet
+    def __init__(self, source_file, fb_user_id):
         self.config = gs.get_settings()
-        logger.debug(self.config)
         self.score = gs.get_score()
         self.collection = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
         self.fb_user_id = fb_user_id
@@ -42,7 +40,6 @@ class HermitCrab(object):
         self.start_urls = list(filter(
             fb.search,
             list(filter(None, ','.join(lines).split(',')))))
-        logger.debug(self.start_urls)
 
         for url in self.start_urls:
             response = self.parse_item(url.split('/')[1])
@@ -50,7 +47,6 @@ class HermitCrab(object):
                 logger.info(response['error']['message'])
             else:
                 item = self.process_response(response)
-                logger.debug(self.categories)
                 if self.persist(response):
                     if ('location' in response
                             and 'country' in response['location']
@@ -64,34 +60,23 @@ class HermitCrab(object):
         gd.mv(source_file, os.environ.get('DRIVE_DONE'))
 
         # Go get pages alike
+
+        rows = [
+            ['SCORE', 'WEB SITE', 'ABOUT', 'CATEGORY', 'LIKES', 'TELPHONE',
+            'EMAIL', 'ADDRESS', 'CITY', 'COUNTRY', 'CRAWL DATE']
+                ]
         if len(self.categories) > 0:
-            logger.debug("====YAY=====")
-            pg_limit = 0
-            rows = [
-                ['SCORE', 'WEB SITE', 'ABOUT', 'CATEGORY', 'LIKES', 'TELPHONE',
-                'EMAIL', 'ADDRESS', 'CITY', 'COUNTRY', 'CRAWL DATE']
-                    ]
             for cat in list(set(self.categories)):
                 pages = self.search_alike(cat)
-                for i in pages['data']:
-                    logger.debug(i)
-                    if self.persist(i):
-                        if ('location' in i
-                                and 'country' in i['location']
-                                and i['location']['country']
+                for page in pages['data']:
+                    if self.persist(page):
+                        if ('location' in page
+                                and 'country' in page['location']
+                                and page['location']['country']
                                 in self.config['allowed_countries']):
-                            rows.append(self.build_row(self.process_response(i)))
-                    #time.sleep(2)
+                            rows.append(self.build_row(self.process_response(page)))
                 logger.debug(rows)
-                if pg_limit == 1000:
-                    self.insert_sheet(rows)
-                    rows = [
-                        ['SCORE', 'WEB SITE', 'ABOUT', 'CATEGORY', 'LIKES', 'TELPHONE',
-                        'EMAIL', 'ADDRESS', 'CITY', 'COUNTRY', 'CRAWL DATE']
-                            ]
-                    pg_limit = 0
-                else:
-                    pg_limit += 1
+            self.insert_sheet(rows)
 
         sys.exit(0)
 

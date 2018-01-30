@@ -4,6 +4,8 @@ services:
     image: mongo:3.6
     volumes:
       - ./storage:/data/db
+    ports:
+      - "127.0.0.1:27017:27017"
 
   hermitapp:
     build:
