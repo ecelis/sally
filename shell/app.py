@@ -7,9 +7,9 @@ from cherrypy.lib import cpstats
 import requests
 from mongoengine import connect
 import model
+import sally.google.drive as gd
 
 logger = logging.getLogger(__name__)
-
 
 
 class HermitShell(object):
@@ -37,11 +37,6 @@ class HermitShell(object):
     def home(self):
         """Return user home"""
         return open("home.html")
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def page(self, page, fb_user_id):
-        pass
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
@@ -74,21 +69,31 @@ class HermitShell(object):
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def queue(self):
-        pass
+        items = gd.get_files(os.environ.get('DRIVE_UPLOADS'))
+        return items
 
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def output(self):
-        pass
+        items = gd.get_files(os.environ.get('DRIVE_RESULTS'))
+        return items
 
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def done(self):
-        pass
+        items = gd.get_files(os.environ.get('DRIVE_DONE'))
+        return items
+
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def processing(self):
+        items = gd.get_files(os.environ.get('DRIVE_PROC'))
+        return items
 
 
     @cherrypy.expose
