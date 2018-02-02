@@ -75,34 +75,34 @@ FB.api('/me?fields=id,name,email', function(response) {
 }
 
 function catchToken(accessToken) {
-FB.api('/me?fields=id,name,email', function(response) {
-  document.getElementById('status').innerHTML =
-    'Thanks for logging in, ' + response.name + '!';
+  FB.api('/me?fields=id,name,email', function(response) {
+    document.getElementById('status').innerHTML =
+      'Thanks for logging in, ' + response.name + '!';
 
-  let user = {
-    name: response.name,
-    email: response.email,
-    fb_userId: response.id,
-    fb_accessToken: accessToken
-  };
-  console.log(user);
+    let user = {
+      name: response.name,
+      email: response.email,
+      fb_userId: response.id,
+      fb_accessToken: accessToken
+    };
+    console.log(user);
 
-  let hHeaders = new Headers({
-    'Content-Type': 'application/json'
-  });
-
-  let hInit = {
-    headers: hHeaders,
-    method: 'POST',
-    mode: 'cors',
-    cache: 'no-store',
-    body: JSON.stringify(user)
-  };
-
-  fetch('https://sally.patito.club/authorize', hInit)
-    .then(function(res) {
-      window.location.assign('https://sally.patito.club/home')
+    let hHeaders = new Headers({
+      'Content-Type': 'application/json'
     });
-});
+
+    let hInit = {
+      headers: hHeaders,
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-store',
+      body: JSON.stringify(user)
+    };
+
+    fetch('https://sally.patito.club/authorize', hInit)
+      .then(function(res) {
+        window.location.assign('https://sally.patito.club/home')
+      });
+  });
 }
 
