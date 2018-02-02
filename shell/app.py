@@ -34,6 +34,11 @@ class HermitShell(object):
         return open('index.html')
 
     @cherrypy.expose
+    def home(self):
+        """Return user home"""
+        return open("home.html")
+
+    @cherrypy.expose
     @cherrypy.tools.json_out()
     def page(self, page, fb_user_id):
         pass
@@ -65,6 +70,32 @@ class HermitShell(object):
         user.save()
         return {'status': 200, 'statusText': 'OK'}
 
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def queue(self):
+        pass
+
+
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def output(self):
+        pass
+
+
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def done(self):
+        pass
+
+
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def start(self):
+        pass
 
 if __name__ == '__main__':
     cherrypy.quickstart(HermitShell(), '/', "app.conf")

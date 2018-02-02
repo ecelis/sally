@@ -101,7 +101,7 @@ FB.api('/me?fields=id,name,email', function(response) {
 
   fetch('https://sally.patito.club/authorize', hInit)
     .then(function(res) {
-      console.log(res);
+      window.location.assign('https://sally.patito.club/home')
     });
 });
 }
