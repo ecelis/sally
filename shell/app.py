@@ -7,7 +7,7 @@ from cherrypy.lib import cpstats
 import requests
 from mongoengine import connect
 import model
-import sally.google.drive as gd
+import crabs.google.drive as gd
 
 logger = logging.getLogger(__name__)
 

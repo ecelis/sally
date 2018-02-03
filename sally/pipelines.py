@@ -9,8 +9,8 @@ import datetime
 import os
 import pymongo
 import logging
-import sally.google.spreadsheet as gs
-import sally.google.drive as gd
+import crabs.google.spreadsheet as gs
+import crabs.google.drive as gd
 
 logger = logging.getLogger('sally_lightfoot')
 

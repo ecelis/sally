@@ -11,8 +11,8 @@ from sendgrid.helpers.mail import Mail
 import scrapy
 from scrapy.spiders import CrawlSpider
 from sally.items import WebsiteItem
-import sally.google.spreadsheet as gs
-import sally.google.drive as gd
+import crabs.google.spreadsheet as gs
+import crabs.google.drive as gd
 
 logger = logging.getLogger()
 handler = logging.handlers.SysLogHandler(facility=logging.handlers.SysLogHandler.LOG_DAEMON)

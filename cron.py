@@ -1,7 +1,7 @@
 import os
 import logging
-import sally.google.spreadsheet as gs
-import sally.google.drive as gd
+import crabs.google.spreadsheet as gs
+import crabs.google.drive as gd
 import scrapy
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings

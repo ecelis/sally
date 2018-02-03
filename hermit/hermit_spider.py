@@ -9,8 +9,8 @@ import requests
 from mongoengine import connect
 from mongoengine import errors
 import hermit.model as model
-import sally.google.spreadsheet as gs
-import sally.google.drive as gd
+import crabs.google.spreadsheet as gs
+import crabs.google.drive as gd
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)

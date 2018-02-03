@@ -2,7 +2,7 @@
 """Google spreadsheets interface for Sally crawler."""
 import os
 import logging
-from sally.google import authorize
+from crabs.google import authorize
 
 logger = logging.getLogger(__name__)
 

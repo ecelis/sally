@@ -1,5 +1,5 @@
 import logging
-import sally.google.authorize as authorize
+import crabs.google.authorize as authorize
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
