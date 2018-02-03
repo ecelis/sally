@@ -69,6 +69,7 @@ class HermitShell(object):
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def queue(self):
+        """Return a list of files in queue"""
         items = gd.get_files(os.environ.get('DRIVE_UPLOADS'))
         return items
 
@@ -77,6 +78,7 @@ class HermitShell(object):
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def output(self):
+        """Return a list of result files"""
         items = gd.get_files(os.environ.get('DRIVE_RESULTS'))
         return items
 
@@ -85,6 +87,7 @@ class HermitShell(object):
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def done(self):
+        """return a list of finished files"""
         items = gd.get_files(os.environ.get('DRIVE_DONE'))
         return items
 
@@ -92,6 +95,7 @@ class HermitShell(object):
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def processing(self):
+        """Return a list of files being processed"""
         items = gd.get_files(os.environ.get('DRIVE_PROC'))
         return items
 
@@ -100,6 +104,7 @@ class HermitShell(object):
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def start(self):
+        """Force a start of crawlers"""
         pass
 
 if __name__ == '__main__':

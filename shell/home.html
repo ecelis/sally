@@ -11,9 +11,7 @@
         <link rel="apple-touch-icon" href="icon.png">
         <!-- Place favicon.ico in the root directory -->
 
-        <link rel="stylesheet" href="/static/css/normalize.css">
-        <link rel="stylesheet" href="/static/css/main.css">
-        <link rel="stylesheet" href="/static/css/layout.css">
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css">
         <!-- Google Tag Manager -->
         <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -27,27 +25,47 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
         <![endif]-->
 
-        <div class="wrapper">
-          <header class="header">Sally</header>
-          <article class="content">
-            <h1>Lead bot experiment</h1>
-            <p>Crawl the web trying to find good sales leads</p>
-          </article>
-          <div class="block-a"><ul id="block-a"></ul></div>
-          <div class="block-b"><ul id="block-b"></ul></div>
-          <div class="block-c"><ul id="block-c"></ul></div>
-          <footer class="footer">
-            <a href="https://docs.google.com/document/d/e/2PACX-1vTZNe2j7BWBTM2ymqWjod4jVr_MbHGnM8DwE53XokDzZAmYvamrDFdENm8slUxQcaTlGfdgBWIVyHHa/pub">
-              Privacy policy
-            </a>
-          </footer>
+        <div class="container">
+          <div class="row">
+            <header class="header">Sally</header>
+          </div>
+          <div class="row">
+            <div class="col-7">
+              <form>
+                <div class="form-group">
+                  <input type="text" class="form-control"
+                                     id="query"
+                                     aria-describedby="queryHelp"
+                                     placeholder="Search...">
+                  <small id="queryHelp"
+                    class="form-text text-muted">Search text</small>
+                </div>
+                <button type="button" id="search_button"
+                  class="btn btn-primary">Search</button>
+                <button type="button" id="start_button"
+                  class="btn btn-danger">Start</button>
+              </form>
+            </div>
+            <div class="col-sm">
+              <div class="block-a"><h6>Queue</h6><ul id="block-a"></ul></div>
+              <div class="block-b"><h6>Results</h6><ul id="block-b"></ul></div>
+              <div class="block-c">
+                <h6>Processing</h6><ul id="block-c"></ul></div>
+            </div>
+          </div>
+          <div class="row">
+            <footer class="footer">
+              <a href="https://docs.google.com/document/d/e/2PACX-1vTZNe2j7BWBTM2ymqWjod4jVr_MbHGnM8DwE53XokDzZAmYvamrDFdENm8slUxQcaTlGfdgBWIVyHHa/pub">
+                Privacy policy
+              </a>
+            </footer>
+          </div>
         </div>
 
 
         <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W9MXBRJ"
             height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-        <script src="/static/js/vendor/modernizr-3.5.0.min.js"></script>
-        <script src="/static/js/plugins.js"></script>
+        <script src="/static/js/bootstrap.min.js"></script>
         <script src="/static/js/home.js"></script>
         <script>initHome();</script>
 
