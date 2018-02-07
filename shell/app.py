@@ -8,6 +8,7 @@ import requests
 from mongoengine import connect
 import model
 import crabs.google.drive as gd
+import crabs.cron
 
 logger = logging.getLogger(__name__)
 
@@ -105,7 +106,7 @@ class HermitShell(object):
     @cherrypy.tools.json_out()
     def start(self):
         """Force a start of crawlers"""
-        pass
+        cron.main()
 
 if __name__ == '__main__':
     cherrypy.quickstart(HermitShell(), '/', "app.conf")
