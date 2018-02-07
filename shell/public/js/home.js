@@ -1,3 +1,13 @@
+let startCrawl = function() {
+  fetch('https://sally.patito.club/start',
+    {headers: new Headers({'Content-Type': 'application/json'}),
+      method: 'GET', cache: 'no-store'})
+    .then(res => res.json())
+  .then(out => {
+    console.log(out);
+  });
+}
+
 async function fetchItem(endpoint, target_element, hInit) {
      fetch('https://sally.patito.club/' + endpoint, hInit)
       .then(res => res.json())
@@ -7,7 +17,6 @@ async function fetchItem(endpoint, target_element, hInit) {
           li = document.createElement("li");
           li.appendChild(document.createTextNode(item['name']));
           e.appendChild(li)
-          console.log(e);
         });
       });
 };
@@ -17,6 +26,7 @@ function initHome() {
       'Content-Type': 'application/json'
     });
 
+  // Fetch items from Google drive
     let hInit = {
       headers: hHeaders,
       method: 'GET',
@@ -24,7 +34,11 @@ function initHome() {
       cache: 'no-store',
     };
 
-  fetchItem('queue','block-a',hInit);
-  fetchItem('output','block-b',hInit);
-  fetchItem('processing','block-c',hInit);
+  fetchItem('queue','block-a', hInit);
+  fetchItem('output','block-b', hInit);
+  fetchItem('processing','block-c', hInit);
+
+  // Attach event handlers
+  document.getElementById('start_button').addEventListener("click",
+  startCrawl)
 }
