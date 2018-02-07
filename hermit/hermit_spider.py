@@ -78,7 +78,6 @@ class HermitCrab(object):
                 logger.debug(rows)
             self.insert_sheet(rows)
 
-        sys.exit(0)
 
     def insert_sheet(self, rows):
         """Create a Google spreadhseet and insert given rows to it."""
