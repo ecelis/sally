@@ -8,7 +8,7 @@ import logging.handlers
 import requests
 from mongoengine import connect
 from mongoengine import errors
-import hermit.model as model
+import crabs.hermit.model as model
 import crabs.google.spreadsheet as gs
 import crabs.google.drive as gd
 

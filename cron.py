@@ -5,8 +5,8 @@ import crabs.google.drive as gd
 import scrapy
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
-from sally.spiders.lightfoot_spider import BasicCrab
-from hermit import hermit_spider
+from crabs.sally.spiders.lightfoot_spider import BasicCrab
+from crabs.hermit import hermit_spider
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)

@@ -32,7 +32,7 @@ class HermitShell(object):
     @cherrypy.expose
     def index(self):
         """Return landing page"""
-        return open('index.html')
+        return open(os.path.join(os.path.dirname(__file__), 'index.html'))
 
     @cherrypy.expose
     def home(self):
@@ -109,4 +109,5 @@ class HermitShell(object):
         cron.main()
 
 if __name__ == '__main__':
-    cherrypy.quickstart(HermitShell(), '/', "app.conf")
+    conf = os.path.join(os.path.dirname(__file__), 'app.conf')
+    cherrypy.quickstart(HermitShell(), '/', conf)

@@ -7,7 +7,6 @@
 
 import logging
 import scrapy
-from sally.qualifiers import QUALIFIER as q
 
 logger = logging.getLogger(__name__)
 

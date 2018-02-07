@@ -10,7 +10,7 @@ from sendgrid.helpers.mail import Email
 from sendgrid.helpers.mail import Mail
 import scrapy
 from scrapy.spiders import CrawlSpider
-from sally.items import WebsiteItem
+from crabs.sally.items import WebsiteItem
 import crabs.google.spreadsheet as gs
 import crabs.google.drive as gd
 
