@@ -61,6 +61,7 @@ six==1.11.0
 snowballstemmer==1.2.1
 Sphinx==1.6.6
 sphinxcontrib-websupport==1.0.1
+sqlite3==0.0.0
 tempora==1.10
 tldextract==2.2.0
 Twisted==17.9.0

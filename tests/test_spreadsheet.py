@@ -2,7 +2,7 @@ import unittest
 import datetime
 import logging
 from googleapiclient.errors import HttpError
-import sally.google.spreadsheet as gs
+import crabs.sally.google.spreadsheet as gs
 
 logger = logging.getLogger(__name__)
 
