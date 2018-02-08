@@ -2,6 +2,7 @@
 import os
 import datetime as dt
 import logging
+import threading
 import cherrypy
 from cherrypy.lib import cpstats
 import requests
@@ -106,7 +107,8 @@ class HermitShell(object):
     @cherrypy.tools.json_out()
     def start(self):
         """Force a start of crawlers"""
-        cron.main()
+        thr = threading.Thread(target=cron.main, args=(), kwargs={})
+        thr.start()
         return {'status': 200, 'statusText': 'OK'}
 
 if __name__ == '__main__':

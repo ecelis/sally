@@ -40,7 +40,6 @@ class LightfootPipeline(object):
                 uri = "mongodb://" + os.environ['MONGO_USER'] + ":" + os.environ['MONGO_PASSWORD'] + "@" + os.environ['MONGO_HOST']
             else:
                 uri = "mongodb://" + os.environ['MONGO_HOST']
-        logger.debug(uri)
         return cls(
                 mongo_uri = uri,
                 mongo_db = os.environ['MONGO_DBNAME']

@@ -13,16 +13,8 @@ from twisted.python import log
 observer = log.PythonLoggingObserver()
 observer.start()
 BOT_NAME = 'sally'
-
-### BEGIN Eve settings
-
-API_VERSION = 'v1'
-ALLOWED_FILTERS = []
-
-### END Eve settings
-
-SPIDER_MODULES = ['sally.spiders']
-NEWSPIDER_MODULE = 'sally.spiders'
+SPIDER_MODULES = ['crabs.sally.spiders']
+NEWSPIDER_MODULE = 'crabs.sally.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = 'Mozilla/5.0 (FreeBSD 11.1; rv:41.0) Gecko/41.0 Firefox/41.0 sally/1.3'
@@ -99,7 +91,7 @@ DOWNLOADER_MIDDLEWARES = {
 #    'sally.pipelines.SallyPipeline': 300,
 #}
 ITEM_PIPELINES = {
-    'sally.pipelines.LightfootPipeline': 300,
+    'crabs.sally.pipelines.LightfootPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
