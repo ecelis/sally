@@ -1,0 +1,22 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html" />
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html" />
+
+<dom-module id="my-new-view">
+  <template>
+    <style>
+      :host {
+        display: block;
+        padding: 16px;
+      }
+    </style>
+
+    <h1>New View</h1>
+    <paper-checkbox>Ready to deploy!</paper-checkbox>
+  </template>
+  <script charset="utf-8">
+    class MyNewView extends Polymer.Element {
+      static get is() { return 'my-new-view'; }
+    }
+    customElements.define(MyNewView.is, MyNewView);
+  </script>
+</dom-module>
