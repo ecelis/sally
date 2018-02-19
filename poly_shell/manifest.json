@@ -1,7 +1,7 @@
 {
-  "name": "My App",
-  "short_name": "My App",
-  "description": "My App description",
+  "name": "Sally",
+  "short_name": "Sally",
+  "description": "Sally shell",
   "icons": [
     {
       "src": "images/manifest/icon-192x192.png",
