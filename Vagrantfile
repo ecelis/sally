@@ -12,7 +12,7 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "centos/7"
+  config.vm.box = "bento/ubuntu-17.10-i386"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -64,13 +64,8 @@ Vagrant.configure("2") do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
-    sudo yum -y update
-    sudo yum -y install yum-utils
-    sudo yum -y groupinstall development
-    sudo yum -y install https://centos7.iuscommunity.org/ius-release.rpm
-    sudo yum -y install python36u python36u-devel
-    sudo ln -s /usr/bin/python3.6 /usr/bin/python3
-    sudo yum -y install python36u-pip
+    sudo apt-get -q update
+    sudo apt-get -q dist-upgrade
     cd /vagrant
     ./bootstrap.sh
   SHELL

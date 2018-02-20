@@ -178,3 +178,62 @@ Download [Robo 3T](https://robomongo.org/)
   * [Facebook Graph API](https://developers.facebook.com/docs/graph-api)
   * [MongoDB Docs](https://docs.mongodb.com/)
   * [Neo4j docker image](https://hub.docker.com/_/neo4j/)
+
+
+Dev notes
+
+%2C     ,
+%3A     :
+1006    Local business or place
+1013    Company, organization or institution
+1009    Brand or product
+
+
+    div#contentArea
+      div#browse_result_area
+        div#initial_browse_result
+          div#BrowseResultsContainer
+            div.clearfix
+              div._401d
+                div.clearfix
+                  div._42ef
+                    div._glj
+                      div.clearfix
+                        a._32mo get HREF
+                          span Title
+                      div
+                        div._glm
+                          div._pac
+                          span Category || a Category
+                          a N like this
+                        div._glo
+                          div
+                            div._ajw
+                              div._52eh
+                                div._ajw
+                                  div._52eh _ajx Description
+
+                        div._glo
+                          div
+                            div._ajw
+                              div._52eh
+                                div._ajw
+                                  div._52eh._ajx Description
+
+
+    x = 0;
+    y = document.body.scrollHeight;
+    window.scroll(x, y);
+
+
+
+
+
+
+https://www.facebook.com/search/pages/?q=zapateria&filters_category=%7B%22name%22%3A%22pages_category%22%2C%22args%22%3A%221006%22%7D
+https://www.facebook.com/search/pages/?q=zapateria&filters_category{"name":"pages_category","args":"1006"}
+https://www.facebook.com/search/pages/?q=zapateria&filters_category{"name"%3a"pages_category"%2c"args"%3a"1006"}
+
+https://www.facebook.com/search/top/?q=zapateria&filters_rp_location=%7B%22name%22%3A%22location%22%2C%22args%22%3A%22114897945188014%22%7D
+
+https://www.facebook.com/search/top/?q=zapateria&filters_rp_location=%7B%22name%22%3A%22location%22%2C%22args%22%3A%22114897945188014%22%7D
