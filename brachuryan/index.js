@@ -28,7 +28,7 @@ function buildQuery(keyWord, filterName, filterArgs) {
 (async () => {
   const browser = await puppeteer.launch({
     headless: false,
-    slowMo: 250,
+    slowMo: 50,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   const page = await browser.newPage();
@@ -43,6 +43,19 @@ function buildQuery(keyWord, filterName, filterArgs) {
   await page.type(PASSWORD_FIELD, process.env.FB_PASSWD);
   await page.click(LOGIN_BUTTON);
   await page.goto(url);
+  /*  await page.evaluate(sel => {
+    let element = document.querySelector(sel);
+    let x = 0;
+    let y = document.body.scrollHeight;
+    window.scroll(x, y);
+  });
+  */
+  await page.keyboard.press('Tab');
+  /*  setTimeout(function() {
+    console.log('down ===> down');
+    await page.keyboard.press('PageDown');
+  }, 700);
+  */
   await page.screenshot({path: '/tmp/example.png'});
 
   //  await browser.close();
