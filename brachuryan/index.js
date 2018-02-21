@@ -25,10 +25,39 @@ function buildQuery(keyWord, filterName, filterArgs) {
     + '"%2c"args"%3a"' + filterArgs + '"}';
 };
 
+function extractItems() {
+    const extractedElements = document.querySelectorAll('#boxes > div.box');
+    const items = [];
+    for (let element of extractedElements) {
+          items.push(element.innerText);
+        }
+    return items;
+}
+
+async function scrapeInfiniteScrollItems(
+    page,
+    extractItems,
+    itemTargetCount,
+    scrollDelay = 1000,
+) {
+    let items = [];
+    try {
+          let previousHeight;
+          while (items.length < itemTargetCount) {
+                  items = await page.evaluate(extractItems);
+                  previousHeight = await page.evaluate('document.body.scrollHeight');
+                  await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
+                  await page.waitForFunction(`document.body.scrollHeight > ${previousHeight}`);
+                  await page.waitFor(scrollDelay);
+                }
+        } catch(e) { }
+    return items;
+}
+
 (async () => {
   const browser = await puppeteer.launch({
     headless: false,
-    slowMo: 50,
+    slowMo: 1,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   const page = await browser.newPage();
@@ -43,20 +72,10 @@ function buildQuery(keyWord, filterName, filterArgs) {
   await page.type(PASSWORD_FIELD, process.env.FB_PASSWD);
   await page.click(LOGIN_BUTTON);
   await page.goto(url);
-  /*  await page.evaluate(sel => {
-    let element = document.querySelector(sel);
-    let x = 0;
-    let y = document.body.scrollHeight;
-    window.scroll(x, y);
-  });
-  */
+  const items = await scrapeInfiniteScrollItems(page, extractItems, 100);
+  //  fs.writeFileSync('./items.txt', items.join('\n') + '\n');
   await page.keyboard.press('Tab');
-  /*  setTimeout(function() {
-    console.log('down ===> down');
-    await page.keyboard.press('PageDown');
-  }, 700);
-  */
   await page.screenshot({path: '/tmp/example.png'});
 
-  //  await browser.close();
+  await browser.close();
 })();
