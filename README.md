@@ -1,4 +1,7 @@
-# Sally
+# ARCHIVED I'll try gitlab for management lifecycle and sally was the project choosen
+## https://gitlab.com/ecelis/sally
+
+## Sally
 
 
 Collection of web crawlers (crabs) based on Scrapy framework. Each crab
